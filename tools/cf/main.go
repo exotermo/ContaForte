@@ -20,12 +20,12 @@ Ciclo de vida
   down                               Derruba a stack (mantém os volumes)
   reset                              Derruba a stack E apaga os volumes (pede confirmação)
 Operação
-  test [backend|web|all]             Roda os testes em container (backend: Gradle+Testcontainers; web: lint, tipos e Vitest)
+  test [backend|web|go|all]          Roda os testes em container (backend: Gradle+Testcontainers; web: lint, tipos e Vitest; go: cf e container-exporter)
   e2e                                Testes E2E do navegador (Playwright) contra a stack em execução
   status                             Estado, saúde e consumo de cada serviço
   doctor                             Diagnóstico: isolamento de rede, portas, segredos, RAM
   logs [serviço]                     Acompanha os logs
-  open                               Abre o app no navegador
+  open [app|grafana]                 Abre o app (ou o Grafana) no navegador
   backup                             pg_dump comprimido em backups/
   restore <arquivo.sql.gz>           Restaura um backup (pede confirmação)
   version                            Mostra a versão
@@ -60,7 +60,7 @@ func main() {
 	case "doctor":
 		err = cmdDoctor()
 	case "open":
-		err = cmdOpen()
+		err = cmdOpen(args)
 	case "backup":
 		err = cmdBackup()
 	case "restore":

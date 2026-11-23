@@ -2,7 +2,7 @@
 # Redes:
 #   edge: bridge, única com publicação de porta (apenas o gateway, em 127.0.0.1)
 #   app : internal, sem saída para a Internet (dados e serviços)
-#   obs : internal, observabilidade (serviços entram na Etapa 6)
+#   obs : internal, observabilidade (Prometheus, Grafana, Loki, Alloy, exporters)
 
 name: contaforte
 
@@ -20,6 +20,10 @@ volumes:
   postgres-data:
   redis-data:
   mqtt-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  alloy-data:
 
 services:
   postgres:
@@ -79,7 +83,7 @@ services:
   backend:
     build: ./apps/backend
     restart: unless-stopped
-    networks: [app]            # sem saída à Internet; o gateway o alcança pela rede app
+    networks: [app, obs]       # sem saída à Internet; obs = o Prometheus coleta a porta de gestão (8081)
     depends_on:
       postgres:
         condition: service_healthy
@@ -119,10 +123,139 @@ services:
       start_period: 20s
     mem_limit: 256m
 
+  # ---------------------------------------------------------------- observabilidade
+  # Proxy somente-leitura da API do Docker: o Alloy e o container-exporter nunca montam o docker.sock diretamente.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:v0.5.0
+    restart: unless-stopped
+    networks: [obs]
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      INFO: 1
+      NETWORKS: 1      # o Alloy consulta redes ao descobrir containers
+      EVENTS: 1
+      VERSION: 1
+      POST: 0          # nenhuma operação de escrita
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    mem_limit: 64m
+
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    restart: unless-stopped
+    networks: [obs]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    volumes:
+      - ./infrastructure/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infrastructure/monitoring/prometheus/rules.yml:/etc/prometheus/rules.yml:ro
+      - prometheus-data:/prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:9090/-/ready"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    mem_limit: 384m
+
+  loki:
+    image: grafana/loki:3.6.22
+    restart: unless-stopped
+    networks: [obs]
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    volumes:
+      - ./infrastructure/monitoring/loki/loki.yaml:/etc/loki/loki.yaml:ro
+      - loki-data:/loki
+    # imagem mínima (sem shell/wget): não há healthcheck; o ./cf doctor confere o alvo "loki" no Prometheus
+    mem_limit: 384m
+
+  alloy:
+    image: grafana/alloy:v1.22.0
+    restart: unless-stopped
+    networks: [obs]
+    depends_on: [loki, docker-proxy]
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    volumes:
+      - ./infrastructure/monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - alloy-data:/var/lib/alloy/data
+    mem_limit: 320m
+
+  # Métricas por container (CPU, memória, rede) lidas pelo proxy somente-leitura. Substitui o cAdvisor,
+  # que exigiria o docker.sock e o containerd montados (acesso root implícito ao host).
+  container-exporter:
+    build: ./tools/container-exporter
+    restart: unless-stopped
+    networks: [obs]
+    depends_on: [docker-proxy]
+    environment:
+      DOCKER_HOST_URL: http://docker-proxy:2375
+      COMPOSE_PROJECT: contaforte
+    mem_limit: 32m
+
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.21.1
+    restart: unless-stopped
+    networks: [app, obs]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATA_SOURCE_URI: postgres:5432/${POSTGRES_DB}?sslmode=disable
+      DATA_SOURCE_USER: ${POSTGRES_USER}
+      DATA_SOURCE_PASS: ${POSTGRES_PASSWORD}
+    mem_limit: 64m
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.98.0
+    restart: unless-stopped
+    networks: [app, obs]
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_ADDR: redis://redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    mem_limit: 64m
+
+  grafana:
+    image: grafana/grafana:13.3.1
+    restart: unless-stopped
+    networks: [obs]
+    depends_on: [prometheus, loki]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?defina com ./cf init}
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SECURITY_COOKIE_SAMESITE: strict
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/dashboards:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/grafana/api/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    mem_limit: 384m
+
   gateway:
     image: nginx:1.27-alpine
     restart: unless-stopped
-    networks: [edge, app]
+    networks: [edge, app, obs]  # obs: para publicar o Grafana em /grafana/
     ports:
       - "127.0.0.1:${GATEWAY_PORT:-8080}:80"
     volumes:

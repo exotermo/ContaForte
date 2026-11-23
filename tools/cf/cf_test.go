@@ -146,3 +146,16 @@ func TestJWTKeyRoundTrip(t *testing.T) {
 		t.Error("chave inválida deveria dar erro")
 	}
 }
+
+func TestPromTargets(t *testing.T) {
+	raw := `{"status":"success","data":{"activeTargets":[
+	  {"labels":{"job":"backend"},"health":"up","lastError":""},
+	  {"labels":{"job":"loki"},"health":"down","lastError":"connection refused"}]}}`
+	total, down, err := promTargets(raw)
+	if err != nil || total != 2 || len(down) != 1 || down[0] != "loki" {
+		t.Fatalf("total=%d down=%v err=%v", total, down, err)
+	}
+	if _, _, err := promTargets("não é json"); err == nil {
+		t.Error("JSON inválido deveria dar erro")
+	}
+}

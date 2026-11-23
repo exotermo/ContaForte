@@ -35,7 +35,7 @@ func cmdReset() error {
 	return compose(root, "down", "-v", "--remove-orphans")
 }
 
-func cmdOpen() error {
+func cmdOpen(args []string) error {
 	root, err := findRoot()
 	if err != nil {
 		return err
@@ -46,6 +46,15 @@ func cmdOpen() error {
 		port = "8080"
 	}
 	url := "http://127.0.0.1:" + port
+	if len(args) > 0 {
+		switch args[0] {
+		case "grafana":
+			url += "/grafana/"
+		case "app":
+		default:
+			return fmt.Errorf("alvo desconhecido %q (use app ou grafana)", args[0])
+		}
+	}
 	opener := "xdg-open"
 	if runtime.GOOS == "darwin" {
 		opener = "open"

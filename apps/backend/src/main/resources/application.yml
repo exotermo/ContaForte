@@ -52,6 +52,9 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true   # buckets para o p95 no Grafana
 
 logging:
   structured:

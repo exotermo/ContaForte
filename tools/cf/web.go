@@ -22,7 +22,12 @@ func cmdTest(args []string) error {
 		return cmdTestBackend()
 	case "web":
 		return cmdTestWeb()
+	case "go":
+		return cmdTestGo()
 	case "all":
+		if err := cmdTestGo(); err != nil {
+			return fmt.Errorf("go: %w", err)
+		}
 		if err := cmdTestBackend(); err != nil {
 			return fmt.Errorf("backend: %w", err)
 		}
@@ -31,7 +36,7 @@ func cmdTest(args []string) error {
 		}
 		return nil
 	default:
-		return fmt.Errorf("alvo desconhecido %q (use backend, web ou all)", target)
+		return fmt.Errorf("alvo desconhecido %q (use backend, web, go ou all)", target)
 	}
 }
 
@@ -82,4 +87,17 @@ func cmdE2E() error {
 		"-v", filepath.Join(root, "apps", "web", "e2e")+":/src:ro",
 		"-v", "contaforte-npm-cache:/root/.npm",
 		playwrightImage, "sh", "-c", script)
+}
+
+// cmdTestGo roda vet e testes dos módulos Go (cf e container-exporter) num container, sem exigir Go no host.
+func cmdTestGo() error {
+	root, err := findRoot()
+	if err != nil {
+		return err
+	}
+	script := "set -e; for m in tools/cf tools/container-exporter; do echo \"== $m\"; (cd $m && gofmt -l . | (! grep .) && go vet ./... && go test ./...); done"
+	return runDocker("run", "--rm",
+		"-e", "GOCACHE=/tmp/gocache", "-e", "GOFLAGS=-buildvcs=false",
+		"-v", root+":/repo:ro", "-w", "/repo",
+		"golang:1.25-alpine", "sh", "-c", script)
 }

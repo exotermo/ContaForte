@@ -1,0 +1,47 @@
+// Coleta os logs dos containers do projeto via docker-proxy (API somente leitura) e envia ao Loki.
+
+discovery.docker "containers" {
+  host             = "tcp://docker-proxy:2375"
+  refresh_interval = "10s"
+  filter {
+    name   = "label"
+    values = ["com.docker.compose.project=contaforte"]
+  }
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+}
+
+loki.source.docker "containers" {
+  host       = "tcp://docker-proxy:2375"
+  targets    = discovery.relabel.containers.output
+  forward_to = [loki.process.json.receiver]
+}
+
+// Logs do backend são JSON (ECS): extrai o nível para virar label filtrável. Os demais seguem como texto.
+loki.process "json" {
+  stage.json {
+    expressions = { level = "log.level" }
+  }
+  stage.labels {
+    values = { level = "" }
+  }
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -138,10 +139,63 @@ func cmdDoctor() error {
 		check(unhealthy == 0, "todos os serviços saudáveis", fmt.Sprintf("%d serviço(s) com problema (veja ./cf status)", unhealthy))
 	}
 
+	problems += doctorMonitoring(root)
+
 	fmt.Println()
 	if problems > 0 {
 		return fmt.Errorf("%d problema(s) encontrado(s)", problems)
 	}
 	fmt.Println("Tudo certo.")
 	return nil
+}
+
+// promTargets interpreta /api/v1/targets do Prometheus e devolve os alvos que NÃO estão "up".
+func promTargets(raw string) (total int, down []string, err error) {
+	var r struct {
+		Data struct {
+			ActiveTargets []struct {
+				Labels    map[string]string `json:"labels"`
+				Health    string            `json:"health"`
+				LastError string            `json:"lastError"`
+			} `json:"activeTargets"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal([]byte(raw), &r); err != nil {
+		return 0, nil, err
+	}
+	for _, t := range r.Data.ActiveTargets {
+		if t.Health != "up" {
+			down = append(down, t.Labels["job"])
+		}
+	}
+	return len(r.Data.ActiveTargets), down, nil
+}
+
+// doctorMonitoring confere o monitoramento: alvos do Prometheus e logs chegando ao Loki.
+func doctorMonitoring(root string) (problems int) {
+	fmt.Println("\nMonitoramento")
+	raw, err := composeOut(root, "exec", "-T", "prometheus", "wget", "-qO-", "http://127.0.0.1:9090/api/v1/targets")
+	if err != nil {
+		warn("Prometheus indisponível (stack parada?): pulando checagens de monitoramento")
+		return 0
+	}
+	total, down, err := promTargets(raw)
+	switch {
+	case err != nil:
+		fail("resposta inválida do Prometheus: %v", err)
+		problems++
+	case len(down) > 0:
+		fail("%d de %d alvos fora do ar: %s", len(down), total, strings.Join(down, ", "))
+		problems++
+	default:
+		ok("todos os %d alvos do Prometheus estão no ar", total)
+	}
+	labels, err := composeOut(root, "exec", "-T", "grafana", "wget", "-qO-", "http://loki:3100/loki/api/v1/label/service/values")
+	if err != nil || !strings.Contains(labels, `"data":["`) {
+		fail("nenhum log chegou ao Loki (veja ./cf logs alloy)")
+		problems++
+	} else {
+		ok("logs chegando ao Loki")
+	}
+	return problems
 }
