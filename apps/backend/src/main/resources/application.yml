@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: contaforte-backend
+  datasource:
+    # Em produção vêm do ambiente (SPRING_DATASOURCE_URL/USERNAME/PASSWORD), nunca daqui.
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/contaforte}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  server:
+    port: 8081            # porta de gestão: acessível só na rede interna, nunca pelo gateway
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  structured:
+    format:
+      console: ecs        # logs em JSON (timestamp, level, service, traceId...)
+    ecs:
+      service:
+        name: ${spring.application.name}

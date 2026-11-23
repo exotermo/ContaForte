@@ -135,3 +135,35 @@ func trimLines(s string) []string {
 	}
 	return out
 }
+
+// cmdTest roda os testes do backend num container Gradle/JDK 21. O socket do Docker é montado
+// para o Testcontainers subir Postgres "irmãos"; --network host permite alcançar as portas mapeadas.
+// Atenção: montar o docker.sock equivale a dar acesso root ao daemon — uso restrito a desenvolvimento.
+func cmdTest() error {
+	root, err := findRoot()
+	if err != nil {
+		return err
+	}
+	sock := "/var/run/docker.sock"
+	st, err := os.Stat(sock)
+	if err != nil {
+		return fmt.Errorf("docker.sock não encontrado em %s: %w", sock, err)
+	}
+	gid := dockerSockGID(st)
+	args := []string{
+		"run", "--rm", "--network", "host",
+		"-u", fmt.Sprintf("%d:%d", os.Getuid(), os.Getgid()),
+		"--group-add", gid,
+		"-e", "GRADLE_USER_HOME=/home/gradle/.gradle",
+		"-e", "TESTCONTAINERS_HOST_OVERRIDE=localhost",
+		"-v", sock + ":" + sock,
+		"-v", "contaforte-gradle-cache:/home/gradle/.gradle",
+		"-v", filepath.Join(root, "apps", "backend") + ":/app",
+		"-w", "/app",
+		"gradle:8.14.3-jdk21",
+		"gradle", "test", "--no-daemon", "--console=plain",
+	}
+	cmd := exec.Command("docker", args...)
+	cmd.Stdout, cmd.Stderr, cmd.Stdin = os.Stdout, os.Stderr, os.Stdin
+	return cmd.Run()
+}

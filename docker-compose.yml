@@ -76,6 +76,25 @@ services:
       start_period: 5s
     mem_limit: 128m
 
+  backend:
+    build: ./apps/backend
+    restart: unless-stopped
+    networks: [app]            # sem saída à Internet; o gateway o alcança pela rede app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:8081/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    mem_limit: 768m
+
   gateway:
     image: nginx:1.27-alpine
     restart: unless-stopped

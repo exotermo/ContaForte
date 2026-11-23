@@ -20,6 +20,7 @@ Ciclo de vida
   down                               Derruba a stack (mantém os volumes)
   reset                              Derruba a stack E apaga os volumes (pede confirmação)
 Operação
+  test                               Roda os testes do backend (Gradle + Testcontainers, em container)
   status                             Estado, saúde e consumo de cada serviço
   doctor                             Diagnóstico: isolamento de rede, portas, segredos, RAM
   logs [serviço]                     Acompanha os logs
@@ -49,6 +50,8 @@ func main() {
 		err = cmdReset()
 	case "logs":
 		err = cmdCompose(append([]string{"logs", "-f", "--tail=100"}, args...))
+	case "test":
+		err = cmdTest()
 	case "status":
 		err = cmdStatus()
 	case "doctor":
