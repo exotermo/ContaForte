@@ -159,3 +159,12 @@ func TestPromTargets(t *testing.T) {
 		t.Error("JSON inválido deveria dar erro")
 	}
 }
+
+func TestTunnelEnabled(t *testing.T) {
+	cases := map[string]bool{"": false, "tunnel": true, "a, tunnel": true, "tunnels": false, "other": false}
+	for in, want := range cases {
+		if got := tunnelEnabled(map[string]string{"COMPOSE_PROFILES": in}); got != want {
+			t.Errorf("tunnelEnabled(%q) = %v, esperado %v", in, got, want)
+		}
+	}
+}

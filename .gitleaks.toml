@@ -1,0 +1,9 @@
+# Configuração do gitleaks (usada no CI). Estende as regras padrão.
+title = "ContaForte"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Valor fictício usado em teste unitário do CLI (não é um segredo)"
+paths = ['''tools/cf/cf_test\.go''']

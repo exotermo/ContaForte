@@ -2,7 +2,9 @@
 
 Plataforma open source de gestão financeira pessoal, pensada para o contexto brasileiro (PIX, VA/VR, OFX/CSV, LGPD). Em vez de só mostrar "onde o dinheiro foi gasto", ela mantém um modelo financeiro **contextual** do usuário para responder *em que contexto* o gasto aconteceu, qual o impacto e o que fazer a respeito.
 
-> **Status:** fase de design (SDD v0.1.0). Ainda não há código. O roadmap está abaixo.
+[![CI](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml/badge.svg)](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml)
+
+> **Status:** Milestone 1 (Foundation) em fechamento: stack Docker isolada, backend com autenticação, frontend, monitoramento completo e CI. As funcionalidades financeiras começam no Milestone 2.
 
 ## Ideias centrais
 
@@ -17,6 +19,31 @@ Plataforma open source de gestão financeira pessoal, pensada para o contexto br
 ## Arquitetura (resumo)
 
 Monólito modular em Java 21 + Spring Boot, serviço de ML em Python/FastAPI isolado, front em Next.js, PostgreSQL como fonte da verdade e Redis para cache e jobs. Ingress via Cloudflare Tunnel e MQTT para IoT. Detalhes em [`ARCHITECTURE.md`](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/Arquitetura/ARCHITECTURE.md) e no [SDD](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/SDD/SDD_Personal_Financial_Copilot.md).
+
+## Quickstart
+
+Precisa só de Docker (Compose v2) e cerca de 4 GB de RAM livre. Java, Node e Go não são necessários no host.
+
+```bash
+./cf init     # verifica pré-requisitos e gera o .env com segredos aleatórios
+./cf up       # constrói e sobe a stack, esperando ficar saudável
+./cf open     # http://127.0.0.1:8080 (admin inicial: veja ADMIN_EMAIL/ADMIN_PASSWORD no .env)
+```
+
+O CLI `./cf` também cuida de `status`, `doctor`, `logs`, `test`, `e2e`, `backup` e `restore`. O Grafana fica em `http://127.0.0.1:8080/grafana/` (usuário `admin`, senha `GRAFANA_PASSWORD`). Para publicar na Internet sem abrir portas há um perfil opcional de Cloudflare Tunnel. Guia completo em [Operação](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/06_Operacao/README.md).
+
+### Segurança por padrão
+
+- Só o gateway publica porta, e apenas em `127.0.0.1`. Bancos e serviços ficam em redes Docker `internal`, sem saída à Internet.
+- Segredos gerados aleatoriamente pelo `./cf init` (`.env` com permissão 600, fora do Git). Login com JWT RS256, refresh com rotação e rate limit.
+- Nenhum container monta o `docker.sock` diretamente: o monitoramento usa um proxy somente-leitura.
+
+### Operação: o que saber
+
+- **Memória do host:** os limites dos containers somam cerca de 3,7 GB, e o uso real fica em torno de 1,3 GB.
+- **Postgres do monitoramento:** o `postgres-exporter` usa o mesmo usuário da aplicação. Um usuário dedicado com o papel `pg_monitor` é um endurecimento futuro.
+- **Sem Alertmanager:** os alertas só aparecem no Prometheus e no Grafana, não notificam ninguém.
+- **Gerador de dashboards:** `tools/gen-dashboards` reproduz exatamente os JSON provisionados. Edite lá e regenere.
 
 ## Roadmap
 

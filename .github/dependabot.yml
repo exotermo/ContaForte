@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+  - package-ecosystem: docker
+    directory: /apps/backend
+    schedule: { interval: weekly }
+  - package-ecosystem: docker
+    directory: /apps/web
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: /apps/web
+    schedule: { interval: weekly }
+  - package-ecosystem: gradle
+    directory: /apps/backend
+    schedule: { interval: weekly }
+  - package-ecosystem: gomod
+    directory: /tools/cf
+    schedule: { interval: monthly }
+  - package-ecosystem: gomod
+    directory: /tools/container-exporter
+    schedule: { interval: monthly }

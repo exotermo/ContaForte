@@ -51,6 +51,16 @@ func jwtKeyBits(b64 string) (int, error) {
 	return rk.N.BitLen(), nil
 }
 
+// tunnelEnabled informa se o perfil opcional "tunnel" (cloudflared) está ativo no .env.
+func tunnelEnabled(env map[string]string) bool {
+	for _, p := range strings.Split(env["COMPOSE_PROFILES"], ",") {
+		if strings.TrimSpace(p) == "tunnel" {
+			return true
+		}
+	}
+	return false
+}
+
 func cmdDoctor() error {
 	root, err := findRoot()
 	if err != nil {
@@ -137,6 +147,11 @@ func cmdDoctor() error {
 			}
 		}
 		check(unhealthy == 0, "todos os serviços saudáveis", fmt.Sprintf("%d serviço(s) com problema (veja ./cf status)", unhealthy))
+	}
+
+	if tunnelEnabled(env) {
+		fmt.Println("\nTúnel Cloudflare")
+		check(strings.TrimSpace(env["TUNNEL_TOKEN"]) != "", "TUNNEL_TOKEN definido", "perfil tunnel ativo sem TUNNEL_TOKEN no .env")
 	}
 
 	problems += doctorMonitoring(root)
