@@ -168,3 +168,19 @@ func TestTunnelEnabled(t *testing.T) {
 		}
 	}
 }
+
+func TestE2ECleanupSQLSoTocaNoPrefixoDeTeste(t *testing.T) {
+	sql := strings.ToLower(e2eCleanupSQL)
+	if strings.Count(sql, "like 'e2e-%'") != 2 {
+		t.Fatalf("toda exclusão precisa ser limitada ao prefixo %q: %s", e2ePrefix, e2eCleanupSQL)
+	}
+	for _, stmt := range strings.Split(sql, ";") {
+		stmt = strings.TrimSpace(stmt)
+		if stmt != "" && strings.HasPrefix(stmt, "delete") && !strings.Contains(stmt, "e2e-%") {
+			t.Fatalf("delete sem o filtro de prefixo: %s", stmt)
+		}
+	}
+	if !strings.Contains(sql, "from transactions") || strings.Index(sql, "from transactions") > strings.Index(sql, "delete from accounts") {
+		t.Fatal("as transações precisam ser removidas antes das contas")
+	}
+}

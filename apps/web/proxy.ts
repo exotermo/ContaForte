@@ -18,5 +18,5 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   // exclui assets, PWA e as rotas de sessão/saúde (que fazem a própria checagem)
-  matcher: ["/((?!_next/static|_next/image|icon.png|icons|sw.js|manifest.webmanifest|session|up|offline).*)"],
+  matcher: ["/((?!_next/static|_next/image|icon.png|icons|sw.js|manifest.webmanifest|session|bff|up|offline).*)"],
 };
