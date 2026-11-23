@@ -16,3 +16,5 @@ Formato: Contexto, Decisão, Consequências. Status: Proposto, Aceito ou Substit
 | [010](010-recomendacoes-de-ml-devem-ser-explicaveis.md) | Recomendações de ML devem ser explicáveis | Aceito |
 | [011](011-autenticacao-jwt-rs256-e-refresh-com-rotacao.md) | Autenticação com JWT RS256 e refresh tokens com rotação | Aceito |
 | [012](012-observabilidade-com-stack-grafana-e-docker-proxy.md) | Observabilidade com Prometheus, Grafana, Loki e proxy somente-leitura do Docker | Aceito |
+| [013](013-saldo-derivado-e-classes-de-liquidez.md) | Saldo derivado e classes de liquidez | Aceito |
+| [014](014-categorias-em-dois-niveis-e-contextos.md) | Categorias em dois níveis e contextos próprios | Aceito |
