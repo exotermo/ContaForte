@@ -19,13 +19,13 @@ class UserRepositoryTest extends AbstractIntegrationTest {
         Integer tabelas = jdbc.queryForObject(
                 "select count(*) from information_schema.tables where table_schema = 'public' "
                         + "and table_name in ('users', 'audit_logs', 'refresh_tokens', 'accounts', "
-                        + "'transaction_categories', 'transaction_contexts', 'transactions')",
+                        + "'transaction_categories', 'transaction_contexts', 'transactions', 'imports', 'import_items')",
                 Integer.class);
-        assertThat(tabelas).isEqualTo(7);
+        assertThat(tabelas).isEqualTo(9);
 
         Integer aplicadas = jdbc.queryForObject(
                 "select count(*) from flyway_schema_history where success", Integer.class);
-        assertThat(aplicadas).isEqualTo(5);
+        assertThat(aplicadas).isEqualTo(6);
     }
 
     @Test

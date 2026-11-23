@@ -12,6 +12,14 @@ secrets/
 *.zip
 datasets/real/
 
+# Extratos bancários reais NUNCA entram no repositório (trazem nomes, documentos e estabelecimentos de terceiros).
+# Só as fixtures sintéticas de datasets/synthetic são versionadas.
+*.ofx
+*.qfx
+*.csv
+!datasets/synthetic/**/*.ofx
+!datasets/synthetic/**/*.csv
+
 # Conteúdo de terceiros que nunca deve ser versionado
 clone-pgp.zip
 

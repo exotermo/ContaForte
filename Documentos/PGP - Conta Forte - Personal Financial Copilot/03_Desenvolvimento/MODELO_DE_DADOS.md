@@ -1,6 +1,6 @@
-# Modelo de dados e API (Milestone 2)
+# Modelo de dados e API (Milestones 2 e 3)
 
-Fonte da verdade: as migrações em `apps/backend/src/main/resources/db/migration` (V1–V5). Este documento é o mapa; em caso de divergência, vale a migração. Decisões em [ADR-013](../02_Arquitetura/Arquitetura/ADR/013-saldo-derivado-e-classes-de-liquidez.md) e [ADR-014](../02_Arquitetura/Arquitetura/ADR/014-categorias-em-dois-niveis-e-contextos.md).
+Fonte da verdade: as migrações em `apps/backend/src/main/resources/db/migration` (V1–V6). Este documento é o mapa; em caso de divergência, vale a migração. Decisões em [ADR-013](../02_Arquitetura/Arquitetura/ADR/013-saldo-derivado-e-classes-de-liquidez.md) e [ADR-014](../02_Arquitetura/Arquitetura/ADR/014-categorias-em-dois-niveis-e-contextos.md).
 
 ## Diagrama
 
@@ -15,6 +15,9 @@ erDiagram
     transaction_categories |o--o{ transaction_categories : "subcategoria (parent_id)"
     transaction_categories |o--o{ transactions : classifica
     transaction_contexts |o--o{ transactions : contextualiza
+    accounts ||--o{ imports : "recebe extratos"
+    imports ||--o{ import_items : "linhas da prévia"
+    imports |o--o{ transactions : "origem (import_id)"
 
     accounts {
         uuid id PK
@@ -50,7 +53,29 @@ erDiagram
         varchar code "só nos padrão"
         varchar name
     }
+    imports {
+        uuid id PK
+        uuid user_id FK
+        uuid account_id FK
+        varchar format "OFX ou CSV"
+        varchar status "PREVIEW, CONFIRMED, ROLLED_BACK"
+        varchar file_sha256 "o arquivo NÃO é guardado"
+        int total_rows "novas + duplicadas + possíveis + inválidas"
+        timestamptz expires_at "só a prévia vence (24 h)"
+    }
+    import_items {
+        uuid id PK
+        uuid import_id FK
+        int line_no
+        varchar status "NEW, DUPLICATE, POSSIBLE_DUPLICATE, INVALID"
+        numeric amount "14,2, positivo"
+        varchar external_id "FITID"
+        uuid duplicate_of FK
+        boolean selected "só NEW e POSSIBLE"
+    }
 ```
+
+`transactions` ganha `import_id` e `external_id` (V6, M3). Decisões em [ADR-015](../02_Arquitetura/Arquitetura/ADR/015-importacao-em-duas-fases-sem-guardar-o-arquivo.md) e [ADR-016](../02_Arquitetura/Arquitetura/ADR/016-deduplicacao-em-camadas-com-contagem-de-ocorrencias.md).
 
 ## Regras que o banco impõe (além da API)
 
@@ -63,6 +88,11 @@ erDiagram
 | Categorias em no máximo 2 níveis, pai padrão ou do mesmo dono | gatilho `check_category_hierarchy` |
 | Nome único entre as contas ativas; único por pai nas categorias | índices únicos parciais/por escopo |
 | Apagar o usuário apaga tudo dele (LGPD), menos os padrões | `ON DELETE CASCADE` a partir de `users` |
+| A importação é da conta e do dono; a transação importada só aponta para importação **da própria conta** | FK composta `(conta, user_id)` em `imports` e `(import_id, account_id)` em `transactions` |
+| Contadores da importação somam o total; datas seguem o status | `CHECK ck_imports_counts` e `ck_imports_lifecycle` |
+| Só NOVA e POSSÍVEL duplicata podem ser importadas; linha válida tem data, tipo e valor positivo | `CHECK` em `import_items` |
+| O identificador externo não se repete na conta entre as transações ativas (o rollback o libera) | índice único parcial `uk_transactions_external` |
+| Importação confirmada não pode ser apagada, só desfeita | FK de `transactions.import_id` (sem `CASCADE`) |
 
 O `NUMERIC(14,2)` do Postgres **arredonda em silêncio** valores com mais de 2 casas; por isso a API recusa (422) antes de gravar.
 

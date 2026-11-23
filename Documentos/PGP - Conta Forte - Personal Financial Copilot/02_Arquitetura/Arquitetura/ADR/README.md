@@ -18,3 +18,5 @@ Formato: Contexto, Decisão, Consequências. Status: Proposto, Aceito ou Substit
 | [012](012-observabilidade-com-stack-grafana-e-docker-proxy.md) | Observabilidade com Prometheus, Grafana, Loki e proxy somente-leitura do Docker | Aceito |
 | [013](013-saldo-derivado-e-classes-de-liquidez.md) | Saldo derivado e classes de liquidez | Aceito |
 | [014](014-categorias-em-dois-niveis-e-contextos.md) | Categorias em dois níveis e contextos próprios | Aceito |
+| [015](015-importacao-em-duas-fases-sem-guardar-o-arquivo.md) | Importação em duas fases, sem guardar o arquivo, com rollback lógico | Aceito |
+| [016](016-deduplicacao-em-camadas-com-contagem-de-ocorrencias.md) | Deduplicação em camadas, com contagem de ocorrências | Aceito |

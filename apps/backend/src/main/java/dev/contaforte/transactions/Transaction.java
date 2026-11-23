@@ -64,6 +64,13 @@ public class Transaction {
     @Column(nullable = false, length = 20)
     private TransactionSource source = TransactionSource.MANUAL;
 
+    @Column(name = "import_id", updatable = false)
+    private UUID importId;
+
+    /** Identificador no extrato (FITID etc.). Opaco; único por conta entre as transações ativas. */
+    @Column(name = "external_id", length = 255, updatable = false)
+    private String externalId;
+
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
@@ -112,6 +119,8 @@ public class Transaction {
     public UUID getContextId() { return contextId; }
     public Instant getOccurredAt() { return occurredAt; }
     public TransactionSource getSource() { return source; }
+    public UUID getImportId() { return importId; }
+    public String getExternalId() { return externalId; }
     public Instant getDeletedAt() { return deletedAt; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
@@ -123,5 +132,12 @@ public class Transaction {
     public void setCategoryId(UUID categoryId) { this.categoryId = categoryId; }
     public void setContextId(UUID contextId) { this.contextId = contextId; }
     public void setOccurredAt(Instant occurredAt) { this.occurredAt = occurredAt; }
+    /** Marca a transação como vinda de uma importação (origem OFX/CSV, com o identificador do extrato). */
+    public void markImported(UUID importId, String externalId, TransactionSource source) {
+        this.importId = importId;
+        this.externalId = externalId;
+        this.source = source;
+    }
+
     public void setDeletedAt(Instant deletedAt) { this.deletedAt = deletedAt; }
 }
