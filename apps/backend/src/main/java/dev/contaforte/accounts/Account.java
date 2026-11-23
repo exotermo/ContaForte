@@ -84,5 +84,7 @@ public class Account {
     public Instant getUpdatedAt() { return updatedAt; }
 
     public void setName(String name) { this.name = name; }
+    /** Só a camada de serviço chama, e apenas enquanto a conta não tem transações. */
+    public void setOpeningBalance(BigDecimal openingBalance) { this.openingBalance = openingBalance; }
     public void setArchivedAt(Instant archivedAt) { this.archivedAt = archivedAt; }
 }
