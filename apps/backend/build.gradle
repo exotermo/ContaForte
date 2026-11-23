@@ -25,7 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.86'   // Argon2 (Spring Security)
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.87'   // Argon2 (Spring Security)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
