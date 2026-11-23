@@ -2,6 +2,10 @@ package main
 
 import (
 	"bufio"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"net"
@@ -12,7 +16,11 @@ import (
 	"strings"
 )
 
-const minRAMMB = 4096 // abaixo disso a stack com monitoramento completo fica apertada
+// abaixo de minRAMMB a stack com monitoramento completo fica apertada
+const (
+	minRAMMB   = 4096
+	jwtKeyName = "JWT_PRIVATE_KEY_B64"
+)
 
 // secretKeys são gerados aleatoriamente quando ausentes (ou com --force).
 var secretKeys = []string{"POSTGRES_PASSWORD", "REDIS_PASSWORD", "MQTT_PASSWORD", "ADMIN_PASSWORD", "GRAFANA_PASSWORD"}
@@ -29,7 +37,7 @@ var defaults = map[string]string{
 
 // buildEnv completa o mapa com defaults e segredos, sem sobrescrever o que já existe
 // (a menos que force=true para os segredos). Devolve as chaves que foram geradas.
-func buildEnv(current map[string]string, force bool, gen func(int) (string, error)) (map[string]string, []string, error) {
+func buildEnv(current map[string]string, force bool, gen func(int) (string, error), genKey func() (string, error)) (map[string]string, []string, error) {
 	env := map[string]string{}
 	for k, v := range current {
 		env[k] = v
@@ -51,7 +59,29 @@ func buildEnv(current map[string]string, force bool, gen func(int) (string, erro
 			created = append(created, k)
 		}
 	}
+	// chave RSA do JWT: gerada uma vez e preservada (regenerá-la derruba todas as sessões)
+	if env[jwtKeyName] == "" || env[jwtKeyName] == "change-me" || force {
+		k, err := genKey()
+		if err != nil {
+			return nil, nil, err
+		}
+		env[jwtKeyName] = k
+		created = append(created, jwtKeyName)
+	}
 	return env, created, nil
+}
+
+// genJWTKey cria uma chave RSA de 3072 bits em PKCS#8/DER, em Base64 (uma linha, própria para .env).
+func genJWTKey() (string, error) {
+	k, err := rsa.GenerateKey(rand.Reader, 3072)
+	if err != nil {
+		return "", err
+	}
+	der, err := x509.MarshalPKCS8PrivateKey(k)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(der), nil
 }
 
 func cmdInit(args []string) error {
@@ -96,7 +126,7 @@ func cmdInit(args []string) error {
 			return err
 		}
 	}
-	env, created, err := buildEnv(current, *force, randomHex)
+	env, created, err := buildEnv(current, *force, randomHex, genJWTKey)
 	if err != nil {
 		return err
 	}

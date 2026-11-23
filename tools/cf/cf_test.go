@@ -8,9 +8,10 @@ import (
 )
 
 func fakeGen(int) (string, error) { return strings.Repeat("a", 48), nil }
+func fakeKey() (string, error)    { return "chave-falsa", nil }
 
 func TestBuildEnvGeneratesMissing(t *testing.T) {
-	env, created, err := buildEnv(map[string]string{}, false, fakeGen)
+	env, created, err := buildEnv(map[string]string{}, false, fakeGen, fakeKey)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -26,18 +27,18 @@ func TestBuildEnvGeneratesMissing(t *testing.T) {
 
 func TestBuildEnvKeepsExistingSecrets(t *testing.T) {
 	cur := map[string]string{"POSTGRES_PASSWORD": "mantenha-este-valor-com-24-chars"}
-	env, _, _ := buildEnv(cur, false, fakeGen)
+	env, _, _ := buildEnv(cur, false, fakeGen, fakeKey)
 	if env["POSTGRES_PASSWORD"] != cur["POSTGRES_PASSWORD"] {
 		t.Error("segredo existente foi sobrescrito")
 	}
-	env, _, _ = buildEnv(cur, true, fakeGen)
+	env, _, _ = buildEnv(cur, true, fakeGen, fakeKey)
 	if env["POSTGRES_PASSWORD"] == cur["POSTGRES_PASSWORD"] {
 		t.Error("--force deveria regenerar")
 	}
 }
 
 func TestBuildEnvReplacesPlaceholder(t *testing.T) {
-	env, _, _ := buildEnv(map[string]string{"REDIS_PASSWORD": "change-me"}, false, fakeGen)
+	env, _, _ := buildEnv(map[string]string{"REDIS_PASSWORD": "change-me"}, false, fakeGen, fakeKey)
 	if env["REDIS_PASSWORD"] == "change-me" {
 		t.Error("placeholder deveria ser substituído")
 	}
@@ -113,5 +114,35 @@ func TestPublishedOutsideLoopback(t *testing.T) {
 	bad := publishedOutsideLoopback(svcs)
 	if len(bad) != 1 || !strings.Contains(bad[0], "redis") {
 		t.Errorf("esperado só redis, veio %v", bad)
+	}
+}
+
+func TestBuildEnvJWTKeyGeneratedAndPreserved(t *testing.T) {
+	env, _, _ := buildEnv(map[string]string{}, false, fakeGen, fakeKey)
+	if env[jwtKeyName] != "chave-falsa" {
+		t.Fatalf("chave JWT não gerada: %q", env[jwtKeyName])
+	}
+	cur := map[string]string{jwtKeyName: "minha-chave"}
+	env, _, _ = buildEnv(cur, false, fakeGen, fakeKey)
+	if env[jwtKeyName] != "minha-chave" {
+		t.Error("chave JWT existente foi sobrescrita sem --force")
+	}
+	env, _, _ = buildEnv(cur, true, fakeGen, fakeKey)
+	if env[jwtKeyName] != "chave-falsa" {
+		t.Error("--force deveria regenerar a chave JWT")
+	}
+}
+
+func TestJWTKeyRoundTrip(t *testing.T) {
+	k, err := genJWTKey()
+	if err != nil {
+		t.Fatal(err)
+	}
+	bits, err := jwtKeyBits(k)
+	if err != nil || bits != 3072 {
+		t.Errorf("bits=%d err=%v", bits, err)
+	}
+	if _, err := jwtKeyBits("lixo"); err == nil {
+		t.Error("chave inválida deveria dar erro")
 	}
 }

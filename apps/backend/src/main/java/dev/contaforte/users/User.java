@@ -70,6 +70,7 @@ public class User {
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 
+    public void setEmail(String email) { this.email = email; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     public void setRole(Role role) { this.role = role; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

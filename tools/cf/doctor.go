@@ -1,6 +1,9 @@
 package main
 
 import (
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
@@ -28,6 +31,23 @@ func publishedOutsideLoopback(svcs []svcInfo) []string {
 		}
 	}
 	return bad
+}
+
+// jwtKeyBits valida a chave JWT do .env (PKCS#8 RSA em Base64) e devolve o tamanho em bits.
+func jwtKeyBits(b64 string) (int, error) {
+	der, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		return 0, err
+	}
+	key, err := x509.ParsePKCS8PrivateKey(der)
+	if err != nil {
+		return 0, err
+	}
+	rk, ok := key.(*rsa.PrivateKey)
+	if !ok {
+		return 0, fmt.Errorf("a chave não é RSA")
+	}
+	return rk.N.BitLen(), nil
 }
 
 func cmdDoctor() error {
@@ -62,6 +82,11 @@ func cmdDoctor() error {
 		}
 	}
 	check(len(weak) == 0, "segredos fortes", "segredos fracos ou placeholder: "+strings.Join(weak, ", "))
+	if bits, err := jwtKeyBits(env[jwtKeyName]); err != nil {
+		check(false, "", "chave JWT ausente ou inválida: rode ./cf init")
+	} else {
+		check(bits >= 2048, fmt.Sprintf("chave JWT RSA de %d bits", bits), fmt.Sprintf("chave JWT fraca (%d bits)", bits))
+	}
 	if _, err := exec.LookPath("git"); err == nil {
 		ignored := exec.Command("git", "-C", root, "check-ignore", "-q", ".env").Run() == nil
 		check(ignored, ".env ignorado pelo Git", ".env NÃO está no .gitignore")
