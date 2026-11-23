@@ -165,6 +165,9 @@ func cmdTestBackend() error {
 		"--group-add", gid,
 		"-e", "GRADLE_USER_HOME=/home/gradle/.gradle",
 		"-e", "TESTCONTAINERS_HOST_OVERRIDE=localhost",
+		// as fixtures sintéticas de importação ficam fora de apps/backend: monta só leitura e avisa o caminho aos testes
+		"-e", "FIXTURES_DIR=/datasets/synthetic/imports",
+		"-v", filepath.Join(root, "datasets") + ":/datasets:ro",
 		"-v", sock + ":" + sock,
 		"-v", "contaforte-gradle-cache:/home/gradle/.gradle",
 		"-v", filepath.Join(root, "apps", "backend") + ":/app",

@@ -105,13 +105,14 @@ jobs:
           docker compose logs --tail=80
 
   generated:
-    name: Arquivos gerados em dia (cenário e dashboards)
+    name: Arquivos gerados em dia (cenário, fixtures e dashboards)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Regenera e exige que nada mude
         run: |
           python3 tools/gen-synthetic/gen_synthetic.py
+          python3 tools/gen-synthetic/gen_import_fixtures.py
           python3 tools/gen-dashboards/gen_dashboards.py
           git diff --exit-code -- datasets/synthetic infrastructure/monitoring/grafana/dashboards
 
