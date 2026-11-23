@@ -1,6 +1,6 @@
 # Contribuindo
 
-Obrigado pelo interesse! O projeto está em fase de design, então por enquanto as contribuições mais úteis são **revisão do SDD, ADRs e requisitos** (abra uma issue).
+Obrigado pelo interesse! A fundação (Milestone 1) está pronta e o desenvolvimento segue pelos milestones do roadmap. As contribuições mais úteis agora são **revisão do SDD e dos ADRs, testes e relatos de bugs** (abra uma issue). Para rodar e testar localmente, veja o [guia de desenvolvimento](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/03_Desenvolvimento/DEVELOPMENT.md).
 
 ## Regras
 

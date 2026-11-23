@@ -4,7 +4,7 @@ Plataforma open source de gestão financeira pessoal, pensada para o contexto br
 
 [![CI](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml/badge.svg)](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml)
 
-> **Status:** Milestone 1 (Foundation) em fechamento: stack Docker isolada, backend com autenticação, frontend, monitoramento completo e CI. As funcionalidades financeiras começam no Milestone 2.
+> **Status:** Milestone 1 (Foundation) concluído (`v0.1.0`): stack Docker isolada, backend com autenticação, frontend, monitoramento completo e CI. As funcionalidades financeiras começam no Milestone 2.
 
 ## Ideias centrais
 
@@ -63,7 +63,7 @@ A prioridade é entregar os milestones 1 a 5 de ponta a ponta antes de avançar.
 
 ## Documentação
 
-Toda a documentação de projeto está em [`Documentos/`](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/README.md), organizada seguindo o PGP/MCTI de forma enxuta.
+Para desenvolver, veja o [guia de desenvolvimento](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/03_Desenvolvimento/DEVELOPMENT.md) e o [CHANGELOG](CHANGELOG.md). Toda a documentação de projeto está em [`Documentos/`](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/README.md), organizada seguindo o PGP/MCTI de forma enxuta.
 
 ## Contribuindo
 

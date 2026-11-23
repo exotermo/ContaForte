@@ -1,14 +1,14 @@
-# Wrapper fino: a lógica fica no CLI `cf` (tools/cf). Enquanto ele não existe, usa docker compose direto.
-COMPOSE ?= docker compose
-
-.PHONY: up down ps logs config
+# Atalhos finos: a lógica fica no CLI `cf` (tools/cf).
+.PHONY: init up down status doctor test
+init:
+	./cf init
 up:
-	$(COMPOSE) up -d --wait
+	./cf up
 down:
-	$(COMPOSE) down
-ps:
-	$(COMPOSE) ps
-logs:
-	$(COMPOSE) logs -f --tail=100
-config:
-	$(COMPOSE) config -q
+	./cf down
+status:
+	./cf status
+doctor:
+	./cf doctor
+test:
+	./cf test
