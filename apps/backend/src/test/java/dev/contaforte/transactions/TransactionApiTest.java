@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 class TransactionApiTest extends ApiTestSupport {
@@ -30,40 +29,6 @@ class TransactionApiTest extends ApiTestSupport {
 
     // ---------------------------------------------------------------- apoio
 
-    private String conta(Pessoa p, String nome, String tipo, String saldo) {
-        Map<String, Object> body = new HashMap<>(Map.of("name", nome, "type", tipo));
-        if (saldo != null) body.put("openingBalance", saldo);
-        var r = call(HttpMethod.POST, "/api/v1/accounts", body, p);
-        assertThat(r.getStatusCode()).as("conta %s: %s", nome, r.getBody()).isEqualTo(HttpStatus.CREATED);
-        return (String) r.getBody().get("id");
-    }
-
-    private String saldo(Pessoa p, String contaId) {
-        return (String) call(HttpMethod.GET, "/api/v1/accounts/" + contaId, null, p).getBody().get("balance");
-    }
-
-    private Map<String, Object> corpo(String tipo, String conta, Object valor) {
-        Map<String, Object> b = new HashMap<>();
-        b.put("type", tipo);
-        b.put("accountId", conta);
-        b.put("amount", valor);
-        return b;
-    }
-
-    private ResponseEntity<Map> lancar(Pessoa p, Map<String, Object> corpo) {
-        return call(HttpMethod.POST, "/api/v1/transactions", corpo, p);
-    }
-
-    private Map criada(Pessoa p, Map<String, Object> corpo) {
-        var r = lancar(p, corpo);
-        assertThat(r.getStatusCode()).as("lançar %s: %s", corpo, r.getBody()).isEqualTo(HttpStatus.CREATED);
-        return r.getBody();
-    }
-
-    private HttpStatus status(HttpMethod m, String path, Object body, Pessoa p) {
-        return HttpStatus.valueOf(call(m, path, body, p).getStatusCode().value());
-    }
-
     private Map pagina(Pessoa p, String query) {
         var r = call(HttpMethod.GET, "/api/v1/transactions" + query, null, p);
         assertThat(r.getStatusCode()).as(query + " -> " + r.getBody()).isEqualTo(HttpStatus.OK);
@@ -72,19 +37,6 @@ class TransactionApiTest extends ApiTestSupport {
 
     private List<String> descricoes(Pessoa p, String query) {
         return ((List<Map>) pagina(p, query).get("items")).stream().map(i -> (String) i.get("description")).toList();
-    }
-
-    private String categoriaPadrao(Pessoa p, String codigo) {
-        for (Map c : getList("/api/v1/categories", p)) {
-            if (codigo.equals(c.get("code"))) return (String) c.get("id");
-            for (Map f : (List<Map>) c.get("children")) if (codigo.equals(f.get("code"))) return (String) f.get("id");
-        }
-        throw new AssertionError("categoria padrão não encontrada: " + codigo);
-    }
-
-    private String contextoPadrao(Pessoa p, String codigo) {
-        return getList("/api/v1/contexts", p).stream().filter(c -> codigo.equals(c.get("code")))
-                .findFirst().orElseThrow().get("id").toString();
     }
 
     // ---------------------------------------------------------------- acesso

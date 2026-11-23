@@ -1,18 +1,25 @@
 package dev.contaforte.accounts;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * Efeito das transações no saldo de cada conta (o saldo nunca é armazenado, ADR-013). Feito numa única consulta
- * agregada no banco. O sinal por tipo espelha {@code TransactionType.accountSign()}; um teste confere os dois.
+ * Único lugar que calcula saldos (o saldo nunca é armazenado, ADR-013): uma consulta agregada no banco soma o efeito
+ * das transações por conta. O sinal por tipo espelha {@code TransactionType.accountSign()}; um teste confere os dois.
+ * Contas e resumo usam esta mesma consulta.
  */
 @Component
-class AccountBalances {
+public class AccountBalances {
+
+    /** Saldo atual de uma conta (abertura + efeito das transações). */
+    public record Balance(UUID id, String name, AccountType type, BigDecimal balance, boolean archived) {}
+
 
     private static final String SQL = """
             select a.id,
@@ -30,9 +37,27 @@ class AccountBalances {
             """;
 
     private final JdbcTemplate jdbc;
+    private final AccountRepository accounts;
 
-    AccountBalances(JdbcTemplate jdbc) {
+    AccountBalances(JdbcTemplate jdbc, AccountRepository accounts) {
         this.jdbc = jdbc;
+        this.accounts = accounts;
+    }
+
+    /** Saldos das contas do usuário, em ordem de nome; arquivadas só se pedido. */
+    public List<Balance> forUser(UUID userId, boolean includeArchived) {
+        Map<UUID, BigDecimal> effects = effectsByAccount(userId);
+        List<Balance> result = new ArrayList<>();
+        for (Account a : accounts.findByUserIdOrderByNameAsc(userId)) {
+            if (includeArchived || !a.isArchived()) {
+                result.add(new Balance(a.getId(), a.getName(), a.getType(), balanceOf(a, effects), a.isArchived()));
+            }
+        }
+        return result;
+    }
+
+    static BigDecimal balanceOf(Account a, Map<UUID, BigDecimal> effects) {
+        return a.getOpeningBalance().add(effects.getOrDefault(a.getId(), BigDecimal.ZERO)).setScale(2);
     }
 
     /** Soma dos efeitos das transações por conta do usuário (some ao saldo de abertura para obter o saldo). */

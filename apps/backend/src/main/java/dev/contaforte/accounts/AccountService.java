@@ -122,6 +122,6 @@ class AccountService {
     }
 
     private static BigDecimal balanceOf(Account a, Map<UUID, BigDecimal> effects) {
-        return a.getOpeningBalance().add(effects.getOrDefault(a.getId(), BigDecimal.ZERO)).setScale(2);
+        return AccountBalances.balanceOf(a, effects);
     }
 }
