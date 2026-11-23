@@ -32,3 +32,7 @@ __pycache__/
 
 # KDE
 .directory
+
+# CLI e backups
+tools/cf/bin/
+backups/

@@ -1,0 +1,117 @@
+package main
+
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+)
+
+func fakeGen(int) (string, error) { return strings.Repeat("a", 48), nil }
+
+func TestBuildEnvGeneratesMissing(t *testing.T) {
+	env, created, err := buildEnv(map[string]string{}, false, fakeGen)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, k := range secretKeys {
+		if len(env[k]) < 24 {
+			t.Errorf("segredo %s não gerado", k)
+		}
+	}
+	if env["GATEWAY_PORT"] != "8080" || len(created) == 0 {
+		t.Errorf("defaults ausentes: %v", env)
+	}
+}
+
+func TestBuildEnvKeepsExistingSecrets(t *testing.T) {
+	cur := map[string]string{"POSTGRES_PASSWORD": "mantenha-este-valor-com-24-chars"}
+	env, _, _ := buildEnv(cur, false, fakeGen)
+	if env["POSTGRES_PASSWORD"] != cur["POSTGRES_PASSWORD"] {
+		t.Error("segredo existente foi sobrescrito")
+	}
+	env, _, _ = buildEnv(cur, true, fakeGen)
+	if env["POSTGRES_PASSWORD"] == cur["POSTGRES_PASSWORD"] {
+		t.Error("--force deveria regenerar")
+	}
+}
+
+func TestBuildEnvReplacesPlaceholder(t *testing.T) {
+	env, _, _ := buildEnv(map[string]string{"REDIS_PASSWORD": "change-me"}, false, fakeGen)
+	if env["REDIS_PASSWORD"] == "change-me" {
+		t.Error("placeholder deveria ser substituído")
+	}
+}
+
+func TestEnvRoundTripAndPerm(t *testing.T) {
+	p := filepath.Join(t.TempDir(), ".env")
+	in := map[string]string{"A": "1", "B": "dois"}
+	if err := writeEnv(p, in); err != nil {
+		t.Fatal(err)
+	}
+	st, _ := os.Stat(p)
+	if st.Mode().Perm() != 0o600 {
+		t.Errorf("permissão %o, esperado 600", st.Mode().Perm())
+	}
+	out, err := parseEnv(p)
+	if err != nil || out["A"] != "1" || out["B"] != "dois" {
+		t.Errorf("round trip falhou: %v %v", out, err)
+	}
+}
+
+func TestRandomHex(t *testing.T) {
+	a, _ := randomHex(24)
+	b, _ := randomHex(24)
+	if len(a) != 48 || a == b {
+		t.Errorf("randomHex inválido: %q %q", a, b)
+	}
+}
+
+func TestWeakSecret(t *testing.T) {
+	for _, v := range []string{"", "change-me", "curto", "Password"} {
+		if !weakSecret(v) {
+			t.Errorf("%q deveria ser fraco", v)
+		}
+	}
+	if weakSecret(strings.Repeat("x", 48)) {
+		t.Error("segredo longo não deveria ser fraco")
+	}
+}
+
+func TestMemField(t *testing.T) {
+	mi := "MemTotal:       16384000 kB\nMemAvailable:    8192000 kB\n"
+	if v, err := memField(mi, "MemAvailable"); err != nil || v != 8000 {
+		t.Errorf("got %d %v", v, err)
+	}
+	if _, err := memField(mi, "Nada"); err == nil {
+		t.Error("esperava erro")
+	}
+}
+
+func TestParsePSLinesAndArray(t *testing.T) {
+	lines := `{"Name":"a-1","Service":"a","State":"running","Health":"healthy"}
+{"Name":"b-1","Service":"b","State":"exited"}`
+	s, err := parsePS(lines)
+	if err != nil || len(s) != 2 || s[1].State != "exited" {
+		t.Fatalf("linhas: %v %v", s, err)
+	}
+	s, err = parsePS(`[{"Service":"a","State":"running"}]`)
+	if err != nil || len(s) != 1 {
+		t.Fatalf("array: %v %v", s, err)
+	}
+	if s, _ := parsePS(""); s != nil {
+		t.Error("vazio deveria dar nil")
+	}
+}
+
+func TestPublishedOutsideLoopback(t *testing.T) {
+	svcs := []svcInfo{
+		{Service: "gateway", Publishers: []publisher{{URL: "127.0.0.1", PublishedPort: 8080}}},
+		{Service: "postgres", Publishers: []publisher{{URL: "", TargetPort: 5432}}},
+		{Service: "redis", Publishers: []publisher{{URL: "0.0.0.0", PublishedPort: 6379}}},
+	}
+	bad := publishedOutsideLoopback(svcs)
+	if len(bad) != 1 || !strings.Contains(bad[0], "redis") {
+		t.Errorf("esperado só redis, veio %v", bad)
+	}
+}

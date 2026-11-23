@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Wrapper do CLI: compila tools/cf sob demanda (Go local ou container) e executa.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC="$ROOT/tools/cf"
+BIN="$SRC/bin/cf"
+
+needs_build() {
+  [ ! -x "$BIN" ] || [ -n "$(find "$SRC" -name '*.go' -newer "$BIN" -print -quit)" ]
+}
+
+if needs_build; then
+  mkdir -p "$SRC/bin"
+  if command -v go >/dev/null 2>&1; then
+    (cd "$SRC" && CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o bin/cf .)
+  elif command -v docker >/dev/null 2>&1; then
+    echo "Go não encontrado no host: compilando o cf em container..." >&2
+    docker run --rm -u "$(id -u):$(id -g)" -e CGO_ENABLED=0 -e GOCACHE=/tmp/gocache \
+      -v "$SRC:/src" -w /src golang:1.25-alpine go build -trimpath -ldflags "-s -w" -o bin/cf .
+  else
+    echo "Precisa de Go ou Docker para compilar o cf." >&2; exit 1
+  fi
+fi
+exec "$BIN" "$@"
