@@ -1,0 +1,6 @@
+export const dynamic = "force-dynamic";
+
+// Healthcheck do container (não passa pelo gateway: o nginx responde /healthz sozinho).
+export function GET() {
+  return new Response("ok\n", { headers: { "Content-Type": "text/plain" } });
+}

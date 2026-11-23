@@ -20,7 +20,8 @@ Ciclo de vida
   down                               Derruba a stack (mantém os volumes)
   reset                              Derruba a stack E apaga os volumes (pede confirmação)
 Operação
-  test                               Roda os testes do backend (Gradle + Testcontainers, em container)
+  test [backend|web|all]             Roda os testes em container (backend: Gradle+Testcontainers; web: lint, tipos e Vitest)
+  e2e                                Testes E2E do navegador (Playwright) contra a stack em execução
   status                             Estado, saúde e consumo de cada serviço
   doctor                             Diagnóstico: isolamento de rede, portas, segredos, RAM
   logs [serviço]                     Acompanha os logs
@@ -51,7 +52,9 @@ func main() {
 	case "logs":
 		err = cmdCompose(append([]string{"logs", "-f", "--tail=100"}, args...))
 	case "test":
-		err = cmdTest()
+		err = cmdTest(args)
+	case "e2e":
+		err = cmdE2E()
 	case "status":
 		err = cmdStatus()
 	case "doctor":

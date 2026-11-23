@@ -136,10 +136,10 @@ func trimLines(s string) []string {
 	return out
 }
 
-// cmdTest roda os testes do backend num container Gradle/JDK 21. O socket do Docker é montado
+// cmdTestBackend roda os testes do backend num container Gradle/JDK 21. O socket do Docker é montado
 // para o Testcontainers subir Postgres "irmãos"; --network host permite alcançar as portas mapeadas.
 // Atenção: montar o docker.sock equivale a dar acesso root ao daemon — uso restrito a desenvolvimento.
-func cmdTest() error {
+func cmdTestBackend() error {
 	root, err := findRoot()
 	if err != nil {
 		return err
