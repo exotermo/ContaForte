@@ -4,7 +4,7 @@ Plataforma open source de gestão financeira pessoal, pensada para o contexto br
 
 [![CI](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml/badge.svg)](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml)
 
-> **Status:** Milestone 1 (Foundation) concluído (`v0.1.0`): stack Docker isolada, backend com autenticação, frontend, monitoramento completo e CI. As funcionalidades financeiras começam no Milestone 2.
+> **Status:** Milestone 2 (Financial Core) concluído (`v0.2.0`): contas e carteiras, categorias e contextos, transações, resumo financeiro com a separação de liquidez (VA/VR nunca contam como dinheiro disponível) e as telas correspondentes, sobre a fundação do Milestone 1 (stack Docker isolada, autenticação, monitoramento e CI). Próximo: importação de extratos (Milestone 3).
 
 ## Ideias centrais
 
@@ -28,9 +28,10 @@ Precisa só de Docker (Compose v2) e cerca de 4 GB de RAM livre. Java, Node e Go
 ./cf init     # verifica pré-requisitos e gera o .env com segredos aleatórios
 ./cf up       # constrói e sobe a stack, esperando ficar saudável
 ./cf open     # http://127.0.0.1:8080 (admin inicial: veja ADMIN_EMAIL/ADMIN_PASSWORD no .env)
+./cf seed     # opcional: carrega 90 dias de dados FICTÍCIOS num usuário demo (demo@contaforte.local, senha em DEMO_PASSWORD no .env)
 ```
 
-O CLI `./cf` também cuida de `status`, `doctor`, `logs`, `test`, `e2e`, `backup` e `restore`. O Grafana fica em `http://127.0.0.1:8080/grafana/` (usuário `admin`, senha `GRAFANA_PASSWORD`). Para publicar na Internet sem abrir portas há um perfil opcional de Cloudflare Tunnel. Guia completo em [Operação](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/06_Operacao/README.md).
+O CLI `./cf` também cuida de `status`, `doctor`, `logs`, `test`, `e2e`, `bench`, `backup` e `restore`. O Grafana fica em `http://127.0.0.1:8080/grafana/` (usuário `admin`, senha `GRAFANA_PASSWORD`). Para publicar na Internet sem abrir portas há um perfil opcional de Cloudflare Tunnel. Guia completo em [Operação](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/06_Operacao/README.md).
 
 ### Segurança por padrão
 

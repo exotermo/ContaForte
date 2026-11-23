@@ -29,6 +29,21 @@ class UserService {
         return users.findById(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
     }
 
+    /**
+     * Cria uma pessoa (sempre com papel USER: administradores só nascem do bootstrap). A auditoria registra o ator
+     * e o id, nunca o e-mail nem a senha.
+     */
+    @Transactional
+    User createByAdmin(UUID actorId, String email, String password) {
+        String clean = email.trim();
+        if (users.existsByEmailIgnoreCase(clean)) {
+            throw new ApiException(HttpStatus.CONFLICT, "E-mail já em uso.");
+        }
+        User created = users.saveAndFlush(new User(clean, encoder.encode(password), Role.USER));
+        audit.record(actorId, "USER_CREATED_BY_ADMIN", "user:" + created.getId(), Map.of());
+        return created;
+    }
+
     @Transactional
     User update(UUID id, String email, String currentPassword, String newPassword) {
         User user = get(id);

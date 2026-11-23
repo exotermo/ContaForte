@@ -26,6 +26,8 @@ Operação
   doctor                             Diagnóstico: isolamento de rede, portas, segredos, RAM
   logs [serviço]                     Acompanha os logs
   open [app|grafana]                 Abre o app (ou o Grafana) no navegador
+  seed [--reset]                     Carrega dados FICTÍCIOS (90 dias) num usuário demo, só em ambiente local
+  bench                              Mede a latência (p95) das telas com 10 mil transações (k6 em container)
   backup                             pg_dump comprimido em backups/
   restore <arquivo.sql.gz>           Restaura um backup (pede confirmação)
   version                            Mostra a versão
@@ -59,6 +61,10 @@ func main() {
 		err = cmdStatus()
 	case "doctor":
 		err = cmdDoctor()
+	case "seed":
+		err = cmdSeed(args)
+	case "bench":
+		err = cmdBench(args)
 	case "open":
 		err = cmdOpen(args)
 	case "backup":

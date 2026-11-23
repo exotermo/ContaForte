@@ -10,6 +10,7 @@ Pré-requisitos: Docker com Compose v2 e cerca de 4 GB de RAM livre. Não é pre
 ./cf init     # verifica pré-requisitos e gera o .env com segredos aleatórios
 ./cf up       # constrói e sobe a stack, esperando todos os serviços ficarem saudáveis
 ./cf open     # abre http://127.0.0.1:8080
+./cf seed     # opcional: dados FICTÍCIOS de demonstração (veja abaixo)
 ```
 
 O administrador inicial é `ADMIN_EMAIL` (padrão `admin@contaforte.local`) com a senha de `ADMIN_PASSWORD` no `.env`.
@@ -27,7 +28,36 @@ O administrador inicial é `ADMIN_EMAIL` (padrão `admin@contaforte.local`) com 
 | `open [app\|grafana]` | Abre o app ou o Grafana |
 | `test [backend\|web\|go\|all]` | Testes em container |
 | `e2e` | Testes de navegador (Playwright) contra a stack em execução |
+| `seed [--reset]` | Carrega 90 dias de dados **fictícios** num usuário demo e confere o resumo no final |
+| `bench` | Mede o p95 das telas com 10 mil transações sintéticas (k6 em container) |
 | `backup` / `restore <arquivo>` | `pg_dump` comprimido em `backups/` e restauração |
+
+## Dados de demonstração (`./cf seed`)
+
+Para ver o produto com números sem digitar nada: `./cf seed` cria o usuário `demo@contaforte.local` (senha aleatória gerada uma vez e guardada em `DEMO_PASSWORD` no `.env`) e carrega, pela API (com todas as regras de negócio), 7 contas, 154 transações dos últimos 90 dias, uma de cada tipo de conta e de transação. No final, o `cf` compara o resumo calculado pelo backend com o resultado esperado pelo gerador e falha se divergirem.
+
+- Tudo é **fictício** e determinístico (`datasets/synthetic/scenario.json`, gerado por `tools/gen-synthetic`, semente fixa). Nenhum dado real entra no repositório.
+- Rodar de novo recusa se o usuário demo já tem dados. `./cf seed --reset` apaga **só** o usuário demo (e os dados dele, em cascata) e recarrega.
+- **Só em ambiente local:** o comando recusa rodar com o perfil `tunnel` ativo.
+- O administrador do `.env` nunca recebe os dados de demonstração: eles ficam no usuário demo.
+
+## Desempenho (`./cf bench`)
+
+Cria um usuário descartável com N transações sintéticas (padrão 10 mil), roda o k6 por 20 s com 10 usuários virtuais passando pelo gateway e remove tudo ao final. Medido na máquina de desenvolvimento (p95, em ms):
+
+| Rota | 10 mil transações | 100 mil transações |
+|---|---|---|
+| Lista de transações | 30 | 97 |
+| Lista com filtros (tipo, período, texto) | 35 | 35 |
+| Página profunda (página 400) | 34 | 88 |
+| Resumo mensal | 24 | 20 |
+| Resumo atual | 45 | 301 |
+
+Leitura: para uso pessoal (10 mil linhas equivalem a quase 3 anos com 10 lançamentos por dia) tudo fica abaixo de 50 ms. O `/summary` é o primeiro a crescer, porque soma todas as transações a cada leitura (saldo derivado, [ADR-013](../02_Arquitetura/Arquitetura/ADR/013-saldo-derivado-e-classes-de-liquidez.md)). Se um dia passar de ~300 ms em uso real, o caminho é uma visão materializada ou um cache do saldo.
+
+## Painéis do Grafana
+
+Além de Visão geral, PostgreSQL e Redis, o painel **Negócio** mostra as transações registradas por tipo, o p95 das telas financeiras (última hora) e as respostas 4xx/5xx por rota. Nenhuma métrica carrega valor, descrição ou dado pessoal. Limitação do Prometheus a conhecer: a **primeira** ocorrência de uma série nova (por exemplo, o primeiro 404 de uma rota) não aparece em `rate()`/`increase()`; a partir da segunda aparece. Os contadores de negócio são registrados em 0 na partida justamente para evitar isso.
 
 ## Rede e isolamento
 

@@ -21,10 +21,10 @@ Porta de entrada da documentação do **ContaForte — Personal Financial Copilo
 | `00_Gestao_do_Projeto` | Abertura, escopo, riscos | ✅ iniciado |
 | `01_Analise_e_Requisitos` | Requisitos funcionais e não funcionais | ✅ iniciado |
 | `02_Arquitetura` | SDD, arquitetura, ADRs | ✅ iniciado |
-| `03_Desenvolvimento` | Guia de desenvolvimento, changelog | ⏳ Milestone 1 |
-| `04_Testes` | Plano e evidências de teste | ⏳ Milestone 1 |
-| `05_Encerramento` | Aceite e lições aprendidas | ⏳ por milestone |
-| `06_Operacao` | Instalação, runbooks, backup | ⏳ Milestone 1 |
+| `03_Desenvolvimento` | Guia de desenvolvimento, modelo de dados e API | ✅ |
+| `04_Testes` | Estratégia e evidências de teste | ✅ |
+| `05_Encerramento` | Lições aprendidas | ✅ M1, M2 |
+| `06_Operacao` | Instalação, operação, monitoramento, backup | ✅ |
 | `07_Referencias` | Normas, LGPD, links | ✅ iniciado |
 
 Regra de precedência em caso de divergência: **código e configuração > migrations/schemas > ADRs > SDD**. Veja [DOCUMENTATION_PLAN.md](DOCUMENTATION_PLAN.md).

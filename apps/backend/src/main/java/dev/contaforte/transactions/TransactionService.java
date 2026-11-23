@@ -63,6 +63,11 @@ class TransactionService {
         this.events = events;
         this.metrics = metrics;
         this.clock = clock;
+        // Registra o contador de cada tipo em 0 já na partida. Um contador que nasce na primeira transação já chega ao
+        // Prometheus com valor > 0 e sem amostra anterior, então rate()/increase() perderiam essa primeira contagem.
+        for (TransactionType type : TransactionType.values()) {
+            metrics.counter("contaforte.transactions.recorded", "type", type.name());
+        }
     }
 
     // ---------------------------------------------------------------- criação

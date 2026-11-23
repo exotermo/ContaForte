@@ -14,9 +14,11 @@ Só Docker (Compose v2). Os builds e testes rodam em containers, então não é 
 | `tools/cf` | CLI de configuração e operação (Go, só biblioteca padrão) |
 | `tools/container-exporter` | Exporter Prometheus de CPU, memória e rede por container (Go) |
 | `tools/gen-dashboards` | Gerador dos dashboards do Grafana (Python) |
+| `tools/gen-synthetic` | Gerador do cenário sintético de demonstração (Python, determinístico) |
+| `tools/loadtest` | Script k6 usado pelo `./cf bench` |
 | `infrastructure/` | Gateway nginx, MQTT, monitoramento (Prometheus, Loki, Alloy, Grafana) |
 | `docker-compose.yml` | A stack inteira, em três redes: `edge`, `app` (internal) e `obs` (internal) |
-| `datasets/synthetic` | Dados fictícios para testes. **Nunca** dados reais |
+| `datasets/synthetic` | Cenário fictício do `./cf seed`. **Nunca** dados reais |
 | `Documentos/` | SDD, ADRs, requisitos e operação |
 
 ## Testes
@@ -40,6 +42,7 @@ Os mesmos passos rodam no CI (`.github/workflows/ci.yml`). Atenção: o teste do
 ## Fluxos comuns
 - **Nova migração:** crie `V<N>__descricao.sql` em `db/migration`. Nunca edite uma migração já aplicada.
 - **Novo endpoint:** controller no pacote do domínio, regra de acesso em `SecurityConfig`, teste de integração estendendo `AbstractIntegrationTest`. A API sai documentada em `/api/v1/openapi`.
+- **Cenário de demonstração:** edite `tools/gen-synthetic/gen_synthetic.py` e regenere `datasets/synthetic/scenario.json` (o gerador confere que nenhuma conta comum fica negativa e calcula o resumo esperado). O CI regenera os dois geradores e falha se o arquivo versionado estiver desatualizado.
 - **Dashboards:** edite `tools/gen-dashboards/gen_dashboards.py`, regenere os JSON em `infrastructure/monitoring/grafana/dashboards` e reinicie o Grafana.
 - **E2E e dados de teste:** os testes Playwright criam contas e transações com o prefixo `e2e-`; o `./cf e2e` remove tudo o que tem esse prefixo ao terminar (passando ou falhando). Use o prefixo em qualquer dado novo de E2E.
 - **Mudou arquivo montado** (Prometheus, nginx, Alloy)? `./cf up` não recria o container: reinicie o serviço (`docker compose restart <serviço>`).
@@ -53,6 +56,9 @@ Veja o [CONTRIBUTING](../../../CONTRIBUTING.md). Em resumo: sem dados financeiro
 - Tokens nunca ficam acessíveis ao JavaScript do navegador (BFF com cookies httpOnly + SameSite=Strict).
 - Logs e auditoria sem dados pessoais.
 - Containers sem `docker.sock`, exceto o proxy somente-leitura do monitoramento.
+
+## Modelo de dados e API
+Veja [MODELO_DE_DADOS.md](MODELO_DE_DADOS.md): diagrama, regras impostas pelo banco, liquidez e a tabela de endpoints.
 
 ## Releases
 Versionamento semântico com tags `vX.Y.Z` na `main`. O histórico de mudanças está em [CHANGELOG.md](../../../CHANGELOG.md).

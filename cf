@@ -5,20 +5,25 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$ROOT/tools/cf"
 BIN="$SRC/bin/cf"
 
+# versão embutida no binário: a tag mais próxima (ex.: v0.2.0) ou o hash do commit; "dev" fora de um repositório Git
+VERSION="$(git -C "$ROOT" describe --tags --always 2>/dev/null || echo dev)"
+
 needs_build() {
-  [ ! -x "$BIN" ] || [ -n "$(find "$SRC" -name '*.go' -newer "$BIN" -print -quit)" ]
+  [ ! -x "$BIN" ] || [ -n "$(find "$SRC" -name '*.go' -newer "$BIN" -print -quit)" ] \
+    || [ "$(cat "$SRC/bin/.version" 2>/dev/null)" != "$VERSION" ]
 }
 
 if needs_build; then
   mkdir -p "$SRC/bin"
   if command -v go >/dev/null 2>&1; then
-    (cd "$SRC" && CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o bin/cf .)
+    (cd "$SRC" && CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=$VERSION" -o bin/cf .)
   elif command -v docker >/dev/null 2>&1; then
     echo "Go não encontrado no host: compilando o cf em container..." >&2
     docker run --rm -u "$(id -u):$(id -g)" -e CGO_ENABLED=0 -e GOCACHE=/tmp/gocache \
-      -v "$SRC:/src" -w /src golang:1.25-alpine go build -trimpath -ldflags "-s -w" -o bin/cf .
+      -v "$SRC:/src" -w /src golang:1.25-alpine go build -trimpath -ldflags "-s -w -X main.version=$VERSION" -o bin/cf .
   else
     echo "Precisa de Go ou Docker para compilar o cf." >&2; exit 1
   fi
+  echo "$VERSION" > "$SRC/bin/.version"
 fi
 exec "$BIN" "$@"

@@ -469,6 +469,15 @@ class TransactionApiTest extends ApiTestSupport {
     }
 
     @Test
+    void metricaExisteParaTodosOsTiposDesdeAPartida() {
+        // sem isso o primeiro lançamento de cada tipo nasceria já com valor e o Prometheus perderia a primeira contagem
+        for (TransactionType type : TransactionType.values()) {
+            assertThat(metrics.find("contaforte.transactions.recorded").tag("type", type.name()).counter())
+                    .as(type.name()).isNotNull();
+        }
+    }
+
+    @Test
     void auditoriaRegistraOsEventosSemValorNemDescricao() {
         Pessoa ana = pessoa();
         String c = conta(ana, "Conta", "CHECKING_ACCOUNT", null);

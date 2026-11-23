@@ -28,6 +28,7 @@ O produto promete que nem todo saldo é capital disponível: VA/VR não podem ap
 
 ## Consequências
 - Todo saldo exige somar transações. Com a escala de uso pessoal isso é barato; se a medição mostrar lentidão, o caminho é índice ou visão materializada, em um novo ADR.
+- **Medição (Milestone 2):** com 10 mil transações o `/summary` responde em ~45 ms (p95); com 100 mil, em ~300 ms (`./cf bench`). Bom o bastante para uso pessoal; é o primeiro ponto a revisitar se a escala mudar.
 - O banco arredonda silenciosamente valores com mais de 2 casas (comportamento do `NUMERIC(14,2)`), então a **API precisa recusar** esses valores com 422 antes de gravar. O teste disso fica na etapa da API de transações.
 - **Formato na API:** valores monetários **saem como string decimal** (`"1234.50"`), nunca como número JSON, para que nenhum cliente passe por ponto flutuante. Na entrada aceita-se string ou número, com no máximo 2 casas e até 12 dígitos inteiros (`Money.parse`).
 - A consulta de saldo usa o sinal por tipo em SQL, espelhando `TransactionType.accountSign()`; um teste confere os cinco tipos contra um cálculo manual para as duas regras não divergirem.

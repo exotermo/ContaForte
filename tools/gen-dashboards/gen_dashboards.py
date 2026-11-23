@@ -124,4 +124,31 @@ r.ts("Clientes",[("redis_connected_clients","conectados"),("redis_blocked_client
 r.ts("Chaves expiradas e removidas",[("rate(redis_expired_keys_total[5m])","expiradas"),("rate(redis_evicted_keys_total[5m])","removidas (evicted)")],unit="ops")
 r.ts("Rede",[("rate(redis_net_input_bytes_total[5m])","entrada"),("rate(redis_net_output_bytes_total[5m])","saída")],unit="Bps")
 r.save("redis.json")
+# ---------------- Negócio ----------------
+# Métricas de uso do produto (transações registradas) e a experiência nas telas financeiras. Nenhuma métrica aqui
+# carrega valor, descrição ou qualquer dado pessoal: só tipo da transação, rota e status HTTP.
+FIN='uri=~"/api/v1/(accounts|transactions|summary|categories|contexts).*"'
+n=D("cf-negocio","ContaForte — Negócio",["contaforte","negocio"])
+n.row("Uso")
+n.stat("Transações registradas (desde o início do backend)","sum(contaforte_transactions_recorded_total) or vector(0)",w=6,decimals=0)
+n.stat("Transações na última hora","sum(increase(contaforte_transactions_recorded_total[1h])) or vector(0)",w=6,decimals=0)
+n.stat("Contas criadas (24h)","sum(increase(http_server_requests_seconds_count{job=\"backend\",method=\"POST\",uri=\"/api/v1/accounts\",status=\"201\"}[24h])) or vector(0)",w=6,decimals=0)
+n.stat("Logins (24h)","sum(increase(http_server_requests_seconds_count{job=\"backend\",uri=\"/api/v1/auth/login\",status=\"200\"}[24h])) or vector(0)",w=6,decimals=0)
+n.ts("Transações registradas por tipo (5 min)",[("sum by (type) (increase(contaforte_transactions_recorded_total[5m]))","{{type}}")],stack=True)
+n.ts("Requisições por área",[
+    ("sum(rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/transactions.*\"}[5m]))","transações"),
+    ("sum(rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/accounts.*\"}[5m]))","contas"),
+    ("sum(rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/summary.*\"}[5m]))","resumo"),
+    ("sum(rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/(categories|contexts).*\"}[5m]))","categorias e contextos")],unit="reqps")
+n.row("Latência das telas financeiras (p95, última hora)")
+n.stat("Lista de transações","histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/transactions\",method=\"GET\"}[1h]))) * 1000",unit="ms",w=6,decimals=0,thresholds=[{"color":"green","value":None},{"color":"orange","value":300},{"color":"red","value":1000}])
+n.stat("Resumo","histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/summary\"}[1h]))) * 1000",unit="ms",w=6,decimals=0,thresholds=[{"color":"green","value":None},{"color":"orange","value":300},{"color":"red","value":1000}])
+n.stat("Resumo mensal","histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/summary/monthly\"}[1h]))) * 1000",unit="ms",w=6,decimals=0,thresholds=[{"color":"green","value":None},{"color":"orange","value":300},{"color":"red","value":1000}])
+n.stat("Criar transação","histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/transactions\",method=\"POST\"}[1h]))) * 1000",unit="ms",w=6,decimals=0,thresholds=[{"color":"green","value":None},{"color":"orange","value":300},{"color":"red","value":1000}])
+n.ts("p95 por rota",[(f"histogram_quantile(0.95, sum by (le, uri, method) (rate(http_server_requests_seconds_bucket{{job=\"backend\",{FIN}}}[5m])))","{{method}} {{uri}}")],unit="s",w=24)
+n.row("Rejeições e erros")
+n.ts("Respostas 4xx por rota (validação, conflito, não encontrado)",[(f"sum by (status, uri) (rate(http_server_requests_seconds_count{{job=\"backend\",{FIN},status=~\"4..\"}}[5m]))","{{status}} {{uri}}")],unit="reqps")
+n.ts("Respostas 5xx por rota",[(f"sum by (status, uri) (rate(http_server_requests_seconds_count{{job=\"backend\",{FIN},status=~\"5..\"}}[5m]))","{{status}} {{uri}}")],unit="reqps")
+n.save("negocio.json")
+
 print("dashboards gerados:", os.listdir(OUT))

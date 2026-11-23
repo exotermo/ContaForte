@@ -40,13 +40,19 @@ public abstract class ApiTestSupport extends AbstractIntegrationTest {
 
     protected Pessoa pessoa(Role role) {
         String email = "u" + UUID.randomUUID() + "@teste.local";
-        User u = users.save(new User(email, encoder.encode(SENHA), role));
+        users.save(new User(email, encoder.encode(SENHA), role));
+        return entrar(email, SENHA);
+    }
+
+    /** Faz o login de verdade (com IP próprio) e devolve a pessoa com o token de acesso. */
+    protected Pessoa entrar(String email, String senha) {
+        User u = users.findByEmailIgnoreCase(email).orElseThrow();
         HttpHeaders h = new HttpHeaders();
         h.setContentType(MediaType.APPLICATION_JSON);
         int n = SEQ.incrementAndGet();
         h.set("X-Forwarded-For", "10.8." + (n / 250) + "." + (n % 250 + 1));
         ResponseEntity<Map> r = rest.exchange("/api/v1/auth/login", HttpMethod.POST,
-                new HttpEntity<>(Map.of("email", email, "password", SENHA), h), Map.class);
+                new HttpEntity<>(Map.of("email", email, "password", senha), h), Map.class);
         assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
         return new Pessoa(u.getId(), (String) r.getBody().get("accessToken"));
     }

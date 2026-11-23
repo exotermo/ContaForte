@@ -86,6 +86,8 @@ jobs:
           TUNNEL_TOKEN=ci docker compose --profile tunnel config -q
       - name: Sobe a stack completa
         run: ./cf up
+      - name: Dados de demonstração (o cf seed confere o resumo contra o esperado pelo gerador)
+        run: ./cf seed
       - name: Smoke test (gateway, login e Grafana protegido)
         run: |
           set -euo pipefail
@@ -101,6 +103,17 @@ jobs:
         run: |
           docker compose ps -a
           docker compose logs --tail=80
+
+  generated:
+    name: Arquivos gerados em dia (cenário e dashboards)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regenera e exige que nada mude
+        run: |
+          python3 tools/gen-synthetic/gen_synthetic.py
+          python3 tools/gen-dashboards/gen_dashboards.py
+          git diff --exit-code -- datasets/synthetic infrastructure/monitoring/grafana/dashboards
 
   secrets:
     name: Varredura de segredos (gitleaks)
