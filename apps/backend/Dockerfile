@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
     gradle bootJar -x test --no-daemon -q \
     && cp build/libs/*.jar /app/app.jar
 
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:24-jre-alpine AS runtime
 RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app
 WORKDIR /app
 COPY --from=build --chown=app:app /app/app.jar ./app.jar
