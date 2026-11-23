@@ -117,6 +117,7 @@ public class Transaction {
     public Instant getUpdatedAt() { return updatedAt; }
 
     public void setCounterpartAccountId(UUID counterpartAccountId) { this.counterpartAccountId = counterpartAccountId; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
     public void setDescription(String description) { this.description = description; }
     public void setMerchant(String merchant) { this.merchant = merchant; }
     public void setCategoryId(UUID categoryId) { this.categoryId = categoryId; }
