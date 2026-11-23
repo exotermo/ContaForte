@@ -2,65 +2,21 @@ package dev.contaforte.accounts;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.contaforte.AbstractIntegrationTest;
+import dev.contaforte.ApiTestSupport;
 import dev.contaforte.transactions.TransactionType;
 import dev.contaforte.users.Role;
-import dev.contaforte.users.User;
-import dev.contaforte.users.UserRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-class AccountApiTest extends AbstractIntegrationTest {
-
-    private static final String SENHA = "SenhaDoUsuario#2026";
-    private static final AtomicInteger SEQ = new AtomicInteger(500);
-
-    @Autowired TestRestTemplate rest;
-    @Autowired UserRepository users;
-    @Autowired PasswordEncoder encoder;
-    @Autowired JdbcTemplate jdbc;
-
-    /** Uma pessoa de teste: id e token de acesso obtidos pelo login real. */
-    private record Pessoa(UUID id, String token) {}
-
-    private Pessoa pessoa(Role role) {
-        String email = "u" + UUID.randomUUID() + "@teste.local";
-        User u = users.save(new User(email, encoder.encode(SENHA), role));
-        HttpHeaders h = new HttpHeaders();
-        h.setContentType(MediaType.APPLICATION_JSON);
-        h.set("X-Forwarded-For", "10.9." + (SEQ.incrementAndGet() / 250) + "." + (SEQ.get() % 250 + 1));
-        ResponseEntity<Map> r = rest.exchange("/api/v1/auth/login", HttpMethod.POST,
-                new HttpEntity<>(Map.of("email", email, "password", SENHA), h), Map.class);
-        assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
-        return new Pessoa(u.getId(), (String) r.getBody().get("accessToken"));
-    }
-
-    private Pessoa pessoa() {
-        return pessoa(Role.USER);
-    }
-
-    private ResponseEntity<Map> call(HttpMethod m, String path, Object body, Pessoa p) {
-        HttpHeaders h = new HttpHeaders();
-        h.setContentType(MediaType.APPLICATION_JSON);
-        if (p != null) h.setBearerAuth(p.token());
-        return rest.exchange(path, m, new HttpEntity<>(body, h), Map.class);
-    }
+class AccountApiTest extends ApiTestSupport {
 
     private Map criar(Pessoa p, String nome, String tipo, Object saldo) {
         Map<String, Object> body = new HashMap<>();
@@ -73,9 +29,7 @@ class AccountApiTest extends AbstractIntegrationTest {
     }
 
     private List<Map> listar(Pessoa p, String query) {
-        HttpHeaders h = new HttpHeaders();
-        h.setBearerAuth(p.token());
-        return rest.exchange("/api/v1/accounts" + query, HttpMethod.GET, new HttpEntity<>(h), List.class).getBody();
+        return getList("/api/v1/accounts" + query, p);
     }
 
     private void lancar(Pessoa p, Object conta, Object contraparte, TransactionType tipo, String valor, boolean excluida) {
