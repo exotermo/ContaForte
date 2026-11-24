@@ -118,6 +118,7 @@ class TransactionService {
         if (f.type() != null) spec = spec.and(TransactionSpecs.ofType(f.type()));
         if (f.contextId() != null) spec = spec.and(TransactionSpecs.inContext(f.contextId()));
         if (f.categoryId() != null) spec = spec.and(TransactionSpecs.inCategories(categoryAndChildren(userId, f.categoryId())));
+        if (f.importId() != null) spec = spec.and(TransactionSpecs.fromImport(f.importId()));
         if (f.q() != null && !f.q().isBlank()) spec = spec.and(TransactionSpecs.textContains(f.q().trim()));
 
         return PageResponse.of(transactions.findAll(spec, PageRequest.of(page, size, ORDER)).map(TransactionResponse::of));

@@ -3,6 +3,7 @@
 
 # API: upstream via variável, o gateway sobe mesmo sem o backend.
 location /api/ {
+  client_max_body_size 6m;   # extratos de até 5 MB (o backend impõe o limite exato); o padrão do nginx seria 1 MB
   set $backend http://backend:8080;
   proxy_pass $backend;
   proxy_set_header Host $http_host;   # mantém a porta (a checagem de Origin do front compara host:porta)
@@ -14,6 +15,7 @@ location /api/ {
 
 # Frontend
 location / {
+  client_max_body_size 6m;   # o proxy de dados do front repassa o upload de extratos (/bff/imports)
   set $web http://web:3000;
   proxy_pass $web;
   proxy_set_header Host $http_host;

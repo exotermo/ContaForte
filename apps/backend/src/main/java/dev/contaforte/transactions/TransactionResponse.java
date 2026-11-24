@@ -19,12 +19,13 @@ public record TransactionResponse(
         UUID contextId,
         Instant occurredAt,
         TransactionSource source,
+        UUID importId,
         Instant createdAt,
         Instant updatedAt) {
 
     static TransactionResponse of(Transaction t) {
         return new TransactionResponse(t.getId(), t.getAccountId(), t.getCounterpartAccountId(), t.getType(),
                 t.getAmount(), t.getCurrency(), t.getDescription(), t.getMerchant(), t.getCategoryId(),
-                t.getContextId(), t.getOccurredAt(), t.getSource(), t.getCreatedAt(), t.getUpdatedAt());
+                t.getContextId(), t.getOccurredAt(), t.getSource(), t.getImportId(), t.getCreatedAt(), t.getUpdatedAt());
     }
 }

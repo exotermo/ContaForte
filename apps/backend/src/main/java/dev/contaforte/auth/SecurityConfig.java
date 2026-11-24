@@ -31,7 +31,7 @@ class SecurityConfig {
                     .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                     // dados financeiros pessoais: só pessoas (USER/ADMIN); SERVICE e DEVICE não têm acesso
                     .requestMatchers("/api/v1/accounts/**", "/api/v1/categories/**", "/api/v1/contexts/**",
-                            "/api/v1/transactions/**", "/api/v1/summary/**").hasAnyRole("USER", "ADMIN")
+                            "/api/v1/transactions/**", "/api/v1/summary/**", "/api/v1/imports/**").hasAnyRole("USER", "ADMIN")
                     .anyRequest().authenticated())
             .oauth2ResourceServer(o -> o.jwt(j -> j.jwtAuthenticationConverter(roleConverter())))
             .headers(h -> h.cacheControl(Customizer.withDefaults()));

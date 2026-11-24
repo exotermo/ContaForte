@@ -91,7 +91,7 @@ class TransactionController {
 
     /** Filtros da listagem. {@code from}/{@code to} são dias (inclusivos) no fuso America/Sao_Paulo. */
     record Filter(LocalDate from, LocalDate to, UUID accountId, TransactionType type, UUID categoryId,
-                  UUID contextId, String q) {}
+                  UUID contextId, String q, UUID importId) {}
 
     private final TransactionService service;
 
@@ -112,7 +112,7 @@ class TransactionController {
     @GetMapping
     @Operation(summary = "Lista transações com filtros e paginação",
             description = "Ordem fixa: mais recentes primeiro. accountId casa origem ou destino; categoryId de uma "
-                    + "categoria-pai inclui as subcategorias; q busca na descrição e no estabelecimento.")
+                    + "categoria-pai inclui as subcategorias; q busca na descrição e no estabelecimento; importId lista só as de uma importação.")
     PageResponse<TransactionResponse> list(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
@@ -122,9 +122,10 @@ class TransactionController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) UUID contextId,
             @RequestParam(required = false) @Size(max = 100) String q,
+            @RequestParam(required = false) UUID importId,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
-        return service.list(userId(jwt), new Filter(from, to, accountId, type, categoryId, contextId, q), page, size);
+        return service.list(userId(jwt), new Filter(from, to, accountId, type, categoryId, contextId, q, importId), page, size);
     }
 
     @GetMapping("/{id}")

@@ -8,6 +8,12 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100        # importações gravam até 20 mil linhas: inserção em lote
+        order_inserts: true
+        order_updates: true
   flyway:
     enabled: true
 
@@ -18,8 +24,14 @@ spring:
   mvc:
     problemdetails:
       enabled: true       # erros em application/problem+json (RFC 7807)
+  servlet:
+    multipart:
+      max-file-size: 5MB          # igual a ImportLimits.MAX_BYTES
+      max-request-size: 5632KB    # arquivo + campos do formulário
 
 server:
+  tomcat:
+    max-swallow-size: 10MB        # upload acima do limite recebe 413 em vez de a conexão ser derrubada
   port: 8080
   shutdown: graceful
   forward-headers-strategy: native   # IP real do cliente vindo do gateway (rede interna confiável)

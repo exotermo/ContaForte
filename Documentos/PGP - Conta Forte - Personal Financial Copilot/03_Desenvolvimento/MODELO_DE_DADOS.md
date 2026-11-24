@@ -122,5 +122,6 @@ Todos exigem `Authorization: Bearer`, exceto login, refresh, logout, `system/inf
 | Contextos | `GET`, `POST`, `PATCH /{id}` em `/contexts` | USER, ADMIN |
 | Transações | `POST`, `GET` (filtros e paginação), `GET /{id}`, `PATCH /{id}`, `DELETE /{id}` em `/transactions` | USER, ADMIN |
 | Resumo | `GET /summary`, `GET /summary/monthly?month=AAAA-MM` | USER, ADMIN |
+| Importações | `POST /imports` (multipart: prévia), `POST /imports/suggest-mapping`, `GET /imports`, `GET /imports/{id}`, `GET /imports/{id}/items`, `POST /imports/{id}/confirm`, `POST /imports/{id}/rollback`, `DELETE /imports/{id}` (descartar prévia) | USER, ADMIN |
 
-Erros seguem ProblemDetail (RFC 7807): 400 validação, 401 sem sessão, 403 sem permissão ou padrão do sistema, 404 inexistente ou de outro usuário, 409 conflito (nome duplicado, conta arquivada), 422 regra de negócio (valor com mais de 2 casas, data no futuro, tipo e contas inalteráveis).
+Erros seguem ProblemDetail (RFC 7807): 400 validação, 401 sem sessão, 403 sem permissão ou padrão do sistema, 404 inexistente ou de outro usuário, 409 conflito (nome duplicado, conta arquivada, importação já confirmada), 410 prévia vencida, 413 arquivo grande demais, 422 regra de negócio (valor com mais de 2 casas, data no futuro, tipo e contas inalteráveis, extrato ilegível), 429 limite de prévias por hora.

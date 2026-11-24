@@ -37,6 +37,10 @@ final class TransactionSpecs {
         return (root, q, cb) -> root.get("categoryId").in(categoryIds);
     }
 
+    static Specification<Transaction> fromImport(UUID importId) {
+        return (root, q, cb) -> cb.equal(root.get("importId"), importId);
+    }
+
     static Specification<Transaction> inContext(UUID contextId) {
         return (root, q, cb) -> cb.equal(root.get("contextId"), contextId);
     }
