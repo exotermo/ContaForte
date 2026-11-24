@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"os/exec"
@@ -203,6 +204,47 @@ func (a *apiClient) call(method, path string, in, out any) (int, error) {
 	return resp.StatusCode, nil
 }
 
+// upload envia um arquivo (multipart) e decodifica a resposta JSON em out.
+func (a *apiClient) upload(path string, fields map[string]string, fileName string, content []byte, out any) (int, error) {
+	var buf bytes.Buffer
+	mw := multipart.NewWriter(&buf)
+	fw, err := mw.CreateFormFile("file", fileName)
+	if err != nil {
+		return 0, err
+	}
+	fw.Write(content)
+	for k, v := range fields {
+		mw.WriteField(k, v)
+	}
+	mw.Close()
+	req, err := http.NewRequest("POST", a.base+path, &buf)
+	if err != nil {
+		return 0, err
+	}
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	req.Header.Set("Authorization", "Bearer "+a.token)
+	hc := &http.Client{Timeout: 120 * time.Second}
+	resp, err := hc.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
+	if resp.StatusCode >= 300 {
+		var p struct {
+			Detail string `json:"detail"`
+		}
+		_ = json.Unmarshal(raw, &p)
+		return resp.StatusCode, fmt.Errorf("POST %s → %d %s", path, resp.StatusCode, p.Detail)
+	}
+	if out != nil && len(raw) > 0 {
+		if err := json.Unmarshal(raw, out); err != nil {
+			return resp.StatusCode, err
+		}
+	}
+	return resp.StatusCode, nil
+}
+
 func (a *apiClient) login(email, password string) (int, error) {
 	var out struct {
 		AccessToken string `json:"accessToken"`
@@ -255,6 +297,7 @@ func cmdSeed(args []string) error {
 	fs := flag.NewFlagSet("seed", flag.ExitOnError)
 	reset := fs.Bool("reset", false, "apaga o usuário demo (e só ele) antes de carregar")
 	file := fs.String("file", "", "cenário (padrão: datasets/synthetic/scenario.json)")
+	withImports := fs.Bool("with-imports", false, "também importa os extratos sintéticos (OFX) numa conta própria, pela API")
 	fs.Parse(args)
 
 	root, err := findRoot()
@@ -332,6 +375,11 @@ func cmdSeed(args []string) error {
 
 	if err := loadInto(demo, sc, time.Now()); err != nil {
 		return err
+	}
+	if *withImports {
+		if err := seedImports(demo, filepath.Join(root, "datasets", "synthetic", "imports")); err != nil {
+			return err
+		}
 	}
 	fmt.Printf("\nPronto. Entre em http://127.0.0.1:%s com %s (senha em .env → DEMO_PASSWORD)\n", port, sc.DemoEmail)
 	return nil
@@ -452,4 +500,66 @@ func centsOf(s string) (int64, error) {
 		c = -c
 	}
 	return c, nil
+}
+
+// importResp é o pedaço da resposta de importação que a conferência usa.
+type importResp struct {
+	ID            string `json:"id"`
+	Status        string `json:"status"`
+	NewRows       int    `json:"newRows"`
+	DuplicateRows int    `json:"duplicateRows"`
+	PossibleRows  int    `json:"possibleRows"`
+	InvalidRows   int    `json:"invalidRows"`
+	ImportedRows  int    `json:"importedRows"`
+}
+
+// seedImports importa dois extratos OFX sintéticos (o segundo repete 4 lançamentos do primeiro) numa conta própria e
+// confere contagens e saldo. Usa a API de verdade: prévia, depois confirmação, como o usuário faria.
+func seedImports(demo *apiClient, dir string) error {
+	var acc struct {
+		ID string `json:"id"`
+	}
+	if _, err := demo.call("POST", "/api/v1/accounts", map[string]string{"name": "Conta de extratos (importação)", "type": "CHECKING_ACCOUNT"}, &acc); err != nil {
+		return err
+	}
+	steps := []struct {
+		file        string
+		wantNew     int
+		wantDup     int
+		wantBalance string
+	}{
+		{"conta-corrente-1.ofx", 12, 0, "4179.53"},
+		{"conta-corrente-2.ofx", 3, 4, "3954.62"},
+	}
+	for _, st := range steps {
+		content, err := os.ReadFile(filepath.Join(dir, st.file))
+		if err != nil {
+			return err
+		}
+		var prev importResp
+		if _, err := demo.upload("/api/v1/imports", map[string]string{"accountId": acc.ID}, st.file, content, &prev); err != nil {
+			return fmt.Errorf("%s: %w", st.file, err)
+		}
+		if prev.NewRows != st.wantNew || prev.DuplicateRows != st.wantDup {
+			return fmt.Errorf("%s: prévia com %d novas e %d duplicadas, esperado %d e %d", st.file, prev.NewRows, prev.DuplicateRows, st.wantNew, st.wantDup)
+		}
+		var done importResp
+		if _, err := demo.call("POST", "/api/v1/imports/"+prev.ID+"/confirm", map[string]any{}, &done); err != nil {
+			return fmt.Errorf("%s: %w", st.file, err)
+		}
+		if done.Status != "CONFIRMED" || done.ImportedRows != st.wantNew {
+			return fmt.Errorf("%s: confirmação inesperada (%s, %d importadas)", st.file, done.Status, done.ImportedRows)
+		}
+		var bal struct {
+			Balance string `json:"balance"`
+		}
+		if _, err := demo.call("GET", "/api/v1/accounts/"+acc.ID, nil, &bal); err != nil {
+			return err
+		}
+		if bal.Balance != st.wantBalance {
+			return fmt.Errorf("%s: saldo %s ≠ esperado %s", st.file, bal.Balance, st.wantBalance)
+		}
+		ok("%s importado: %d novas, %d duplicadas puladas, saldo %s", st.file, prev.NewRows, prev.DuplicateRows, bal.Balance)
+	}
+	return nil
 }

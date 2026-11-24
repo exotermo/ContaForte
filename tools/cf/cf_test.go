@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func fakeGen(int) (string, error) { return strings.Repeat("a", 48), nil }
@@ -191,5 +192,28 @@ func writeFile(t *testing.T, path, content string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestBenchCSVTemDatasNoPassadoELinhasDistintas(t *testing.T) {
+	lines := strings.Split(strings.TrimSpace(string(benchCSV(5000))), "\n")
+	if len(lines) != 5001 || lines[0] != "Data;Descricao;Valor" {
+		t.Fatalf("formato inesperado: %d linhas, cabeçalho %q", len(lines), lines[0])
+	}
+	seen := map[string]bool{}
+	hoje := time.Now().In(spZone).Format("2006-01-02")
+	for _, l := range lines[1:] {
+		if seen[l] {
+			t.Fatalf("linha repetida: %s", l)
+		}
+		seen[l] = true
+		f := strings.Split(l, ";")
+		d, err := time.ParseInLocation("02/01/2006", f[0], spZone)
+		if err != nil || d.Format("2006-01-02") > hoje {
+			t.Fatalf("data inválida ou futura: %q", f[0])
+		}
+		if !strings.HasPrefix(f[2], "-") {
+			t.Fatalf("valor deveria ser despesa: %q", f[2])
+		}
 	}
 }

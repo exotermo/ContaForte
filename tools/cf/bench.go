@@ -8,7 +8,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // k6Image fica fixada: o resultado do bench precisa ser comparável entre execuções.
@@ -86,6 +88,7 @@ func cmdBench(args []string) error {
 	rows := fs.Int("rows", 10000, "quantidade de transações sintéticas")
 	duration := fs.String("duration", "20s", "duração do teste de carga")
 	vus := fs.Int("vus", 10, "usuários virtuais simultâneos")
+	importRows := fs.Int("import-rows", 20000, "linhas do CSV usado para medir a importação (0 desliga)")
 	fs.Parse(args)
 	if *rows < 100 || *rows > 200000 {
 		return fmt.Errorf("--rows deve estar entre 100 e 200000")
@@ -154,6 +157,12 @@ func cmdBench(args []string) error {
 	}
 	ok("%d transações sintéticas inseridas para %s (removidas ao final)", *rows, benchEmail)
 
+	if *importRows > 0 {
+		if err := benchImport(root, env, user, *importRows); err != nil {
+			return err
+		}
+	}
+
 	out, err := os.MkdirTemp("", "cf-bench-")
 	if err != nil {
 		return err
@@ -186,5 +195,114 @@ func cmdBench(args []string) error {
 		return fmt.Errorf("algum limiar do k6 foi estourado (p95 < 1000 ms ou falhas > 1%%): veja os números acima")
 	}
 	fmt.Println("\nTodos os limiares respeitados (p95 < 1000 ms, falhas < 1%).")
+	return nil
+}
+
+// benchCSV gera um CSV sintético (data;descrição;valor) com n linhas, todas distintas entre si.
+func benchCSV(n int) []byte {
+	var b strings.Builder
+	b.WriteString("Data;Descricao;Valor\n")
+	base := time.Now().In(spZone) // datas sempre no passado: o parser recusa data futura
+	for i := 0; i < n; i++ {
+		d := base.AddDate(0, 0, -(i % 700))
+		cents := (i*7919)%99000 + 100
+		fmt.Fprintf(&b, "%s;IMPORTA %d LOJA %d;-%d,%02d\n", d.Format("02/01/2006"), i, i%50, cents/100, cents%100)
+	}
+	return []byte(b.String())
+}
+
+// memMiB lê o uso atual de memória do contêiner do backend (docker stats), em MiB.
+func memMiB(root string) float64 {
+	cmd := exec.Command("docker", "compose", "stats", "--no-stream", "--format", "{{.MemUsage}}", "backend")
+	cmd.Dir = root
+	out, err := cmd.Output()
+	if err != nil {
+		return -1
+	}
+	f := strings.Fields(string(out))
+	if len(f) == 0 {
+		return -1
+	}
+	v := strings.TrimSuffix(f[0], "MiB")
+	x, err := strconv.ParseFloat(v, 64)
+	if err != nil {
+		return -1
+	}
+	return x
+}
+
+// benchImport mede prévia, confirmação e desfazer de um CSV grande pela API e a memória do backend durante isso.
+func benchImport(root string, env map[string]string, user *apiClient, rows int) error {
+	var acc struct {
+		ID string `json:"id"`
+	}
+	if _, err := user.call("POST", "/api/v1/accounts", map[string]string{"name": "Bench importação", "type": "CHECKING_ACCOUNT"}, &acc); err != nil {
+		return err
+	}
+	csv := benchCSV(rows)
+	if len(csv) > 5*1024*1024 {
+		return fmt.Errorf("o CSV de %d linhas passa de 5 MB (%d bytes): use --import-rows menor", rows, len(csv))
+	}
+	mapping := `{"delimiter":";","hasHeader":"true","dateColumn":"#1","dateFormat":"DMY_SLASH","descriptionColumn":"#2","amountColumn":"#3"}`
+	fields := map[string]string{"accountId": acc.ID, "mapping": mapping}
+
+	memBefore := memMiB(root)
+	var peak float64
+	stop := make(chan struct{})
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		for {
+			select {
+			case <-stop:
+				return
+			case <-time.After(500 * time.Millisecond):
+				if m := memMiB(root); m > peak {
+					peak = m
+				}
+			}
+		}
+	}()
+
+	t0 := time.Now()
+	var prev importResp
+	_, err := user.upload("/api/v1/imports", fields, "bench.csv", csv, &prev)
+	tPreview := time.Since(t0)
+	if err != nil {
+		close(stop)
+		<-done
+		return fmt.Errorf("prévia de %d linhas falhou: %w", rows, err)
+	}
+	t1 := time.Now()
+	var conf importResp
+	_, err = user.call("POST", "/api/v1/imports/"+prev.ID+"/confirm", map[string]any{}, &conf)
+	tConfirm := time.Since(t1)
+	if err != nil {
+		close(stop)
+		<-done
+		return fmt.Errorf("confirmação falhou: %w", err)
+	}
+	t2 := time.Now()
+	_, err = user.call("POST", "/api/v1/imports/"+prev.ID+"/rollback", nil, nil)
+	tRollback := time.Since(t2)
+	close(stop)
+	<-done
+	if err != nil {
+		return fmt.Errorf("desfazer falhou: %w", err)
+	}
+	if prev.NewRows != rows || conf.ImportedRows != rows {
+		return fmt.Errorf("contagens inesperadas: %d novas, %d duplicadas, %d possíveis, %d inválidas, %d importadas, esperado %d novas", prev.NewRows, prev.DuplicateRows, prev.PossibleRows, prev.InvalidRows, conf.ImportedRows, rows)
+	}
+
+	fmt.Printf("\nImportação de %d linhas (CSV de %.0f KB):\n", rows, float64(len(csv))/1024)
+	fmt.Printf("  prévia      %7.2f s\n  confirmação %7.2f s\n  desfazer    %7.2f s\n", tPreview.Seconds(), tConfirm.Seconds(), tRollback.Seconds())
+	fmt.Printf("  memória do backend: %.0f MiB antes, pico %.0f MiB (limite 768 MiB)\n", memBefore, peak)
+	if tPreview > 10*time.Second {
+		return fmt.Errorf("a prévia de %d linhas levou %.1f s (meta: menos de 10 s)", rows, tPreview.Seconds())
+	}
+	if peak > 700 {
+		return fmt.Errorf("memória do backend chegou a %.0f MiB, perto do limite de 768", peak)
+	}
+	ok("prévia dentro de 10 s e memória abaixo do limite")
 	return nil
 }
