@@ -7,6 +7,7 @@ import dev.contaforte.audit.AuditService;
 import dev.contaforte.categories.CategoryRepository;
 import dev.contaforte.categories.ContextRepository;
 import dev.contaforte.categories.TransactionCategory;
+import dev.contaforte.classification.ClassificationService;
 import dev.contaforte.common.ApiException;
 import dev.contaforte.common.AppTime;
 import dev.contaforte.common.Money;
@@ -51,10 +52,11 @@ class TransactionService {
     private final ApplicationEventPublisher events;
     private final MeterRegistry metrics;
     private final Clock clock;
+    private final ClassificationService classification;
 
     TransactionService(TransactionRepository transactions, AccountRepository accounts, CategoryRepository categories,
                        ContextRepository contexts, AuditService audit, ApplicationEventPublisher events,
-                       MeterRegistry metrics, Clock clock) {
+                       MeterRegistry metrics, Clock clock, ClassificationService classification) {
         this.transactions = transactions;
         this.accounts = accounts;
         this.categories = categories;
@@ -63,6 +65,7 @@ class TransactionService {
         this.events = events;
         this.metrics = metrics;
         this.clock = clock;
+        this.classification = classification;
         // Registra o contador de cada tipo em 0 já na partida. Um contador que nasce na primeira transação já chega ao
         // Prometheus com valor > 0 e sem amostra anterior, então rate()/increase() perderiam essa primeira contagem.
         for (TransactionType type : TransactionType.values()) {
@@ -87,6 +90,7 @@ class TransactionService {
         t.setMerchant(blankToNull(in.merchant()));
         t.setCategoryId(categoryId);
         t.setContextId(contextId);
+        classification.onManualCreate(userId, t);   // categoria ou contexto escolhidos à mão são uma decisão do usuário
         Transaction saved = transactions.saveAndFlush(t);
 
         audit.record(userId, "TRANSACTION_CREATED", "transaction:" + saved.getId(), Map.of("type", in.type().name()));
@@ -151,22 +155,25 @@ class TransactionService {
                 changed.add("occurredAt");
             }
         }
+        String oldDescription = t.getDescription();
+        String newDescription = oldDescription;
         if (in.has("description")) {
-            t.setDescription(blankToNull(in.description()));
+            newDescription = blankToNull(in.description());
+            t.setDescription(newDescription);
             changed.add("description");
         }
         if (in.has("merchant")) {
             t.setMerchant(blankToNull(in.merchant()));
             changed.add("merchant");
         }
-        if (in.has("categoryId")) {
-            t.setCategoryId(visibleCategory(userId, in.categoryId()));   // null limpa a categoria
-            changed.add("categoryId");
-        }
-        if (in.has("contextId")) {
-            t.setContextId(visibleContext(userId, in.contextId()));
-            changed.add("contextId");
-        }
+        boolean categoryPresent = in.has("categoryId");
+        UUID newCategory = categoryPresent ? visibleCategory(userId, in.categoryId()) : null;   // null limpa a categoria
+        boolean contextPresent = in.has("contextId");
+        UUID newContext = contextPresent ? visibleContext(userId, in.contextId()) : null;
+        if (categoryPresent) changed.add("categoryId");
+        if (contextPresent) changed.add("contextId");
+        // a escolha do usuário passa pelo módulo de classificação: ensina o favorecido e grava o feedback da correção
+        classification.onManualEdit(userId, t, oldDescription, categoryPresent, newCategory, contextPresent, newContext, newDescription);
         Transaction saved = changed.isEmpty() ? t : transactions.saveAndFlush(t);
         if (!changed.isEmpty()) {
             audit.record(userId, "TRANSACTION_UPDATED", "transaction:" + id, Map.of("fields", changed));

@@ -71,6 +71,23 @@ public class Transaction {
     @Column(name = "external_id", length = 255, updatable = false)
     private String externalId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "classification_status", nullable = false, length = 10)
+    private ClassificationStatus classificationStatus = ClassificationStatus.NONE;
+
+    /** Quem decidiu (USER, RULE, DEFAULT_RULE ou RECIPIENT); nulo enquanto o estado é NONE. */
+    @Column(name = "classification_source", length = 20)
+    private String classificationSource;
+
+    @Column(name = "classification_confidence", precision = 3, scale = 2)
+    private BigDecimal classificationConfidence;
+
+    @Column(name = "suggested_category_id")
+    private UUID suggestedCategoryId;
+
+    @Column(name = "suggested_context_id")
+    private UUID suggestedContextId;
+
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
@@ -121,6 +138,11 @@ public class Transaction {
     public TransactionSource getSource() { return source; }
     public UUID getImportId() { return importId; }
     public String getExternalId() { return externalId; }
+    public ClassificationStatus getClassificationStatus() { return classificationStatus; }
+    public String getClassificationSource() { return classificationSource; }
+    public BigDecimal getClassificationConfidence() { return classificationConfidence; }
+    public UUID getSuggestedCategoryId() { return suggestedCategoryId; }
+    public UUID getSuggestedContextId() { return suggestedContextId; }
     public Instant getDeletedAt() { return deletedAt; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
@@ -137,6 +159,16 @@ public class Transaction {
         this.importId = importId;
         this.externalId = externalId;
         this.source = source;
+    }
+
+    /** Estado de classificação inteiro de uma vez: o banco só aceita certas combinações (ck_transactions_class_*). */
+    public void setClassification(ClassificationStatus status, String source, BigDecimal confidence,
+                                  UUID suggestedCategoryId, UUID suggestedContextId) {
+        this.classificationStatus = status;
+        this.classificationSource = source;
+        this.classificationConfidence = confidence;
+        this.suggestedCategoryId = suggestedCategoryId;
+        this.suggestedContextId = suggestedContextId;
     }
 
     public void setDeletedAt(Instant deletedAt) { this.deletedAt = deletedAt; }

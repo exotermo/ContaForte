@@ -4,5 +4,7 @@ package dev.contaforte.classification;
 public enum Source {
     RULE,
     RECIPIENT,
-    DEFAULT_RULE
+    DEFAULT_RULE,
+    /** Decisão do usuário (confirmou ou escolheu); nunca sai do motor. */
+    USER
 }

@@ -23,6 +23,9 @@ O Milestone 4 faz o sistema sugerir categoria e contexto para transações impor
 - **Regras comparam por palavras inteiras** sobre o texto normalizado (sem acento, caixa e pontuação): "posto" casa com "COMPRA POSTO ABC", não com "COMPOSTO". Entre as regras padrão, a de padrão mais longo vence ("uber eats" antes de "uber", "posto de saude" antes de "posto"). Só receita e despesa são classificadas.
 - **A confiança é uma fração exata**, comparada com os limiares sem arredondar (6/7 aplica, 84/100 só sugere); o valor gravado é truncado em 2 casas, nunca para cima.
 
+- **Toda escolha manual de categoria ou contexto é uma decisão do usuário** e ensina o favorecido: ao lançar com categoria, ao editar (PATCH), ao confirmar a sugestão ou ao corrigir (`POST /transactions/{id}/classification`). Mudar uma decisão já confirmada retira o voto antigo e soma o novo; limpar a categoria desfaz o aprendizado. Só quando havia **previsão do motor** (automática ou sugerida) é gravado feedback; lançamento manual sem previsão não gera feedback, mas ensina.
+- **Reclassificar é em duas fases e atômico em relação à prévia:** a aplicação recebe os totais da prévia (`expectedAuto`, `expectedSuggest`) e recusa com 409 se o resultado mudou. Só mexe em receita e despesa sem categoria e sem decisão do usuário.
+
 ## Alternativas descartadas
 - **Aplicar sempre o melhor palpite, com opção de desfazer:** esconde erro silencioso; um saldo por categoria errado parece certo.
 - **Limiar único (aplica ou não):** perde a faixa útil do meio, onde a sugestão economiza trabalho sem risco.

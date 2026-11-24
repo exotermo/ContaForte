@@ -20,12 +20,19 @@ public record TransactionResponse(
         Instant occurredAt,
         TransactionSource source,
         UUID importId,
+        ClassificationStatus classificationStatus,
+        String classificationSource,
+        BigDecimal classificationConfidence,
+        UUID suggestedCategoryId,
+        UUID suggestedContextId,
         Instant createdAt,
         Instant updatedAt) {
 
-    static TransactionResponse of(Transaction t) {
+    public static TransactionResponse of(Transaction t) {
         return new TransactionResponse(t.getId(), t.getAccountId(), t.getCounterpartAccountId(), t.getType(),
                 t.getAmount(), t.getCurrency(), t.getDescription(), t.getMerchant(), t.getCategoryId(),
-                t.getContextId(), t.getOccurredAt(), t.getSource(), t.getImportId(), t.getCreatedAt(), t.getUpdatedAt());
+                t.getContextId(), t.getOccurredAt(), t.getSource(), t.getImportId(),
+                t.getClassificationStatus(), t.getClassificationSource(), t.getClassificationConfidence(),
+                t.getSuggestedCategoryId(), t.getSuggestedContextId(), t.getCreatedAt(), t.getUpdatedAt());
     }
 }
