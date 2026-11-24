@@ -1,28 +1,44 @@
 # ContaForte — Personal Financial Copilot
 
-Plataforma open source de gestão financeira pessoal, pensada para o contexto brasileiro (PIX, VA/VR, OFX/CSV, LGPD). Em vez de só mostrar "onde o dinheiro foi gasto", ela mantém um modelo financeiro **contextual** do usuário para responder *em que contexto* o gasto aconteceu, qual o impacto e o que fazer a respeito.
+Plataforma open source e auto-hospedável de gestão financeira pessoal para o contexto brasileiro. Organiza contas e transações, separa dinheiro disponível de benefícios como VA/VR e permite analisar gastos por **categoria e contexto**.
+
+A visão do produto é evoluir para um copiloto com categorização de PIX, previsões e recomendações explicáveis. Esses recursos fazem parte do roadmap; ainda não estão disponíveis.
 
 [![CI](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml/badge.svg)](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml)
 
-> **Status:** Milestone 2 (Financial Core) concluído (`v0.2.0`): contas e carteiras, categorias e contextos, transações, resumo financeiro com a separação de liquidez (VA/VR nunca contam como dinheiro disponível) e as telas correspondentes, sobre a fundação do Milestone 1 (stack Docker isolada, autenticação, monitoramento e CI). Próximo: importação de extratos (Milestone 3).
+> **Status — revisão de 24/11/2026:** M1 e M2 entregues, com tags `v0.1.0` e `v0.2.0`. M3 (importações) em desenvolvimento: parsers, deduplicação e API implementados; interface e validação de ponta a ponta em andamento. O MVP completo corresponde a M1–M5.
 
-## Ideias centrais
+## O que já funciona
 
-- **Categoria ≠ contexto:** `FOOD/RESTAURANT` + contexto `RELATIONSHIP`.
-- **Liquidez importa:** VA/VR não contam como capital disponível para investir.
-- **PIX Intelligence:** o sistema aprende a categoria e o contexto de cada favorecido.
-- **Recomendações explicáveis:** toda sugestão carrega evidências. O LLM só redige o texto e nunca calcula.
-- **Human-in-the-loop:** quando a confiança é baixa, o sistema pergunta, e cada correção vira feedback.
-- **Privacy by Design / Zero Trust / LGPD.**
-- **IoT opcional:** ESP32 com OLED e impressora térmica para "recibos" financeiros.
+- Autenticação, perfis USER/ADMIN e sessão web com tokens em cookies `HttpOnly`.
+- Contas e carteiras, categorias em dois níveis e contextos independentes: por exemplo, categoria “Alimentação / Restaurante” e contexto “Relacionamento”.
+- Receitas, despesas, transferências, investimentos e reembolsos manuais.
+- Resumo financeiro que separa caixa disponível, saldo restrito (VA/VR), investimentos e patrimônio líquido. O caixa disponível não é uma previsão de quanto sobra após compromissos futuros.
+- Ambiente Docker, CLI de operação, dados sintéticos de demonstração e monitoramento provisionado.
 
-## Arquitetura (resumo)
+**Em desenvolvimento no M3:** importação OFX/CSV com prévia, identificação de duplicatas, confirmação e desfazimento. A API já contém esse fluxo; a entrega pelo navegador ainda está em validação. Limites atuais: BRL, arquivo de até 5 MB e até 20 mil linhas. Transferências próprias importadas ainda podem aparecer como receita/despesa, sem conciliação automática.
 
-Monólito modular em Java 21 + Spring Boot, serviço de ML em Python/FastAPI isolado, front em Next.js, PostgreSQL como fonte da verdade e Redis para cache e jobs. Ingress via Cloudflare Tunnel e MQTT para IoT. Detalhes em [`ARCHITECTURE.md`](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/Arquitetura/ARCHITECTURE.md) e no [SDD](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/SDD/SDD_Personal_Financial_Copilot.md).
+## Stack atual
+
+| Camada | Implementação |
+|---|---|
+| Interface e sessão | Next.js 16, React 19, TypeScript, Tailwind 4, TanStack Query; BFF para chamadas autenticadas da interface |
+| Domínio e API | Java 21, Spring Boot 3.5, monólito modular, REST `/api/v1`, Spring Security, JPA e Flyway |
+| Dados | PostgreSQL 16 como fonte da verdade; valores em `NUMERIC`/`BigDecimal`, sem ponto flutuante monetário |
+| Controle de taxa | Redis 7 |
+| Entrada | Nginx local; Cloudflare Tunnel opcional |
+| Observabilidade | Prometheus, Grafana, Loki, Alloy e exporters de PostgreSQL, Redis e containers |
+| Operação e qualidade | CLI `cf` em Go, Docker Compose, GitHub Actions, Testcontainers, Vitest, Playwright e gitleaks |
+
+No acesso local, o gateway recebe o navegador em `127.0.0.1:8080`, encaminha a interface ao Next.js e `/api/` ao backend. O BFF do Next.js chama a API pela rede interna. O Grafana fica em `/grafana/`, apenas na entrada local.
+
+**Componentes futuros:** Python/FastAPI para inteligência e firmware ESP32 para IoT. O broker MQTT já faz parte do Compose, mas ainda não há integração funcional com dispositivos. As pastas `apps/intelligence/` e `firmware/esp32/` estão reservadas para essas etapas.
+
+O [Compose](docker-compose.yml) descreve os serviços executáveis. A [arquitetura](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/Arquitetura/ARCHITECTURE.md) e o [SDD](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/SDD/SDD_Personal_Financial_Copilot.md) também descrevem a visão futura; consulte os [ADRs](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/Arquitetura/ADR/README.md) para as decisões de implementação.
 
 ## Quickstart
 
-Precisa só de Docker (Compose v2) e cerca de 4 GB de RAM livre. Java, Node e Go não são necessários no host.
+Em um terminal Bash, com o repositório clonado, precisa de Docker com Compose v2 e cerca de 4 GB de RAM livre para a stack. Reserve memória adicional para builds e testes. Java, Node e Go não são necessários no host; o wrapper pode usar Go local se disponível.
 
 ```bash
 ./cf init     # verifica pré-requisitos e gera o .env com segredos aleatórios
@@ -37,30 +53,62 @@ O CLI `./cf` também cuida de `status`, `doctor`, `logs`, `test`, `e2e`, `bench`
 
 - Só o gateway publica porta, e apenas em `127.0.0.1`. Bancos e serviços ficam em redes Docker `internal`, sem saída à Internet.
 - Segredos gerados aleatoriamente pelo `./cf init` (`.env` com permissão 600, fora do Git). Login com JWT RS256, refresh com rotação e rate limit.
-- Nenhum container monta o `docker.sock` diretamente: o monitoramento usa um proxy somente-leitura.
+- Alloy e o exporter de containers acessam a API Docker por um proxy com operações de escrita bloqueadas. O `docker-proxy` monta o `docker.sock` do host; a montagem `:ro` não substitui o controle da API. Os testes locais com Testcontainers também precisam de acesso ao daemon Docker.
 
 ### Operação: o que saber
 
-- **Memória do host:** os limites dos containers somam cerca de 3,7 GB, e o uso real fica em torno de 1,3 GB.
+- **Memória do host:** os limites configurados somam cerca de 3,7 GiB sem o túnel opcional. O consumo depende da carga; acompanhe com `./cf status`.
 - **Postgres do monitoramento:** o `postgres-exporter` usa o mesmo usuário da aplicação. Um usuário dedicado com o papel `pg_monitor` é um endurecimento futuro.
 - **Sem Alertmanager:** os alertas só aparecem no Prometheus e no Grafana, não notificam ninguém.
 - **Gerador de dashboards:** `tools/gen-dashboards` reproduz exatamente os JSON provisionados. Edite lá e regenere.
 
 ## Roadmap
 
-| # | Milestone | Foco |
+| Marco | Foco | Estado |
 |---|---|---|
-| 1 | Foundation | Docker Compose, PostgreSQL, Redis, backend, Next.js, auth, CI |
-| 2 | Financial Core | Contas, carteiras, transações, categorias, contextos |
-| 3 | Imports | CSV, OFX, normalização, deduplicação |
-| 4 | PIX Intelligence | Detecção de favorecidos, regras, categorização, feedback |
-| 5 | Dashboard | Saldo, gastos, distribuição, VA/VR, caixa disponível |
-| 6 | Intelligence | Serviço Python, previsão, anomalias, insights |
-| 7 | Goals | Orçamentos, reserva, metas, capacidade de investimento |
-| 8 | IoT | MQTT, ESP32, OLED, impressora térmica |
-| 9 | Financial Twin | Simulação de cenários |
+| M1 — Foundation | Docker, autenticação, CI e observabilidade | Entregue (`v0.1.0`) |
+| M2 — Financial Core | Contas, transações, categorias, contextos e resumo de liquidez | Entregue (`v0.2.0`) |
+| M3 — Imports | OFX/CSV, normalização, deduplicação e desfazimento | Em desenvolvimento |
+| M4 — PIX Intelligence | Favorecidos, regras, categorização e feedback | Planejado |
+| M5 — Dashboard | Gastos por categoria/contexto, VA/VR e caixa disponível | Planejado; o resumo básico já existe no M2 |
+| M6 — Intelligence | Python, previsões, anomalias e insights explicáveis | Futuro |
+| M7 — Goals | Orçamentos, reserva, metas e capacidade de investimento | Futuro |
+| M8 — IoT | ESP32, OLED e impressora térmica via MQTT | Futuro |
+| M9 — Financial Twin | Simulação de cenários | Futuro |
 
-A prioridade é entregar os milestones 1 a 5 de ponta a ponta antes de avançar.
+A prioridade é entregar M1–M5 de ponta a ponta. Open Finance, movimentação bancária, recomendação de ativos individuais e aplicativo mobile nativo estão fora do MVP. Veja a [especificação de escopo](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/00_Gestao_do_Projeto/Especificacao_de_Escopo.md).
+
+## Estrutura do repositório
+
+| Caminho | Conteúdo |
+|---|---|
+| `apps/backend/` | API, domínio financeiro, migrations e testes Java |
+| `apps/web/` | Interface, BFF, testes de componente e E2E |
+| `infrastructure/` | Gateway, MQTT e configuração de observabilidade |
+| `tools/` | CLI, exporter e geradores de dados sintéticos e dashboards |
+| `datasets/synthetic/` | Cenários e extratos fictícios para demonstração e testes |
+| `.github/` | CI e configuração de atualizações de dependências |
+| `Documentos/` | Gestão, requisitos, arquitetura, desenvolvimento, testes e operação |
+
+O `checklist.md` é um acompanhamento **local e não versionado**. Entregas públicas são registradas no roadmap, nos requisitos e no CHANGELOG; marcar uma etapa local não equivale a publicar uma versão.
+
+## Limites da versão atual
+
+- Criação de usuários pela API administrativa; cadastro público e recuperação de senha ainda não implementados.
+- Exportação de dados e fluxo de exclusão pelo usuário ainda pendentes. Privacidade e LGPD são requisitos do projeto, não uma declaração de conformidade concluída.
+- O túnel opcional tem configuração e verificações locais documentadas; a validação com domínio real, HTTPS e cookies seguros permanece pendente no acompanhamento local.
+- A configuração atual é uma base de desenvolvimento e auto-hospedagem. Operação comercial exige validar onboarding, suporte, recuperação de dados, alertas e capacidade com a carga esperada.
+
+## Verificação
+
+```bash
+./cf status        # estado dos serviços
+./cf doctor        # diagnóstico de rede, segredos e observabilidade
+./cf test all      # testes de backend, frontend e ferramentas Go
+./cf e2e           # testes no navegador contra a stack em execução
+```
+
+O [workflow de CI](.github/workflows/ci.yml) cobre backend, frontend, Go, arquivos gerados, segredos e smoke test da stack. A execução de Playwright é disponibilizada pelo CLI; o workflow atual não chama `./cf e2e`. Estratégia e evidências de releases em [Testes](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/04_Testes/README.md).
 
 ## Documentação
 
@@ -72,4 +120,4 @@ Veja [CONTRIBUTING.md](CONTRIBUTING.md). Problemas de segurança: [SECURITY.md](
 
 ## Licença
 
-[GNU AGPL-3.0](LICENSE). Se você hospedar uma versão modificada como serviço, precisa disponibilizar o código-fonte aos usuários.
+[GNU AGPL-3.0](LICENSE). Consulte o texto da licença para as condições de uso, modificação e distribuição.
