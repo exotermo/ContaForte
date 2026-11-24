@@ -95,23 +95,87 @@ public class ClassificationService {
     public ClassificationStatus applyResult(Transaction t, Result r) {
         Result eff = effective(t, r);
         Result.Summary sum = eff.summary();
+        return applyStored(t, eff.category().decided() ? eff.category().id() : null, eff.category().decision(),
+                eff.context().decided() ? eff.context().id() : null, eff.context().decision(),
+                sum.decision() == Decision.NONE ? null : sum.source().name(),
+                sum.decision() == Decision.NONE ? null : sum.confidence().toBigDecimal());
+    }
+
+    /**
+     * Igual a {@link #applyResult}, a partir do que ficou guardado (a linha de uma prévia de importação): só preenche o que
+     * está vazio; AUTO entra aplicado, SUGGEST fica à parte. O estado vem das decisões: alguma SUGGEST = sugerida.
+     */
+    public ClassificationStatus applyStored(Transaction t, UUID categoryId, Decision categoryDecision, UUID contextId, Decision contextDecision,
+                                            String source, BigDecimal confidence) {
         UUID cat = t.getCategoryId();
         UUID ctx = t.getContextId();
         UUID suggestedCat = null;
         UUID suggestedCtx = null;
-        if (eff.category().decision() == Decision.AUTO) cat = eff.category().id();
-        if (eff.category().decision() == Decision.SUGGEST) suggestedCat = eff.category().id();
-        if (eff.context().decision() == Decision.AUTO) ctx = eff.context().id();
-        if (eff.context().decision() == Decision.SUGGEST) suggestedCtx = eff.context().id();
+        boolean suggest = false;
+        boolean any = false;
+        if (t.getCategoryId() == null && categoryId != null && categoryDecision != Decision.NONE) {
+            any = true;
+            if (categoryDecision == Decision.AUTO) cat = categoryId; else { suggestedCat = categoryId; suggest = true; }
+        }
+        if (t.getContextId() == null && contextId != null && contextDecision != Decision.NONE) {
+            any = true;
+            if (contextDecision == Decision.AUTO) ctx = contextId; else { suggestedCtx = contextId; suggest = true; }
+        }
         t.setCategoryId(cat);
         t.setContextId(ctx);
-        if (sum.decision() == Decision.NONE) {
+        if (!any) {
             t.setClassification(ClassificationStatus.NONE, null, null, null, null);
             return ClassificationStatus.NONE;
         }
-        ClassificationStatus status = sum.decision() == Decision.AUTO ? ClassificationStatus.AUTO : ClassificationStatus.SUGGESTED;
-        t.setClassification(status, sum.source().name(), sum.confidence().toBigDecimal(), suggestedCat, suggestedCtx);
+        ClassificationStatus status = suggest ? ClassificationStatus.SUGGESTED : ClassificationStatus.AUTO;
+        t.setClassification(status, source, confidence, suggestedCat, suggestedCtx);
         return status;
+    }
+
+    // ---------------------------------------------------------------- importação
+
+    /**
+     * Transação criada por uma importação com a escolha do usuário feita na prévia: vale como decisão dele (CONFIRMED),
+     * ou "sem classificação" se ele escolheu nenhuma. O aprendizado é separado ({@link #learnImported}), depois de gravar.
+     */
+    public void applyUserChoice(Transaction t, UUID categoryId, UUID contextId) {
+        t.setCategoryId(categoryId);
+        t.setContextId(contextId);
+        if (categoryId == null && contextId == null) {
+            t.setClassification(ClassificationStatus.NONE, null, null, null, null);
+        } else {
+            t.setClassification(ClassificationStatus.CONFIRMED, Source.USER.name(), null, null, null);
+        }
+    }
+
+    /** O que o motor tinha previsto para uma linha que o usuário então trocou (para o feedback). */
+    public record Prediction(UUID categoryId, UUID contextId, String source, BigDecimal confidence) {
+    }
+
+    /**
+     * Depois de gravar as transações de uma importação: as que o usuário decidiu na prévia ensinam o favorecido, e, se havia
+     * previsão do motor, geram feedback (confirmou ou corrigiu). Linhas automáticas ou sugeridas não ensinam nada.
+     */
+    public void learnImported(UUID userId, Transaction t, Prediction predicted) {
+        if (t.getClassificationStatus() != ClassificationStatus.CONFIRMED) return;
+        learn(userId, t, t.getCategoryId(), t.getContextId());
+        if (predicted != null) {
+            boolean same = Objects.equals(predicted.categoryId(), t.getCategoryId()) && Objects.equals(predicted.contextId(), t.getContextId());
+            recipients.insertFeedback(userId, t.getId(), same ? "CONFIRMED" : "CORRECTED", predicted.categoryId(), t.getCategoryId(),
+                    predicted.contextId(), t.getContextId(), predicted.source(), predicted.confidence());
+        }
+    }
+
+    /**
+     * Desfazer uma importação desfaz o aprendizado dela (ADR-018): tira os votos das decisões do usuário nas transações
+     * dela e marca o feedback correspondente como revertido (o registro fica, como histórico). Chamar ANTES da exclusão.
+     */
+    @Transactional
+    public int revertLearning(UUID userId, UUID importId) {
+        List<Transaction> confirmed = transactions.findConfirmedByImport(importId, userId);
+        for (Transaction t : confirmed) unlearn(userId, t, t.getDescription(), t.getCategoryId(), t.getContextId());
+        if (!confirmed.isEmpty()) recipients.markFeedbackReverted(userId, confirmed.stream().map(Transaction::getId).toList());
+        return confirmed.size();
     }
 
     /** O resultado só vale para as dimensões vazias: o que o usuário já preencheu não se toca. */

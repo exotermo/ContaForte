@@ -3,6 +3,7 @@ package dev.contaforte.imports;
 import dev.contaforte.common.PageResponse;
 import dev.contaforte.imports.ImportDtos.ConfirmRequest;
 import dev.contaforte.imports.ImportDtos.ImportItemResponse;
+import dev.contaforte.imports.ImportDtos.ItemClassificationRequest;
 import dev.contaforte.imports.ImportDtos.ImportResponse;
 import dev.contaforte.imports.parse.CsvSuggestion;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,6 +79,15 @@ class ImportController {
                                            @RequestParam(defaultValue = "0") @Min(0) int page,
                                            @RequestParam(defaultValue = "50") @Min(1) @Max(200) int size) {
         return service.items(userId(jwt), id, status, page, size);
+    }
+
+    @PatchMapping("/{id}/items/{itemId}")
+    @Operation(summary = "Troca categoria e contexto de uma linha da prévia, antes de confirmar",
+            description = "Só prévia, e só linhas novas ou possíveis duplicatas. categoryId/contextId nulos = nenhum; reset=true volta ao que o motor decidiu. "
+                    + "A escolha ensina o favorecido na confirmação e é desfeita junto com a importação.")
+    ImportItemResponse classifyItem(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id, @PathVariable UUID itemId,
+                                    @RequestBody ItemClassificationRequest body) {
+        return service.classifyItem(userId(jwt), id, itemId, body);
     }
 
     @PostMapping("/{id}/confirm")

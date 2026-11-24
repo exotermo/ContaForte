@@ -26,6 +26,8 @@ O Milestone 4 faz o sistema sugerir categoria e contexto para transações impor
 - **Toda escolha manual de categoria ou contexto é uma decisão do usuário** e ensina o favorecido: ao lançar com categoria, ao editar (PATCH), ao confirmar a sugestão ou ao corrigir (`POST /transactions/{id}/classification`). Mudar uma decisão já confirmada retira o voto antigo e soma o novo; limpar a categoria desfaz o aprendizado. Só quando havia **previsão do motor** (automática ou sugerida) é gravado feedback; lançamento manual sem previsão não gera feedback, mas ensina.
 - **Reclassificar é em duas fases e atômico em relação à prévia:** a aplicação recebe os totais da prévia (`expectedAuto`, `expectedSuggest`) e recusa com 409 se o resultado mudou. Só mexe em receita e despesa sem categoria e sem decisão do usuário.
 
+- **Na importação, a classificação acontece na PRÉVIA e vale na confirmação.** Cada linha nova ou possível duplicata guarda o que o motor decidiu e o usuário pode trocar linha a linha antes de confirmar (ou voltar ao motor). A confirmação cria cada transação no estado mostrado: automática entra aplicada, sugerida entra sem categoria com a sugestão guardada, a escolha do usuário entra como decisão dele (e só então ensina o favorecido; escolher na prévia não ensina nada até confirmar). **Desfazer a importação desfaz o aprendizado dela** (votos retirados, feedback marcado como revertido).
+
 ## Alternativas descartadas
 - **Aplicar sempre o melhor palpite, com opção de desfazer:** esconde erro silencioso; um saldo por categoria errado parece certo.
 - **Limiar único (aplica ou não):** perde a faixa útil do meio, onde a sugestão economiza trabalho sem risco.

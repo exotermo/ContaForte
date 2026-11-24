@@ -58,4 +58,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
             + "and t.classificationStatus in (dev.contaforte.transactions.ClassificationStatus.NONE, dev.contaforte.transactions.ClassificationStatus.SUGGESTED) "
             + "and t.type in (dev.contaforte.transactions.TransactionType.INCOME, dev.contaforte.transactions.TransactionType.EXPENSE)")
     Page<Transaction> findReclassifiable(UUID userId, Pageable pageable);
+
+    /** Transações ativas de uma importação que o usuário classificou (para reverter o aprendizado ao desfazê-la). */
+    @Query("select t from Transaction t where t.importId = :importId and t.userId = :userId and t.deletedAt is null "
+            + "and t.classificationStatus = dev.contaforte.transactions.ClassificationStatus.CONFIRMED")
+    List<Transaction> findConfirmedByImport(UUID importId, UUID userId);
 }

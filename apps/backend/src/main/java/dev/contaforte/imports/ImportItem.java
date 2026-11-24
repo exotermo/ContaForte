@@ -1,5 +1,8 @@
 package dev.contaforte.imports;
 
+import dev.contaforte.classification.Decision;
+import dev.contaforte.classification.Part;
+import dev.contaforte.classification.Result;
 import dev.contaforte.transactions.TransactionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -66,6 +69,37 @@ public class ImportItem {
     @Column(nullable = false)
     private boolean selected;
 
+    // ---- classificação (M4): o que o motor decidiu e o que o usuário escolheu na prévia
+    @Column(name = "engine_category_id")
+    private UUID engineCategoryId;
+
+    @Column(name = "engine_category_decision", length = 7)
+    private String engineCategoryDecision;
+
+    @Column(name = "engine_context_id")
+    private UUID engineContextId;
+
+    @Column(name = "engine_context_decision", length = 7)
+    private String engineContextDecision;
+
+    @Column(name = "engine_decision", length = 7)
+    private String engineDecision;
+
+    @Column(name = "engine_source", length = 20)
+    private String engineSource;
+
+    @Column(name = "engine_confidence", precision = 3, scale = 2)
+    private BigDecimal engineConfidence;
+
+    @Column(nullable = false)
+    private boolean chosen;
+
+    @Column(name = "chosen_category_id")
+    private UUID chosenCategoryId;
+
+    @Column(name = "chosen_context_id")
+    private UUID chosenContextId;
+
     protected ImportItem() {
         // exigido pelo JPA
     }
@@ -90,6 +124,45 @@ public class ImportItem {
     public UUID getDuplicateOf() { return duplicateOf; }
     public String getReason() { return reason; }
     public boolean isSelected() { return selected; }
+
+    public UUID getEngineCategoryId() { return engineCategoryId; }
+    public String getEngineCategoryDecision() { return engineCategoryDecision; }
+    public UUID getEngineContextId() { return engineContextId; }
+    public String getEngineContextDecision() { return engineContextDecision; }
+    public String getEngineDecision() { return engineDecision; }
+    public String getEngineSource() { return engineSource; }
+    public BigDecimal getEngineConfidence() { return engineConfidence; }
+    public boolean isChosen() { return chosen; }
+    public UUID getChosenCategoryId() { return chosenCategoryId; }
+    public UUID getChosenContextId() { return chosenContextId; }
+
+    /** Guarda o que o motor decidiu para esta linha (só alvos decididos; sem decisão fica tudo nulo). */
+    public void setEngine(Result r) {
+        Part cat = r.category();
+        Part ctx = r.context();
+        engineCategoryId = cat.decided() ? cat.id() : null;
+        engineCategoryDecision = cat.decided() ? cat.decision().name() : null;
+        engineContextId = ctx.decided() ? ctx.id() : null;
+        engineContextDecision = ctx.decided() ? ctx.decision().name() : null;
+        Result.Summary sum = r.summary();
+        boolean any = sum.decision() != Decision.NONE;
+        engineDecision = any ? sum.decision().name() : null;
+        engineSource = any ? sum.source().name() : null;
+        engineConfidence = any ? sum.confidence().toBigDecimal() : null;
+    }
+
+    /** O usuário escolheu categoria e contexto (qualquer um pode ser nulo = "nenhum"); {@code reset} volta ao motor. */
+    public void choose(UUID categoryId, UUID contextId) {
+        chosen = true;
+        chosenCategoryId = categoryId;
+        chosenContextId = contextId;
+    }
+
+    public void resetChoice() {
+        chosen = false;
+        chosenCategoryId = null;
+        chosenContextId = null;
+    }
 
     public void setStatus(ImportItemStatus status) { this.status = status; }
     public void setOccurredAt(Instant occurredAt) { this.occurredAt = occurredAt; }

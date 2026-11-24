@@ -97,13 +97,14 @@ erDiagram
 | A sugestão só existe em SUGGESTED e nunca cobre categoria ou contexto já preenchido | `CHECK ck_transactions_suggestion`; gatilho `check_transaction_suggestion_refs` para o dono |
 | Favorecido único por usuário e por nome normalizado; categorias e contextos de favorecidos, votos, regras e feedback são padrão ou do mesmo dono | `uk_pix_recipients_name` e gatilhos `check_recipient_*`, `check_feedback_refs`, `check_transaction_refs` |
 | Regra tem ao menos um alvo (categoria ou contexto), comparação CONTÉM/COMEÇA/IGUAL e condição única por usuário | `CHECK` e `uk_rules_condition` |
+| Classificação da linha de importação coerente (alvo com decisão, resumo SUGGEST só se alguma dimensão só sugeriu, escolha só se marcada) e do mesmo dono | `CHECK ck_import_items_engine_*`, `ck_import_items_chosen` e gatilho `check_import_item_refs` (V9) |
 | Feedback só referencia transação do mesmo usuário e acompanha a exclusão dela | FK composta `(transaction_id, user_id)` com `ON DELETE CASCADE` |
 
 O `NUMERIC(14,2)` do Postgres **arredonda em silêncio** valores com mais de 2 casas; por isso a API recusa (422) antes de gravar.
 
 ### Classificação (M4, V7)
 
-`transactions` ganha `classification_status` (`NONE`, `AUTO`, `SUGGESTED`, `CONFIRMED`), `classification_source`, `classification_confidence` e `suggested_category_id`/`suggested_context_id`. Novas tabelas: `pix_recipients` (favorecido por usuário), `pix_recipient_category_votes` e `pix_recipient_context_votes` (votos **por direção**, `IN` receita e `OUT` despesa, a confiança é **calculada** dos votos, não guardada; V8), `categorization_rules` e `classification_feedback`. Decisões em [ADR-017](../02_Arquitetura/Arquitetura/ADR/017-classificacao-em-estagios-com-confianca-calibrada.md) e [ADR-018](../02_Arquitetura/Arquitetura/ADR/018-privacidade-de-favorecidos-e-feedback.md).
+`transactions` ganha `classification_status` (`NONE`, `AUTO`, `SUGGESTED`, `CONFIRMED`), `classification_source`, `classification_confidence` e `suggested_category_id`/`suggested_context_id`. Novas tabelas: `pix_recipients` (favorecido por usuário), `pix_recipient_category_votes` e `pix_recipient_context_votes` (votos **por direção**, `IN` receita e `OUT` despesa, a confiança é **calculada** dos votos, não guardada; V8), `categorization_rules` e `classification_feedback`. Na importação (V9), cada linha nova ou possível duplicata de `import_items` guarda o que o motor decidiu (`engine_*`: alvo e decisão de categoria e de contexto, resumo, origem e confiança) e a escolha do usuário na prévia (`chosen*`); na confirmação isso vira o estado da transação. Decisões em [ADR-017](../02_Arquitetura/Arquitetura/ADR/017-classificacao-em-estagios-com-confianca-calibrada.md) e [ADR-018](../02_Arquitetura/Arquitetura/ADR/018-privacidade-de-favorecidos-e-feedback.md).
 
 ## Liquidez (o que entra em cada total)
 
@@ -131,7 +132,7 @@ Todos exigem `Authorization: Bearer`, exceto login, refresh, logout, `system/inf
 | Contextos | `GET`, `POST`, `PATCH /{id}` em `/contexts` | USER, ADMIN |
 | Transações | `POST`, `GET` (filtros e paginação), `GET /{id}`, `PATCH /{id}`, `DELETE /{id}` em `/transactions` | USER, ADMIN |
 | Resumo | `GET /summary`, `GET /summary/monthly?month=AAAA-MM` | USER, ADMIN |
-| Importações | `POST /imports` (multipart: prévia), `POST /imports/suggest-mapping`, `GET /imports`, `GET /imports/{id}`, `GET /imports/{id}/items`, `POST /imports/{id}/confirm`, `POST /imports/{id}/rollback`, `DELETE /imports/{id}` (descartar prévia) | USER, ADMIN |
+| Importações | `POST /imports` (multipart: prévia), `POST /imports/suggest-mapping`, `GET /imports`, `GET /imports/{id}`, `GET /imports/{id}/items`, `POST /imports/{id}/confirm`, `POST /imports/{id}/rollback`, `PATCH /imports/{id}/items/{itemId}` (troca categoria e contexto de uma linha da prévia), `DELETE /imports/{id}` (descartar prévia) | USER, ADMIN |
 | Regras de categorização | `GET`, `POST`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}` em `/categorization-rules`; `POST /categorization-rules/test` (mostra como o motor classificaria um texto, sem gravar) | USER, ADMIN |
 | Favorecidos PIX | `GET` (busca `q`, paginação), `GET /{id}`, `DELETE /{id}` (esquecer) em `/pix-recipients` | USER, ADMIN |
 | Classificação | `GET /classification/review` e `/review/count` (fila de sugestões e sem categoria); `POST /transactions/{id}/classification` (`CONFIRM` ou `CORRECT`, com `createRule` opcional); `POST /classification/reclassify/preview` e `POST /classification/reclassify` (duas fases, com `expectedAuto` e `expectedSuggest` da prévia) | USER, ADMIN |

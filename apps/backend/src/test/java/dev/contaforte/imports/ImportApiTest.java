@@ -164,8 +164,14 @@ class ImportApiTest extends ApiTestSupport {
         assertThat(lista.get("totalElements")).isEqualTo(12);
         for (Map t : (List<Map>) lista.get("items")) {
             assertThat(t).containsEntry("source", "OFX").containsEntry("importId", p.get("id")).containsEntry("accountId", conta);
-            assertThat(t.get("categoryId")).isNull();
+            // M4: as regras padrão categorizam o que reconhecem (posto, farmácia, aluguel...); o resto fica sem categoria
+            if (t.get("categoryId") != null) {
+                assertThat(t).containsEntry("classificationStatus", "AUTO").containsEntry("classificationSource", "DEFAULT_RULE");
+            } else {
+                assertThat(t).containsEntry("classificationStatus", "NONE");
+            }
         }
+        assertThat(((List<Map>) lista.get("items")).stream().filter(t -> t.get("categoryId") != null).count()).isBetween(5L, 11L);
         assertThat(((List<Map>) lista.get("items")).stream().map(t -> t.get("amount"))).contains("187.45", "6500.00");
         assertThat(transacoes(ana, "?importId=" + UUID.randomUUID()).get("totalElements")).isEqualTo(0);   // filtro isola por importação
     }

@@ -142,6 +142,13 @@ class RecipientStore {
                 userId, transactionId, kind, prevCategory, newCategory, prevContext, newContext, predictionSource, predictionConfidence, ClassificationEngine.VERSION);
     }
 
+    /** Marca o feedback das transações como revertido (o registro permanece, para o histórico). */
+    void markFeedbackReverted(UUID userId, List<UUID> transactionIds) {
+        if (transactionIds.isEmpty()) return;
+        named.update("update classification_feedback set reverted_at = now() where user_id = :user and transaction_id in (:ids) and reverted_at is null",
+                new MapSqlParameterSource("user", userId).addValue("ids", transactionIds));
+    }
+
     private static Row row(java.sql.ResultSet rs) throws java.sql.SQLException {
         Timestamp last = rs.getTimestamp(6);
         return new Row(rs.getObject(1, UUID.class), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getBigDecimal(5), last == null ? null : last.toInstant());
