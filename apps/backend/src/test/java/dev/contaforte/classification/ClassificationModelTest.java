@@ -153,39 +153,40 @@ class ClassificationModelTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void favorecidoRecusaNomeCurtoContagemNegativaECategoriaDeOutroUsuario() {
+    void favorecidoRecusaNomeCurtoEContagemNegativa() {
         UUID ana = usuario();
-        UUID bia = usuario();
         assertThatThrownBy(() -> favorecido(ana, "ze")).isInstanceOf(DataIntegrityViolationException.class);
 
         UUID f = favorecido(ana, "joana exemplo");
         assertThatThrownBy(() -> jdbc.update("update pix_recipients set transaction_count = -1 where id = ?", f)).isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> jdbc.update("update pix_recipients set pinned_category_id = ? where id = ?", categoriaDe(bia), f)).isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> jdbc.update("update pix_recipients set pinned_context_id = ? where id = ?", contextoDe(bia), f)).isInstanceOf(DataIntegrityViolationException.class);
-
-        jdbc.update("update pix_recipients set pinned_category_id = ?, pinned_context_id = ? where id = ?", categoriaPadrao(), contextoDe(ana), f);   // o próprio dono e as padrão valem
+        assertThatThrownBy(() -> jdbc.update("update pix_recipients set average_amount = -1 where id = ?", f)).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void votosSaoPositivosUnicosPorCategoriaEDoMesmoDono() {
+    void votosSaoPositivosUnicosPorDirecaoECategoriaEDoMesmoDono() {
         UUID ana = usuario();
         UUID bia = usuario();
         UUID f = favorecido(ana, "joana exemplo");
         UUID cat = categoriaPadrao();
+        String votoCat = "insert into pix_recipient_category_votes (recipient_id, direction, category_id, votes) values (?, ?, ?, ?)";
+        String votoCtx = "insert into pix_recipient_context_votes (recipient_id, direction, context_id, votes) values (?, ?, ?, ?)";
 
-        jdbc.update("insert into pix_recipient_category_votes (recipient_id, category_id, votes) values (?, ?, 2)", f, cat);
-        assertThatThrownBy(() -> jdbc.update("insert into pix_recipient_category_votes (recipient_id, category_id, votes) values (?, ?, 1)", f, cat)).isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> jdbc.update("insert into pix_recipient_category_votes (recipient_id, category_id, votes) values (?, ?, 0)", f, categoriaDe(ana))).isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> jdbc.update("insert into pix_recipient_category_votes (recipient_id, category_id, votes) values (?, ?, 1)", f, categoriaDe(bia))).isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> jdbc.update("insert into pix_recipient_context_votes (recipient_id, context_id, votes) values (?, ?, 1)", f, contextoDe(bia))).isInstanceOf(DataIntegrityViolationException.class);
-        jdbc.update("insert into pix_recipient_context_votes (recipient_id, context_id, votes) values (?, ?, 3)", f, contextoDe(ana));
+        jdbc.update(votoCat, f, "OUT", cat, 2);
+        jdbc.update(votoCat, f, "IN", cat, 1);          // a mesma categoria vale nas duas direções, como votos separados
+        assertThatThrownBy(() -> jdbc.update(votoCat, f, "OUT", cat, 1)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> jdbc.update(votoCat, f, "SAIDA", cat, 1)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> jdbc.update(votoCat, f, "OUT", categoriaDe(ana), 0)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> jdbc.update(votoCat, f, "OUT", categoriaDe(bia), 1)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> jdbc.update(votoCtx, f, "OUT", contextoDe(bia), 1)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> jdbc.update(votoCtx, f, "TALVEZ", contextoDe(ana), 1)).isInstanceOf(DataIntegrityViolationException.class);
+        jdbc.update(votoCtx, f, "IN", contextoDe(ana), 3);
     }
 
     @Test
     void apagarFavorecidoApagaOsVotosEApagarOUsuarioApagaTudo() {
         UUID ana = usuario();
         UUID f = favorecido(ana, "joana exemplo");
-        jdbc.update("insert into pix_recipient_category_votes (recipient_id, category_id, votes) values (?, ?, 2)", f, categoriaPadrao());
+        jdbc.update("insert into pix_recipient_category_votes (recipient_id, direction, category_id, votes) values (?, 'OUT', ?, 2)", f, categoriaPadrao());
         UUID c = conta(ana);
         UUID t = transacao(ana, c);
         jdbc.update("insert into categorization_rules (user_id, match_type, pattern, category_id) values (?, 'CONTAINS', 'mercado', ?)", ana, categoriaPadrao());

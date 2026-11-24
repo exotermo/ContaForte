@@ -103,7 +103,7 @@ O `NUMERIC(14,2)` do Postgres **arredonda em silêncio** valores com mais de 2 c
 
 ### Classificação (M4, V7)
 
-`transactions` ganha `classification_status` (`NONE`, `AUTO`, `SUGGESTED`, `CONFIRMED`), `classification_source`, `classification_confidence` e `suggested_category_id`/`suggested_context_id`. Novas tabelas: `pix_recipients` (favorecido por usuário, com `pinned_category_id`/`pinned_context_id` quando o usuário fixa a escolha), `pix_recipient_category_votes` e `pix_recipient_context_votes` (a confiança é **calculada** dos votos, não guardada), `categorization_rules` e `classification_feedback`. Decisões em [ADR-017](../02_Arquitetura/Arquitetura/ADR/017-classificacao-em-estagios-com-confianca-calibrada.md) e [ADR-018](../02_Arquitetura/Arquitetura/ADR/018-privacidade-de-favorecidos-e-feedback.md).
+`transactions` ganha `classification_status` (`NONE`, `AUTO`, `SUGGESTED`, `CONFIRMED`), `classification_source`, `classification_confidence` e `suggested_category_id`/`suggested_context_id`. Novas tabelas: `pix_recipients` (favorecido por usuário), `pix_recipient_category_votes` e `pix_recipient_context_votes` (votos **por direção**, `IN` receita e `OUT` despesa, a confiança é **calculada** dos votos, não guardada; V8), `categorization_rules` e `classification_feedback`. Decisões em [ADR-017](../02_Arquitetura/Arquitetura/ADR/017-classificacao-em-estagios-com-confianca-calibrada.md) e [ADR-018](../02_Arquitetura/Arquitetura/ADR/018-privacidade-de-favorecidos-e-feedback.md).
 
 ## Liquidez (o que entra em cada total)
 

@@ -27,7 +27,7 @@ class UserRepositoryTest extends AbstractIntegrationTest {
 
         Integer aplicadas = jdbc.queryForObject(
                 "select count(*) from flyway_schema_history where success", Integer.class);
-        assertThat(aplicadas).isEqualTo(7);
+        assertThat(aplicadas).isEqualTo(8);
     }
 
     @Test

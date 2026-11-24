@@ -1,0 +1,5392 @@
+{
+ "version": 1,
+ "fictional": true,
+ "seed": 20261124,
+ "userRules": [
+  {
+   "matchType": "CONTAINS",
+   "pattern": "mercadinho do ze",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "matchType": "STARTS_WITH",
+   "pattern": "academia forca",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "matchType": "CONTAINS",
+   "pattern": "racao",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  }
+ ],
+ "cases": [
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PADARIA SAO JOAO 74/08",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO FEIRA LIVRE DO TIO 62/06",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PEDRO HENRIQUE LIMA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CARLOS ALBERTO MENDES 67/07",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO BELA VISTA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "HONORARIOS PRIMAVERA 836129",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CREDITO SALARIO 10/09",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA PADARIA DO BAIRRO 22497",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CURSO UNIAO 859695",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE SERVICOS GERAIS BARROS ***.149.174-**",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA HORIZONTE",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO HORIZONTE",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA EMPRESA EXEMPLO LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Mercado Da Esquina",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DO BAIRRO 372702",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ALURA CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Vinicius Araujo 57/09",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "FARMACIA PRIMAVERA 615766",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "ELETRO BOM PRECO 864493",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF RODRIGO MARTINS ***.967.549-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO EMPRESA EXEMPLO LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE JOANA EXEMPLO ***.419.011-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA 641737",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Vinicius Araujo 69/09",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONSULTA PRIMAVERA CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BAR DO SANTA RITA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CARLOS ALBERTO MENDES ***.198.039-**",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "CREDITO SALARIO SAO PAULO BR",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "FARMACIA PRIMAVERA RECIFE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "HORTIFRUTI DO BAIRRO CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CLINICA VET AMIGO FIEL 24/03",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "ALUGUEL APTO ESTRELA",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO MARIA DA SILVA SOUZA ***.224.603-**",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER TRIP CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CARLOS ALBERTO MENDES 87/05",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO HORIZONTE 425089",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA MARIA DA SILVA SOUZA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO MODELO 26/12",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF FEIRA LIVRE DO TIO ***.329.117-**",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CLINICA VET AMIGO FIEL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "NETFLIX.COM SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Gabriela Nunes ***.723.352-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Gabriela Nunes",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA HORIZONTE MODA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO CENTRAL BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONDOMINIO RESIDENCIAL UNIAO 18/02",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PADARIA BELA VISTA 601598",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "LANCHONETE VILA NOVA 475537",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ESTACIONAMENTO CENTRAL 25/04",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LUCAS FERREIRA GOMES 84/07",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Vinicius Araujo",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Ana Paula Ribeiro ***.204.580-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Ana Paula Ribeiro",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO BETA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Joana Exemplo",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE TATIANE COSTA ***.631.394-**",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE NORTE SUL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CREDITO SALARIO 422895",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Maria Da Silva Souza 25/01",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Joana Exemplo ***.156.199-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA BOM PRECO CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA CENTRAL MODA 175263",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LOJA DO ZE ***.104.779-**",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "ENERGIA ELETRICA ESTRELA",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONTA DE ENERGIA BOM PRECO 19/10",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "RACAO E PETISCOS RECIFE BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ROBERTO ALMEIDA ME ***.604.899-**",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CLINICA VET AMIGO FIEL 54/07",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA PADARIA UNIAO 422988",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "LANCHONETE ESTRELA 8860",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONSULTA VILA NOVA 220121",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Bruno Teixeira ***.536.888-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CLINICA VET AMIGO FIEL 13/02",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO SAO JORGE",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL ALVORADA 301053",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA SANTA RITA 880573",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO GABRIELA NUNES",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Pedro Henrique Lima 85/02",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED VILA NOVA CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS 667477",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ANA PAULA RIBEIRO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF RODRIGO MARTINS ***.409.213-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SPOTIFY",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UDEMY",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER TRIP RECIFE BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA PACOTE DE SERVICOS",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO GABRIELA NUNES",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE MARIA DA SILVA SOUZA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE SERVICOS GERAIS BARROS 70/06",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA DO BAIRRO MODA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO SERVICOS GERAIS BARROS 57/08",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET NORTE SUL SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA RACAO PREMIUM",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Loja Do Ze",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO MERCADO DA ESQUINA",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CAFE DA PRACA 44/02",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "HONORARIOS VILA NOVA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ANA PAULA RIBEIRO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX VINICIUS ARAUJO ***.601.706-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "BOTECO NORTE SUL 187160",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO LOJA DO ZE 75/09",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "ELETRO PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS ESTRELA",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA DO BAIRRO 18/03",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA HORIZONTE",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO CLIENTE PROJETO ALFA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Feira Livre Do Tio",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "BOUTIQUE BOM PRECO 757014",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL ALVORADA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PADARIA BELA VISTA 454331",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONTA DE ENERGIA SANTA RITA 04/08",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CAFE DA PRACA 44/06",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Feira Livre Do Tio",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA VILA NOVA",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA MERCADINHO DO ZE 24/01",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Cliente Projeto Beta ***.916.937-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE TATIANE COSTA",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL DO BAIRRO SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO BETA 22/03",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "IFOOD *VILA NOVA",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO CLIENTE PROJETO ALFA 53/06",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF LUCAS FERREIRA GOMES 44/03",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA CENTRAL CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CLINICA VET AMIGO FIEL 41/04",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "ENERGIA ELETRICA BOM PRECO BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX MERCADO DA ESQUINA",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Cafe Da Praca ***.653.180-**",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "ENERGIA ELETRICA PORTAL",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONSULTA PRIMAVERA 546412",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Bruno Teixeira 50/03",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ROBERTO ALMEIDA ME ***.366.460-**",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "CHURRASCARIA BOM PRECO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA PACOTE DE SERVICOS",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF PET SHOP AUMIGOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA ALVORADA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Salao Bela Imagem",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO JOANA EXEMPLO ***.415.156-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Rodrigo Martins 91/07",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SUPERMERCADO HORIZONTE 575547",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL MENSALIDADE 17/12",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONTA DE ENERGIA BOM PRECO",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO MARIA DA SILVA SOUZA",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO SAO JORGE COMBUSTIVEL SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Empresa Exemplo Ltda",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA PORTAL 18/10",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PEDRO HENRIQUE LIMA ***.213.179-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Mercado Da Esquina ***.988.995-**",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "BAR DO PORTAL",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO BOM PRECO",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Joana Exemplo 34/04",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO BETA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS 972010",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CURSO PRIMAVERA CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Carlos Alberto Mendes ***.694.046-**",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "ALURA SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO BETA 36/05",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO ROBERTO ALMEIDA ME ***.307.299-**",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO PRIMAVERA LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS DO BAIRRO CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO PORTAL LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE ANA PAULA RIBEIRO ***.876.899-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF PET SHOP AUMIGOS 33/01",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Lucas Ferreira Gomes",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE SERVICOS GERAIS BARROS 36/01",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "CREDITO SALARIO 14/10",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "RECEBIMENTO PROJETO SAO JORGE 21/10",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BAR DO PRIMAVERA 687737",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO BRUNO TEIXEIRA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER *TRIP HELP 25/03",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CAFE DA PRACA ***.100.532-**",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE LUCAS FERREIRA GOMES 28/06",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Maria Da Silva Souza ***.814.472-**",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE RODRIGO MARTINS 19/09",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO GABRIELA NUNES",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER *TRIP HELP",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Tatiane Costa ***.775.626-**",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "HONORARIOS ALVORADA 20/06",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ESTACIONAMENTO UNIAO 207629",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RODRIGO MARTINS",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL BELA VISTA 19/12",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO ALFA ***.942.349-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA POSTO SANTA RITA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO ALVORADA 11/03",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL MENSALIDADE 951922",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE VINICIUS ARAUJO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA NORTE SUL 26/11",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS ESTRELA 23/09",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INGRESSO TEATRO SANTA RITA",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO CARLOS ALBERTO MENDES 59/05",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "userRule",
+   "description": "RACAO E PETISCOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PET SHOP AUMIGOS 88/02",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF GABRIELA NUNES",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA MERCADINHO DO ZE RECIFE BR",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO DO BAIRRO",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA PRIMAVERA 356811",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "RACAO E PETISCOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CLINICA VET AMIGO FIEL 49/08",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "CHURRASCARIA BOM PRECO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA RACAO PREMIUM CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA CENTRAL",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA PORTAL 373751",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO ALFA ***.612.989-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF RODRIGO MARTINS",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTOS CDB 516768",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONTA DE ENERGIA NORTE SUL 25073",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO ALFA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "unknown",
+   "description": "BOTECO ESTRELA 15/09",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA BRUNO TEIXEIRA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "RAPPI VILA NOVA 01/01",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CAFE DA PRACA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED BOM PRECO CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CHURRASCARIA BELA VISTA 06/04",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Maria Da Silva Souza ***.872.565-**",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO TATIANE COSTA ***.017.235-**",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL MENSALIDADE CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CHURRASCARIA UNIAO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE BELA VISTA",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA FARMACIA CENTRAL 443923",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CARLOS ALBERTO MENDES",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE GABRIELA NUNES 77/07",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA CARTAO SUPERMERCADO ALVORADA 20/07",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONDOMINIO RESIDENCIAL ESTRELA 408706",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INGRESSO TEATRO UNIAO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CAFE DA PRACA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA 410001",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO NORTE SUL",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO EMPRESA EXEMPLO LTDA ***.802.461-**",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO LUCAS FERREIRA GOMES",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA NORTE SUL",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BOTECO BOM PRECO 127608",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE PRIMAVERA RECIFE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CARLOS ALBERTO MENDES",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA VILA NOVA 20/07",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "MERCADINHO DO ZE",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PIZZARIA BOM PRECO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE VINICIUS ARAUJO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA POSTO VILA NOVA 287542",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA PRIMAVERA 19/05",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "RECEBIMENTO PROJETO MODELO CURITIBA BR",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO EMPRESA EXEMPLO LTDA ***.174.002-**",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONSULTA SAO JORGE 96738",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "IFOOD *NORTE SUL",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ANA PAULA RIBEIRO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO RODRIGO MARTINS 49/02",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Feira Livre Do Tio",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Cliente Projeto Alfa",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO CLIENTE PROJETO BETA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LOJA DO ZE ***.368.706-**",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER *TRIP RECIFE BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL HORIZONTE 757637",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "LANCHONETE VILA NOVA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA CENTRAL BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE JOANA EXEMPLO ***.797.456-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF VINICIUS ARAUJO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA VILA NOVA 161894",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PET SHOP AUMIGOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO NORTE SUL",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "RECEBIMENTO PROJETO UNIAO SAO PAULO BR",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PLANO DE SAUDE SAO JORGE 47886",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "LANCHONETE ALVORADA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "ELETRO MODELO",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CARLOS ALBERTO MENDES",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA HORIZONTE 24/03",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE FEIRA LIVRE DO TIO",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA VILA NOVA 12110",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA EMPRESA EXEMPLO LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "unknown",
+   "description": "BAR DO BELA VISTA 14/06",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Vinicius Araujo",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA PACOTE DE SERVICOS 856907",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "RECEBIMENTO PROJETO VILA NOVA 918678",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTOS CDB",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CLINICA VET AMIGO FIEL ***.743.551-**",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA MARIA DA SILVA SOUZA 16/02",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO ALFA 30/08",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA PORTAL CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "PLANO DE SAUDE PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO ALFA ***.591.595-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO JOANA EXEMPLO ***.839.895-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL 319727",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA BELA VISTA 596720",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "MERCADINHO DO ZE",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA ESTRELA",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "HONORARIOS SAO JORGE 358681",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO CARLOS ALBERTO MENDES 85/09",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "RESTAURANTE MODELO RECIFE BR",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO ALVORADA LTDA 29295",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL UNIAO 878312",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "RACAO E PETISCOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Cliente Projeto Alfa 19/08",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA DO BAIRRO 69721",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE MARIA DA SILVA SOUZA 49/05",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA CARTAO SUPERMERCADO CENTRAL SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BOTECO UNIAO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BOTECO BOM PRECO 974195",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL SANTA RITA 05/05",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PADARIA SAO JOAO 83/02",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "ALURA 20/11",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE LUCAS FERREIRA GOMES ***.901.325-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO UNIAO LTDA CURITIBA BR",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO SANTA RITA 322587",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ALUGUEL APTO SANTA RITA",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "HONORARIOS SAO JORGE 06/01",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA 689299",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO ALVORADA RECIFE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LUCAS FERREIRA GOMES",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "RESTAURANTE ESTRELA 16/06",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Tatiane Costa",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA MERCADINHO DO ZE 10/10",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO HORIZONTE",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE JOANA EXEMPLO ***.883.143-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE EMPRESA EXEMPLO LTDA 78/07",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA ALVORADA CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA PRIMAVERA 972853",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER *TRIP",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ACOUGUE HORIZONTE RECIFE BR",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA NORTE SUL BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INGRESSO TEATRO ESTRELA 460562",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE JOANA EXEMPLO 66/03",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONDOMINIO RESIDENCIAL PORTAL RECIFE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO JOANA EXEMPLO",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "ENERGIA ELETRICA BELA VISTA",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "FARMACIA CENTRAL",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PADARIA BELA VISTA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX SALAO BELA IMAGEM 45/08",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE LUCAS FERREIRA GOMES 50/01",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO MERCADO DA ESQUINA 80/05",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE RODRIGO MARTINS 23/02",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX JOANA EXEMPLO 18/07",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "PIZZARIA BOM PRECO 21435",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX SALAO BELA IMAGEM 24/03",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO GABRIELA NUNES",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Cliente Projeto Beta",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA PADARIA BELA VISTA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Pet Shop Aumigos",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA DO BAIRRO",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CLINICA VET AMIGO FIEL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET CENTRAL",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS BOM PRECO CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BOUTIQUE BOM PRECO",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA UNIAO 455132",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONDOMINIO RESIDENCIAL MODELO",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "RESTAURANTE CENTRAL 25/01",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO DO BAIRRO 09/04",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO JOANA EXEMPLO 78/06",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "RAPPI BELA VISTA 20/01",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CLINICA VET AMIGO FIEL ***.175.685-**",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Bruno Teixeira",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ANA PAULA RIBEIRO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL NORTE SUL SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "LANCHONETE DO BAIRRO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX MERCADO DA ESQUINA",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "ESTACIONAMENTO VILA NOVA SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Servicos Gerais Barros",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA MARIA DA SILVA SOUZA 56/06",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Tatiane Costa",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTOS CDB 586894",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "ELETRO MODELO 06/01",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE ANA PAULA RIBEIRO 73/07",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Carlos Alberto Mendes",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO MARIA DA SILVA SOUZA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "NETFLIX.COM",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA FARMACIA BOM PRECO 529495",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Pet Shop Aumigos 84/04",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CAFE DA PRACA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF TATIANE COSTA",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE TATIANE COSTA ***.209.704-**",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO ALFA ***.739.321-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF MARIA DA SILVA SOUZA 30/09",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Roberto Almeida Me ***.309.993-**",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ENERGIA ELETRICA PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "HORTIFRUTI NORTE SUL 262918",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA VILA NOVA",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE ANA PAULA RIBEIRO ***.364.853-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Joana Exemplo",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LUCAS FERREIRA GOMES ***.074.411-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA BELA VISTA 07/01",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO MARIA DA SILVA SOUZA 67/03",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL CENTRAL 990861",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ALURA 19/11",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO HORIZONTE LTDA SAO PAULO BR",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO CARLOS ALBERTO MENDES ***.682.257-**",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX MARIA DA SILVA SOUZA 28/03",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CARLOS ALBERTO MENDES",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PLANO DE SAUDE NORTE SUL",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO UNIAO",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BOTECO PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Rodrigo Martins ***.970.801-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PET SHOP AUMIGOS ***.862.239-**",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO GABRIELA NUNES ***.988.048-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Lucas Ferreira Gomes",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Bruno Teixeira",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA MERCADINHO DO ZE 10/06",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Bruno Teixeira",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SABESP",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF GABRIELA NUNES ***.374.068-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA CURITIBA BR",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Clinica Vet Amigo Fiel 10/08",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTOS CDB 129277",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CARLOS ALBERTO MENDES ***.501.264-**",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE MARIA DA SILVA SOUZA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO LOJA DO ZE ***.323.790-**",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS 19/07",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA BELA VISTA 24/08",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Maria Da Silva Souza ***.073.565-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA CARTAO SUPERMERCADO UNIAO 07/09",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PADARIA BELA VISTA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PEDRO HENRIQUE LIMA 25/02",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Loja Do Ze ***.427.103-**",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "SUPERMERCADO UNIAO",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS CENTRAL 20/08",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CLINICA VET AMIGO FIEL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA ESTRELA",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "RECEBIMENTO PROJETO VILA NOVA 14/05",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA MARIA DA SILVA SOUZA ***.957.933-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "UDEMY",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BOTECO DO BAIRRO 261193",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA BELA VISTA MODA SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SPOTIFY 184331",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA ESTRELA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE ANA PAULA RIBEIRO ***.146.394-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO CARLOS ALBERTO MENDES",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED SANTA RITA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE LOJA DO ZE 26/01",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO MERCADO DA ESQUINA ***.334.139-**",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL DO BAIRRO",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Maria Da Silva Souza ***.736.278-**",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA ESTRELA CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO BOM PRECO 191949",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA RACAO PREMIUM RECIFE BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE JOANA EXEMPLO 49/07",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO ESTRELA LTDA 24/06",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ANA PAULA RIBEIRO ***.394.964-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE BRUNO TEIXEIRA ***.626.691-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RODRIGO MARTINS",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA PACOTE DE SERVICOS 386740",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO ALFA ***.507.190-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL MODELO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "RESTAURANTE DO BAIRRO CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UDEMY CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO BRUNO TEIXEIRA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL MENSALIDADE",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO DO BAIRRO 356760",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Mercado Da Esquina",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "UDEMY 807278",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CLINICA VET AMIGO FIEL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PADARIA SAO JOAO 39/01",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE PORTAL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ANA PAULA RIBEIRO 14/09",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE TATIANE COSTA",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA BRUNO TEIXEIRA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL PORTAL 04/03",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Tatiane Costa",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CAFE DA PRACA 52/02",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO ALFA ***.062.343-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO SALAO BELA IMAGEM 97/06",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO EMPRESA EXEMPLO LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF PET SHOP AUMIGOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO UNIAO RECIFE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER *TRIP",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Servicos Gerais Barros",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Feira Livre Do Tio",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PET SHOP AUMIGOS ***.416.581-**",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONSULTA VILA NOVA 20/09",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA EMPRESA EXEMPLO LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE SERVICOS GERAIS BARROS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA CENTRAL MODA SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS DO BAIRRO 950096",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PADARIA SAO JOAO 93/03",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA MERCADINHO DO ZE 01/03",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO HORIZONTE 23/06",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS 10/02",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ESTACIONAMENTO SANTA RITA 807701",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "STUDIO PILATES BOM PRECO 19/01",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF SERVICOS GERAIS BARROS 43/01",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CAFE DA PRACA 69/01",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Joana Exemplo 47/01",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA POSTO NORTE SUL 20/12",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE MERCADO DA ESQUINA 54/01",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA CENTRAL",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF FEIRA LIVRE DO TIO",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO ALVORADA COMBUSTIVEL 328323",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "STUDIO PILATES SAO JORGE",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE BOM PRECO BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO BETA 47/07",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA UNIAO 878039",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO CENTRAL",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Cliente Projeto Beta",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO CENTRAL LTDA 974142",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "ESTACIONAMENTO DO BAIRRO",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Rodrigo Martins",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "STUDIO PILATES SANTA RITA 20/03",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA ALVORADA",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO SALAO BELA IMAGEM 33/03",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS CENTRAL 10/03",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PET SHOP AUMIGOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "ALUGUEL APTO PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX MERCADO DA ESQUINA",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "BAR DO MODELO 679105",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS PORTAL 13/09",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PET SHOP AUMIGOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO BETA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO ALFA 66/07",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONSULTA ESTRELA CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER TRIP CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INGRESSO TEATRO SAO JORGE CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE BRUNO TEIXEIRA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PEDRO HENRIQUE LIMA 72/01",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "BOUTIQUE PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BAR DO SAO JORGE",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA MERCADINHO DO ZE 479982",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO PORTAL",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA PACOTE DE SERVICOS",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED PRIMAVERA 11/01",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO LOJA DO ZE",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "ENERGIA ELETRICA BELA VISTA 22/08",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF PEDRO HENRIQUE LIMA ***.930.448-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA SAO JORGE",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Tatiane Costa",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA CENTRAL 368010",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ALUGUEL APTO UNIAO 804175",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UDEMY 15/09",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA SANTA RITA 12/05",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA NORTE SUL MODA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CAFE DA PRACA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "unknown",
+   "description": "BOUTIQUE MODELO",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO PORTAL LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA PORTAL MODA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED MODELO",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UDEMY RECIFE BR",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO RODRIGO MARTINS ***.036.391-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF VINICIUS ARAUJO 16/04",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO RODRIGO MARTINS ***.596.032-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA EMPRESA EXEMPLO LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "unknown",
+   "description": "ELETRO SANTA RITA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF TATIANE COSTA",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "CURSO DO BAIRRO 26320",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED SANTA RITA 107547",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA VILA NOVA MODA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Vinicius Araujo ***.682.639-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PADARIA MODELO CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO ESTRELA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO SANTA RITA 26/03",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ALUGUEL APTO ALVORADA",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO MODELO LTDA 609872",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Gabriela Nunes 55/03",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE PRIMAVERA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO CLIENTE PROJETO BETA 17/01",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER *TRIP HELP 42728",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ROBERTO ALMEIDA ME ***.641.870-**",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "SALARIO CENTRAL LTDA 87056",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "RACAO E PETISCOS 26/09",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "PADARIA BOM PRECO 02/01",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA MARIA DA SILVA SOUZA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO SERVICOS GERAIS BARROS 45/09",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO NORTE SUL BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CHURRASCARIA CENTRAL",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ESTACIONAMENTO BELA VISTA 142985",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LUCAS FERREIRA GOMES 36/03",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL BOM PRECO 582910",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PET SHOP AUMIGOS 77/09",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "RESTAURANTE VILA NOVA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA DO BAIRRO",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA BOM PRECO RECIFE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA RACAO PREMIUM 12/11",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Pedro Henrique Lima",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA PRIMAVERA 129576",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Maria Da Silva Souza ***.239.127-**",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LUCAS FERREIRA GOMES ***.253.710-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Bruno Teixeira 27/07",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Servicos Gerais Barros",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "PIZZARIA PORTAL",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Salao Bela Imagem 81/03",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL CENTRAL",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED ESTRELA 07/08",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE VINICIUS ARAUJO ***.180.708-**",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SPOTIFY 09/05",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER *TRIP 751263",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO ALUGUEL SAO JORGE 397970",
+   "type": "EXPENSE",
+   "category": "HOUSING_RENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF PEDRO HENRIQUE LIMA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF MERCADO DA ESQUINA",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "STUDIO PILATES BELA VISTA 06/10",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED ALVORADA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "COMPRA MERCADINHO DO ZE",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "BAR DO BELA VISTA RECIFE BR",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "ACOUGUE VILA NOVA",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER TRIP",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA SAO JORGE",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE GABRIELA NUNES ***.985.457-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LOJA DO ZE 83/03",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO EMPRESA EXEMPLO LTDA ***.979.919-**",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE LOJA DO ZE ***.059.931-**",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LUCAS FERREIRA GOMES",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Tatiane Costa 86/02",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Joana Exemplo ***.123.780-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO BELA VISTA",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO CENTRAL 05/03",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO ALVORADA COMBUSTIVEL SAO PAULO BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE FEIRA LIVRE DO TIO 81/06",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE JOANA EXEMPLO ***.769.154-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PEDRO HENRIQUE LIMA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO PEDRO HENRIQUE LIMA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "ACADEMIA BOM PRECO",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "FARMACIA SANTA RITA 11/10",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE CAFE DA PRACA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE LOJA DO ZE",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Maria Da Silva Souza 88/06",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED HORIZONTE 01/11",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO EMPRESA EXEMPLO LTDA",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO MARIA DA SILVA SOUZA",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA DO BAIRRO CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO GABRIELA NUNES 72/09",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LOJA DO ZE",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX CLINICA VET AMIGO FIEL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO CLINICA VET AMIGO FIEL",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTOS CDB BELO HORIZONTE BR",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO LOJA DO ZE",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PEDRO HENRIQUE LIMA ***.056.094-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO EMPRESA EXEMPLO LTDA 52/03",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET HORIZONTE 20/05",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL VILA NOVA 63292",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Bruno Teixeira",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF SERVICOS GERAIS BARROS",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE SAO JORGE 650148",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA JOANA EXEMPLO",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO BETA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE ANA PAULA RIBEIRO ***.000.953-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO TATIANE COSTA",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA POSTO DO BAIRRO 134016",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "trap",
+   "description": "POSTO CULTURAL MODELO CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO SAO JORGE CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PLANO DE SAUDE BOM PRECO 804305",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "TARIFA PACOTE DE SERVICOS 08/11",
+   "type": "EXPENSE",
+   "category": "FEES_BANK",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER TRIP",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF PEDRO HENRIQUE LIMA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE GABRIELA NUNES",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO CAFE DA PRACA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PEDRO HENRIQUE LIMA ***.809.016-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO BELA VISTA",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "HONORARIOS MODELO 791090",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO FEIRA LIVRE DO TIO 51/03",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX SERVICOS GERAIS BARROS",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA HORIZONTE 23/11",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE PET SHOP AUMIGOS 58/03",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "userRule",
+   "description": "MERCADINHO DO ZE",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "HONORARIOS MODELO 18/07",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER TRIP CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONTA DE ENERGIA SANTA RITA",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX SERVICOS GERAIS BARROS",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER TRIP 170454",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_RIDE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF MARIA DA SILVA SOUZA 19/06",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA MODELO 691010",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PAGAMENTO CONDOMINIO CENTRAL",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SUPERMERCADO BELA VISTA CAMPINAS BR",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE BRUNO TEIXEIRA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "CURSO SAO JORGE 28/02",
+   "type": "EXPENSE",
+   "category": "EDUCATION_COURSES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Vinicius Araujo",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE MARIA DA SILVA SOUZA",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "unknown",
+   "description": "BOUTIQUE CENTRAL",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL 114820",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO CENTRAL BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SABESP 27/04",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "LOJA HORIZONTE MODA 271416",
+   "type": "EXPENSE",
+   "category": "SHOPPING_CLOTHES",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "RECEBIMENTO PROJETO BOM PRECO 85972",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO DE SAUDE PORTAL 190202",
+   "type": "EXPENSE",
+   "category": "HEALTH_APPOINTMENT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO RODRIGO MARTINS",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "DISNEY PLUS 27/10",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "RECEBIMENTO PROJETO ALVORADA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "SUPERMERCADO ESTRELA BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET FIBRA SANTA RITA",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE CLIENTE PROJETO ALFA",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "merchant",
+   "description": "RENDIMENTO POUPANCA BELO HORIZONTE BR",
+   "type": "INCOME",
+   "category": "INCOME_YIELD",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Pet Shop Aumigos",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA CLIENTE PROJETO BETA ***.235.614-**",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "userRule",
+   "description": "RACAO E PETISCOS",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "PET"
+  },
+  {
+   "kind": "merchant",
+   "description": "ACOUGUE MODELO BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Feira Livre Do Tio",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "DROGARIA MODELO",
+   "type": "EXPENSE",
+   "category": "HEALTH_PHARMACY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF CAFE DA PRACA",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ROBERTO ALMEIDA ME",
+   "type": "EXPENSE",
+   "category": "WORK",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO FEIRA LIVRE DO TIO 64/07",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PEDRO HENRIQUE LIMA 41/02",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO FEIRA LIVRE DO TIO 65/04",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "UBER EATS UNIAO 26/11",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "PIZZARIA ESTRELA",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF VINICIUS ARAUJO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO VILA NOVA 25/05",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "CONTA DE ENERGIA SAO JORGE RECIFE BR",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "POSTO BELA VISTA",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_FUEL",
+   "context": null
+  },
+  {
+   "kind": "unknown",
+   "description": "CINEMA ESTRELA 15/02",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO MERCADO DA ESQUINA ***.541.657-**",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX LUCAS FERREIRA GOMES",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "PEDAGIO HORIZONTE BELO HORIZONTE BR",
+   "type": "EXPENSE",
+   "category": "TRANSPORT_VEHICLE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Maria Da Silva Souza",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO JOANA EXEMPLO",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "unknown",
+   "description": "INFORMATICA VILA NOVA",
+   "type": "EXPENSE",
+   "category": "SHOPPING_ELECTRONICS",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Mercado Da Esquina 28/08",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONDOMINIO RESIDENCIAL UNIAO 834801",
+   "type": "EXPENSE",
+   "category": "HOUSING_CONDO",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "RAPPI SAO JORGE",
+   "type": "EXPENSE",
+   "category": "FOOD_DELIVERY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX PADARIA SAO JOAO",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "SANEAMENTO VILA NOVA 138942",
+   "type": "EXPENSE",
+   "category": "HOUSING_WATER",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF MERCADO DA ESQUINA 16/07",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "merchant",
+   "description": "ENERGIA ELETRICA ESTRELA 28/07",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO CLIENTE PROJETO BETA 61/08",
+   "type": "INCOME",
+   "category": "INCOME_FREELANCE",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE MARIA DA SILVA SOUZA",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix enviado - Servicos Gerais Barros 25/05",
+   "type": "EXPENSE",
+   "category": "HOUSING_MAINTENANCE",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX RECEBIDA MARIA DA SILVA SOUZA ***.428.450-**",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "Pix recebido - Empresa Exemplo Ltda 45/04",
+   "type": "INCOME",
+   "category": "INCOME_SALARY",
+   "context": "WORK"
+  },
+  {
+   "kind": "pix",
+   "description": "PAGAMENTO PIX QR CODE JOANA EXEMPLO",
+   "type": "EXPENSE",
+   "category": "LEISURE_EVENTS",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "UNIMED MODELO",
+   "type": "EXPENSE",
+   "category": "HEALTH_INSURANCE",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO CAFE DA PRACA ***.538.033-**",
+   "type": "EXPENSE",
+   "category": "FOOD_SNACKS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "userRule",
+   "description": "ACADEMIA FORCA TOTAL MENSALIDADE",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "NETFLIX.COM CURITIBA BR",
+   "type": "EXPENSE",
+   "category": "LEISURE_STREAMING",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "COMPRA CARTAO SUPERMERCADO HORIZONTE",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "merchant",
+   "description": "HORTIFRUTI BOM PRECO 315969",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF FEIRA LIVRE DO TIO ***.590.029-**",
+   "type": "EXPENSE",
+   "category": "FOOD_GROCERIES",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF ANA PAULA RIBEIRO ***.456.580-**",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "merchant",
+   "description": "CONTA DE ENERGIA PRIMAVERA",
+   "type": "EXPENSE",
+   "category": "HOUSING_ENERGY",
+   "context": null
+  },
+  {
+   "kind": "pix",
+   "description": "PIX TRANSF LOJA DO ZE 10/09",
+   "type": "EXPENSE",
+   "category": "SHOPPING_HOME",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO MARIA DA SILVA SOUZA 53/01",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "FAMILY"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX RECEBIDO DE JOANA EXEMPLO 72/09",
+   "type": "INCOME",
+   "category": "INCOME_OTHER",
+   "context": "RELATIONSHIP"
+  },
+  {
+   "kind": "pix",
+   "description": "TRANSFERENCIA PIX VINICIUS ARAUJO",
+   "type": "EXPENSE",
+   "category": "FOOD_RESTAURANT",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "pix",
+   "description": "PIX ENVIADO SALAO BELA IMAGEM",
+   "type": "EXPENSE",
+   "category": "HEALTH_WELLNESS",
+   "context": "INDIVIDUAL"
+  },
+  {
+   "kind": "merchant",
+   "description": "INTERNET ALVORADA 812775",
+   "type": "EXPENSE",
+   "category": "HOUSING_INTERNET",
+   "context": null
+  }
+ ]
+}
