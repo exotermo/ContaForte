@@ -35,7 +35,7 @@ Sinal do valor: negativo é despesa, positivo é receita; zero e valor com mais 
 
 ## Consequências
 - Falso positivo só é possível na camada "provável" (mesmo valor, dia e texto de outro lançamento real), e a contagem de ocorrências e a regra dos identificadores diferentes já o reduzem; falso negativo ocorre quando a descrição muda entre as fontes (cai em "possível" no máximo, ou em "nova").
-- **Transferências entre contas próprias** aparecem como receita numa conta e despesa na outra; a detecção automática é trabalho do M4. Quando a transferência foi lançada à mão, o extrato a mostra como possível duplicata.
+- **Transferências entre contas próprias** aparecem como receita numa conta e despesa na outra; a detecção automática **não está no escopo do M4** (que trata de classificação) e segue como dívida ainda sem marco. Quando a transferência foi lançada à mão, o extrato a mostra como possível duplicata.
 - Os candidatos vêm de **duas consultas** (as transações ativas no intervalo de datas do arquivo, com um dia de folga, e as que têm os identificadores externos do arquivo em qualquer data), e a comparação é feita em memória, em tempo linear: 20 mil linhas contra 20 mil transações levam frações de segundo.
 - A normalização fica num único lugar (`TextNorm.key`), a mesma para as linhas do arquivo e para as transações existentes.
 - O resultado não depende da ordem das linhas nem da ordem das transações existentes (há teste para isso).

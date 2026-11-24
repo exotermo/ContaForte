@@ -20,3 +20,5 @@ Formato: Contexto, Decisão, Consequências. Status: Proposto, Aceito ou Substit
 | [014](014-categorias-em-dois-niveis-e-contextos.md) | Categorias em dois níveis e contextos próprios | Aceito |
 | [015](015-importacao-em-duas-fases-sem-guardar-o-arquivo.md) | Importação em duas fases, sem guardar o arquivo, com rollback lógico | Aceito |
 | [016](016-deduplicacao-em-camadas-com-contagem-de-ocorrencias.md) | Deduplicação em camadas, com contagem de ocorrências | Aceito |
+| [017](017-classificacao-em-estagios-com-confianca-calibrada.md) | Classificação em estágios, com limiares de confiança e aprendizado só por confirmação | Aceito |
+| [018](018-privacidade-de-favorecidos-e-feedback.md) | Privacidade de favorecidos PIX e do feedback de classificação | Aceito |

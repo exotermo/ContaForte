@@ -1,4 +1,4 @@
-# Modelo de dados e API (Milestones 2 e 3)
+# Modelo de dados e API (Milestones 2, 3 e 4)
 
 Fonte da verdade: as migrações em `apps/backend/src/main/resources/db/migration` (V1–V6). Este documento é o mapa; em caso de divergência, vale a migração. Decisões em [ADR-013](../02_Arquitetura/Arquitetura/ADR/013-saldo-derivado-e-classes-de-liquidez.md) e [ADR-014](../02_Arquitetura/Arquitetura/ADR/014-categorias-em-dois-niveis-e-contextos.md).
 
@@ -93,8 +93,17 @@ erDiagram
 | Só NOVA e POSSÍVEL duplicata podem ser importadas; linha válida tem data, tipo e valor positivo | `CHECK` em `import_items` |
 | O identificador externo não se repete na conta entre as transações ativas (o rollback o libera) | índice único parcial `uk_transactions_external` |
 | Importação confirmada não pode ser apagada, só desfeita | FK de `transactions.import_id` (sem `CASCADE`) |
+| Estado de classificação coerente: NONE sem origem; AUTO e SUGGESTED com origem e confiança e nunca do usuário; CONFIRMED do usuário; confiança entre 0 e 1 | `CHECK ck_transactions_class_shape` e relacionados (V7) |
+| A sugestão só existe em SUGGESTED e nunca cobre categoria ou contexto já preenchido | `CHECK ck_transactions_suggestion`; gatilho `check_transaction_suggestion_refs` para o dono |
+| Favorecido único por usuário e por nome normalizado; categorias e contextos de favorecidos, votos, regras e feedback são padrão ou do mesmo dono | `uk_pix_recipients_name` e gatilhos `check_recipient_*`, `check_feedback_refs`, `check_transaction_refs` |
+| Regra tem ao menos um alvo (categoria ou contexto), comparação CONTÉM/COMEÇA/IGUAL e condição única por usuário | `CHECK` e `uk_rules_condition` |
+| Feedback só referencia transação do mesmo usuário e acompanha a exclusão dela | FK composta `(transaction_id, user_id)` com `ON DELETE CASCADE` |
 
 O `NUMERIC(14,2)` do Postgres **arredonda em silêncio** valores com mais de 2 casas; por isso a API recusa (422) antes de gravar.
+
+### Classificação (M4, V7)
+
+`transactions` ganha `classification_status` (`NONE`, `AUTO`, `SUGGESTED`, `CONFIRMED`), `classification_source`, `classification_confidence` e `suggested_category_id`/`suggested_context_id`. Novas tabelas: `pix_recipients` (favorecido por usuário, com `pinned_category_id`/`pinned_context_id` quando o usuário fixa a escolha), `pix_recipient_category_votes` e `pix_recipient_context_votes` (a confiança é **calculada** dos votos, não guardada), `categorization_rules` e `classification_feedback`. Decisões em [ADR-017](../02_Arquitetura/Arquitetura/ADR/017-classificacao-em-estagios-com-confianca-calibrada.md) e [ADR-018](../02_Arquitetura/Arquitetura/ADR/018-privacidade-de-favorecidos-e-feedback.md).
 
 ## Liquidez (o que entra em cada total)
 
