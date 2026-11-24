@@ -171,7 +171,7 @@ func TestTunnelEnabled(t *testing.T) {
 
 func TestE2ECleanupSQLSoTocaNoPrefixoDeTeste(t *testing.T) {
 	sql := strings.ToLower(e2eCleanupSQL)
-	if strings.Count(sql, "like 'e2e-%'") != 2 {
+	if strings.Count(sql, "like 'e2e-%'") != 3 {
 		t.Fatalf("toda exclusão precisa ser limitada ao prefixo %q: %s", e2ePrefix, e2eCleanupSQL)
 	}
 	for _, stmt := range strings.Split(sql, ";") {
@@ -180,8 +180,10 @@ func TestE2ECleanupSQLSoTocaNoPrefixoDeTeste(t *testing.T) {
 			t.Fatalf("delete sem o filtro de prefixo: %s", stmt)
 		}
 	}
-	if !strings.Contains(sql, "from transactions") || strings.Index(sql, "from transactions") > strings.Index(sql, "delete from accounts") {
-		t.Fatal("as transações precisam ser removidas antes das contas")
+	// ordem exigida pelas chaves estrangeiras: transações, depois importações, depois contas
+	tx, imp, acc := strings.Index(sql, "delete from transactions"), strings.Index(sql, "delete from imports"), strings.Index(sql, "delete from accounts")
+	if tx < 0 || imp < 0 || acc < 0 || !(tx < imp && imp < acc) {
+		t.Fatalf("ordem inválida (transações < importações < contas): %s", e2eCleanupSQL)
 	}
 }
 

@@ -36,6 +36,7 @@ export const tx = (over: Partial<Transaction> = {}): Transaction => ({
   contextId: null,
   occurredAt: "2026-05-10T15:00:00Z",
   source: "MANUAL",
+  importId: null,
   createdAt: "2026-05-10T15:00:00Z",
   updatedAt: "2026-05-10T15:00:00Z",
   ...over,
@@ -68,5 +69,73 @@ export const summary = (over: Partial<Summary> = {}): Summary => ({
     { id: "a1", name: "Banco", type: "CHECKING_ACCOUNT", liquidity: "AVAILABLE", balance: "4200.00" },
     { id: "a2", name: "Vale alimentação", type: "VA", liquidity: "RESTRICTED", balance: "700.00" },
   ],
+  ...over,
+});
+
+import type { CsvSuggestion, ImportBatch, ImportItem } from "@/lib/types";
+
+export const batch = (over: Partial<ImportBatch> = {}): ImportBatch => ({
+  id: "i1",
+  accountId: "a1",
+  format: "OFX",
+  status: "PREVIEW",
+  fileName: "extrato.ofx",
+  totalRows: 12,
+  newRows: 12,
+  duplicateRows: 0,
+  possibleRows: 0,
+  invalidRows: 0,
+  importedRows: 0,
+  mapping: null,
+  expiresAt: "2026-11-25T12:00:00Z",
+  createdAt: "2026-11-24T12:00:00Z",
+  ...over,
+});
+
+export const item = (over: Partial<ImportItem> = {}): ImportItem => ({
+  id: "n1",
+  lineNo: 1,
+  status: "NEW",
+  occurredAt: "2026-03-02T15:00:00Z",
+  type: "EXPENSE",
+  amount: "187.45",
+  description: "COMPRA CARTAO MERCADO EXEMPLO",
+  merchant: "Mercado Exemplo",
+  reason: null,
+  selected: true,
+  duplicateOf: null,
+  existing: null,
+  ...over,
+});
+
+export const pageOf = <T,>(items: T[], over: Partial<{ totalElements: number; totalPages: number; page: number }> = {}) => ({
+  items,
+  page: over.page ?? 0,
+  size: 50,
+  totalElements: over.totalElements ?? items.length,
+  totalPages: over.totalPages ?? (items.length ? 1 : 0),
+});
+
+export const suggestionA = (over: Partial<CsvSuggestion> = {}): CsvSuggestion => ({
+  delimiter: ";",
+  skipLines: 0,
+  hasHeader: true,
+  headers: ["Data", "Histórico", "Documento", "Valor"],
+  sample: [
+    ["02/03/2026", "COMPRA CARTAO MERCADO EXEMPLO", "FIT0001", "-187,45"],
+    ["03/03/2026", "PIX ENVIADO CAFÉ DA PRAÇA", "FIT0002", "-18,50"],
+  ],
+  mapping: {
+    delimiter: ";",
+    skipLines: "0",
+    hasHeader: "true",
+    dateColumn: "Data",
+    dateFormat: "DMY_SLASH",
+    amountColumn: "Valor",
+    descriptionColumn: "Histórico",
+    idColumn: "Documento",
+    invertSign: "false",
+  },
+  warnings: [],
   ...over,
 });

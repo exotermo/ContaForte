@@ -69,6 +69,25 @@ Além de Visão geral, PostgreSQL e Redis, o painel **Negócio** mostra as trans
 
 Só o `gateway` publica porta, e apenas em `127.0.0.1:8080`. O `./cf doctor` confere isso.
 
+## Importar extratos (OFX e CSV)
+
+Em **Importações** você traz o extrato do banco. O fluxo é sempre em duas fases: o sistema lê o arquivo e mostra uma **prévia**, e só quando você confirma é que as transações são criadas.
+
+1. **Arquivo:** escolha a conta que recebe o extrato e o arquivo (`.ofx`, `.qfx`, `.csv` ou `.txt`, até 5 MB, 20 mil linhas, em reais). O formato é reconhecido pelo conteúdo, não pelo nome.
+2. **Colunas (só CSV):** o sistema detecta o separador e o cabeçalho e sugere quais colunas são data, valor, descrição e identificador. Confira a amostra e ajuste. O valor pode vir em uma coluna com sinal, em uma coluna positiva com um tipo (D/C) ou em colunas separadas de débito e crédito.
+3. **Revisão:** quatro abas.
+   - **Novas:** serão importadas (desmarque as que não quiser).
+   - **Duplicadas:** já existem na conta (mesmo identificador, ou mesmo valor, dia e descrição) e nunca são importadas.
+   - **Possíveis duplicatas:** mesmo valor em data próxima, mas descrição diferente. Vêm **desmarcadas** e mostram o lançamento existente ao lado, para você decidir.
+   - **Inválidas:** linhas que não deu para ler, com o motivo.
+4. **Concluído:** as transações entram nos saldos e no resumo. Pelo histórico dá para **desfazer** a importação inteira (as transações saem dos saldos; o histórico fica) e importar de novo depois.
+
+**Como exportar do banco:** procure "exportar extrato" no internet banking ou no app e escolha **OFX** (preferível, traz identificador e data certinhos) ou **CSV**. Cada banco exporta de um jeito: o leitor é genérico e o CSV tem mapeamento de colunas justamente por isso. Extrato de cartão de crédito também funciona; se as despesas vierem positivas, use "Inverter o sinal". Uma transferência entre contas suas aparece nos dois extratos e entra como receita numa conta e despesa na outra.
+
+**Privacidade:** o arquivo **não fica guardado**. Ficam só o hash (para avisar "este arquivo já foi importado"), o nome e as linhas da prévia, por 24 horas, e depois as transações que você confirmou. Prévias não confirmadas são apagadas depois de 24 horas.
+
+**Limites:** 20 prévias por hora por usuário (as descartadas contam). Acima disso a tela mostra em quantos minutos tentar de novo.
+
 ## Observabilidade
 
 Grafana em `http://127.0.0.1:8080/grafana/` (usuário `admin`, senha `GRAFANA_PASSWORD` do `.env`). Três dashboards vêm provisionados como código (Visão geral, PostgreSQL, Redis). Prometheus guarda 15 dias de métricas e o Loki 7 dias de logs. Decisões em [ADR-012](../02_Arquitetura/Arquitetura/ADR/012-observabilidade-com-stack-grafana-e-docker-proxy.md).

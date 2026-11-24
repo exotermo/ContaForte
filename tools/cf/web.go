@@ -80,14 +80,19 @@ func cmdE2E() error {
 		return fmt.Errorf("o gateway não responde em 127.0.0.1:%s: suba a stack com ./cf up", port)
 	}
 	script := "cp -r /src /work && cd /work && npm ci --no-audit --no-fund --loglevel=error && npx playwright test"
+	// o limite de prévias por hora é do usuário admin: zera os contadores antes e depois para o E2E nunca depender da hora
+	clearImportLimits(root)
 	runErr := runDocker("run", "--rm", "--network", "host", "--ipc=host",
+		"-e", "FIXTURES_DIR=/datasets/synthetic/imports",
+		"-v", filepath.Join(root, "datasets")+":/datasets:ro",
 		"-e", "BASE_URL=http://127.0.0.1:"+port,
 		"-e", "ADMIN_EMAIL="+env["ADMIN_EMAIL"],
 		"-e", "ADMIN_PASSWORD="+env["ADMIN_PASSWORD"],
 		"-v", filepath.Join(root, "apps", "web", "e2e")+":/src:ro",
 		"-v", "contaforte-npm-cache:/root/.npm",
 		playwrightImage, "sh", "-c", script)
-	// os testes criam contas e transações com o prefixo "e2e-": remove sempre, passando ou falhando
+	// os testes criam contas, transações e importações com o prefixo "e2e-": remove sempre, passando ou falhando
+	clearImportLimits(root)
 	if err := cleanupE2E(root, env); err != nil {
 		fmt.Fprintln(os.Stderr, "aviso: não consegui limpar os dados do E2E:", err)
 	} else {
@@ -99,9 +104,19 @@ func cmdE2E() error {
 // e2ePrefix marca tudo o que os testes E2E criam; a limpeza só toca nisso.
 const e2ePrefix = "e2e-"
 
-// e2eCleanupSQL apaga as transações e as contas de teste (as contas de teste são identificadas só pelo prefixo).
+// e2eCleanupSQL apaga transações, importações (e as linhas delas, em cascata) e contas de teste, nessa ordem por causa das
+// chaves estrangeiras. As contas de teste são identificadas só pelo prefixo.
 const e2eCleanupSQL = "delete from transactions where account_id in (select id from accounts where name like 'e2e-%'); " +
+	"delete from imports where account_id in (select id from accounts where name like 'e2e-%'); " +
 	"delete from accounts where name like 'e2e-%';"
+
+// clearImportLimits zera os contadores de limite de importação no Redis (chaves rl:import:*). Só mexe nessas chaves.
+func clearImportLimits(root string) {
+	cmd := exec.Command("docker", "compose", "exec", "-T", "redis", "sh", "-c",
+		`redis-cli --scan --pattern 'rl:import:*' | xargs -r redis-cli del >/dev/null`)
+	cmd.Dir = root
+	_ = cmd.Run()
+}
 
 func cleanupE2E(root string, env map[string]string) error {
 	cmd := exec.Command("docker", "compose", "exec", "-T", "postgres",

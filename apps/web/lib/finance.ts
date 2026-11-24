@@ -4,6 +4,10 @@ import type {
   Account,
   CategoryNode,
   ContextItem,
+  CsvSuggestion,
+  ImportBatch,
+  ImportItem,
+  ImportItemStatus,
   NewTransaction,
   Page,
   Summary,
@@ -33,19 +37,28 @@ async function messageOf(res: Response): Promise<string> {
   } catch {
     // corpo ausente ou não JSON
   }
-  if (res.status === 429) return "Muitas requisições. Aguarde um instante e tente de novo.";
+  if (res.status === 413) return "O arquivo é grande demais (o limite é de 5 MB).";
+  if (res.status === 429) {
+    const seconds = Number(res.headers.get("retry-after"));
+    if (Number.isFinite(seconds) && seconds > 0) {
+      const minutes = Math.max(1, Math.ceil(seconds / 60));
+      return `Muitos envios em pouco tempo. Tente de novo em ${minutes} min.`;
+    }
+    return "Muitas requisições. Aguarde um instante e tente de novo.";
+  }
   if (res.status === 403) return "Você não tem permissão para isso.";
   if (res.status >= 500) return "Serviço indisponível no momento. Tente novamente em instantes.";
   if (res.status === 400 && (detail === "" || isFrameworkMessage(detail))) return "Confira os campos informados.";
   return detail || "Não foi possível concluir a operação.";
 }
 
-async function request<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
+/** `form` envia multipart (upload de extrato): o navegador define o Content-Type com o boundary, nunca nós. */
+async function request<T>(path: string, init: { method?: string; body?: unknown; form?: FormData } = {}): Promise<T> {
   const send = () =>
     fetch(`/bff${path}`, {
       method: init.method ?? "GET",
       headers: init.body === undefined ? undefined : { "Content-Type": "application/json" },
-      body: init.body === undefined ? undefined : JSON.stringify(init.body),
+      body: init.form ?? (init.body === undefined ? undefined : JSON.stringify(init.body)),
       cache: "no-store",
     });
   let res = await send();
@@ -84,3 +97,27 @@ export const deleteTransaction = (id: string) => request<void>(`/transactions/${
 
 // ---- resumo
 export const getSummary = () => request<Summary>("/summary");
+
+// ---- importação de extratos
+export const suggestMapping = (file: File) => {
+  const form = new FormData();
+  form.append("file", file);
+  return request<CsvSuggestion>("/imports/suggest-mapping", { method: "POST", form });
+};
+
+export const createImport = (args: { file: File; accountId: string; mapping?: Record<string, string> }) => {
+  const form = new FormData();
+  form.append("file", args.file);
+  form.append("accountId", args.accountId);
+  if (args.mapping) form.append("mapping", JSON.stringify(args.mapping));
+  return request<ImportBatch>("/imports", { method: "POST", form });
+};
+
+export const listImports = (page = 0, size = 20) => request<Page<ImportBatch>>(`/imports${query({ page, size })}`);
+export const getImport = (id: string) => request<ImportBatch>(`/imports/${id}`);
+export const listImportItems = (id: string, opts: { status?: ImportItemStatus; page?: number; size?: number } = {}) =>
+  request<Page<ImportItem>>(`/imports/${id}/items${query({ status: opts.status, page: opts.page ?? 0, size: opts.size ?? 50 })}`);
+export const confirmImport = (id: string, body: { includePossible: string[]; exclude: string[] }) =>
+  request<ImportBatch>(`/imports/${id}/confirm`, { method: "POST", body });
+export const rollbackImport = (id: string) => request<ImportBatch>(`/imports/${id}/rollback`, { method: "POST" });
+export const discardImport = (id: string) => request<void>(`/imports/${id}`, { method: "DELETE" });

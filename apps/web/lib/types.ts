@@ -50,6 +50,7 @@ export type Transaction = {
   contextId: string | null;
   occurredAt: string;
   source: string;
+  importId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -74,6 +75,7 @@ export type TransactionFilter = {
   categoryId?: string;
   contextId?: string;
   q?: string;
+  importId?: string;
 };
 
 export type NewTransaction = {
@@ -86,4 +88,67 @@ export type NewTransaction = {
   merchant?: string;
   categoryId?: string;
   contextId?: string;
+};
+
+// ---- importação de extratos (M3)
+export type ImportFormat = "OFX" | "CSV";
+export type ImportStatus = "PREVIEW" | "CONFIRMED" | "ROLLED_BACK";
+export type ImportItemStatus = "NEW" | "DUPLICATE" | "POSSIBLE_DUPLICATE" | "INVALID";
+
+export type ImportBatch = {
+  id: string;
+  accountId: string;
+  format: ImportFormat;
+  status: ImportStatus;
+  fileName: string;
+  totalRows: number;
+  newRows: number;
+  duplicateRows: number;
+  possibleRows: number;
+  invalidRows: number;
+  importedRows: number;
+  mapping?: Record<string, string> | null;
+  expiresAt?: string;
+  confirmedAt?: string;
+  rolledBackAt?: string;
+  createdAt: string;
+  /** só na criação da prévia */
+  fileAlreadyImported?: boolean;
+  warnings?: string[];
+  /** só na confirmação */
+  skippedByConflict?: number;
+};
+
+export type ExistingSnapshot = {
+  id: string;
+  occurredAt: string;
+  type: TransactionType;
+  amount: string;
+  description: string | null;
+  source: string;
+};
+
+export type ImportItem = {
+  id: string;
+  lineNo: number;
+  status: ImportItemStatus;
+  occurredAt: string | null;
+  type: "INCOME" | "EXPENSE" | null;
+  amount: string | null;
+  description: string | null;
+  merchant: string | null;
+  reason: string | null;
+  selected: boolean;
+  duplicateOf: string | null;
+  existing: ExistingSnapshot | null;
+};
+
+export type CsvSuggestion = {
+  delimiter: string;
+  skipLines: number;
+  hasHeader: boolean;
+  headers: string[];
+  sample: string[][];
+  mapping: Record<string, string>;
+  warnings: string[];
 };

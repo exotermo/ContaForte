@@ -5,6 +5,10 @@ import type { Page, Transaction } from "@/lib/types";
 import { account, categories, contexts, renderWithQuery, tx } from "./test-utils";
 import { TransactionsView } from "./transactions-view";
 
+const replace = vi.fn();
+let urlParams = new URLSearchParams();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }), useSearchParams: () => urlParams }));
+
 const listAccounts = vi.fn();
 const listTransactions = vi.fn();
 const deleteTransaction = vi.fn();
@@ -29,6 +33,8 @@ const page = (items: Transaction[], over: Partial<Page<Transaction>> = {}): Page
 const contas = [account({ id: "a1", name: "Corrente" }), account({ id: "a2", name: "Poupança", type: "SAVINGS_ACCOUNT" })];
 
 afterEach(() => {
+  urlParams = new URLSearchParams();
+  replace.mockReset();
   listAccounts.mockReset();
   listTransactions.mockReset();
   deleteTransaction.mockReset();
@@ -154,5 +160,28 @@ describe("TransactionsView", () => {
     const form = screen.getByRole("form", { name: "Nova transação" });
     const nomes = Array.from(within(form).getByLabelText("Conta").querySelectorAll("option")).map((o) => o.textContent);
     expect(nomes).toEqual(["Corrente", "Poupança"]);
+  });
+
+  it("vindo de uma importação (?importId=), mostra só as dela, avisa e permite ver todas", async () => {
+    urlParams = new URLSearchParams("importId=i1");
+    const user = userEvent.setup();
+    setup([tx({ id: "t1", source: "OFX", importId: "i1" })]);
+
+    expect(await screen.findByText("Mostrando só as transações de uma importação.")).toBeInTheDocument();
+    expect(listTransactions).toHaveBeenCalledWith({ importId: "i1" }, 0);
+
+    await user.click(screen.getByRole("button", { name: "Ver todas" }));
+
+    await waitFor(() => expect(listTransactions).toHaveBeenLastCalledWith({}, 0));
+    expect(replace).toHaveBeenCalledWith("/transacoes");
+    expect(screen.queryByText("Mostrando só as transações de uma importação.")).not.toBeInTheDocument();
+  });
+
+  it("transação importada ganha a etiqueta da origem; lançamento manual não", async () => {
+    setup([tx({ id: "t1", source: "OFX", description: "Importada" }), tx({ id: "t2", source: "MANUAL", description: "Digitada" })]);
+
+    const importada = (await screen.findByText("Importada")).closest("tr")!;
+    expect(importada).toHaveTextContent("OFX");
+    expect(screen.getByText("Digitada").closest("tr")).not.toHaveTextContent("Manual");
   });
 });

@@ -33,3 +33,34 @@ export const transactionTypeLabel = (t: TransactionType) => TRANSACTION_TYPES.fi
 
 /** Tipos que exigem uma conta de destino. */
 export const hasCounterpart = (t: TransactionType) => t === "TRANSFER" || t === "INVESTMENT";
+
+// ---- importação de extratos
+export const IMPORT_STATUS: Record<string, { label: string; cls: string }> = {
+  PREVIEW: { label: "Aguardando confirmação", cls: "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200" },
+  CONFIRMED: { label: "Importada", cls: "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200" },
+  ROLLED_BACK: { label: "Desfeita", cls: "bg-zinc-200 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200" },
+};
+
+export const ITEM_STATUS: Record<string, { tab: string; help: string }> = {
+  NEW: { tab: "Novas", help: "Serão importadas. Desmarque as que você não quer." },
+  DUPLICATE: { tab: "Duplicadas", help: "Já existem na conta e não serão importadas." },
+  POSSIBLE_DUPLICATE: {
+    tab: "Possíveis duplicatas",
+    help: "Parecem lançamentos que você já tem (mesmo valor em data próxima). Marque só as que são mesmo novas.",
+  },
+  INVALID: { tab: "Inválidas", help: "Não deu para ler estas linhas e elas não serão importadas." },
+};
+
+export const SOURCE_LABEL: Record<string, string> = { MANUAL: "Manual", OFX: "OFX", CSV: "CSV", PIX: "PIX", OPEN_FINANCE: "Open Finance", SYSTEM: "Sistema" };
+
+export const DATE_FORMATS: { value: string; label: string }[] = [
+  { value: "AUTO", label: "Detectar automaticamente" },
+  { value: "DMY_SLASH", label: "dd/mm/aaaa (10/03/2026)" },
+  { value: "DMY_SLASH_SHORT", label: "dd/mm/aa (10/03/26)" },
+  { value: "DMY_DASH", label: "dd-mm-aaaa (10-03-2026)" },
+  { value: "DMY_DOT", label: "dd.mm.aaaa (10.03.2026)" },
+  { value: "YMD_DASH", label: "aaaa-mm-dd (2026-03-10)" },
+  { value: "YMD_SLASH", label: "aaaa/mm/dd (2026/03/10)" },
+];
+
+export const DELIMITER_LABEL: Record<string, string> = { ";": "ponto e vírgula (;)", ",": "vírgula (,)", "\t": "tabulação", "|": "barra vertical (|)" };

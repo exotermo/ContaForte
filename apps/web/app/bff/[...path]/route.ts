@@ -6,16 +6,56 @@ export const dynamic = "force-dynamic";
 
 /**
  * Proxy de dados (BFF): injeta o access token do cookie httpOnly e repassa ao backend. O navegador nunca vê o token.
- * Só as rotas financeiras são alcançáveis (nada de /auth ou /admin) e cada segmento do caminho é validado, então o
- * proxy não serve para chegar em outros endereços do backend.
+ * Só as rotas financeiras e de importação são alcançáveis (nada de /auth ou /admin) e cada segmento do caminho é
+ * validado, então o proxy não serve para chegar em outros endereços do backend.
  */
-const ALLOWED_ROOTS = new Set(["accounts", "categories", "contexts", "transactions", "summary"]);
+const ALLOWED_ROOTS = new Set(["accounts", "categories", "contexts", "transactions", "summary", "imports"]);
 const SEGMENT = /^[A-Za-z0-9_-]{1,64}$/;
-const MAX_BODY = 64 * 1024;
+const MAX_JSON = 64 * 1024;
+/** A confirmação de uma importação leva listas de ids de linhas (até milhares): limite maior que o dos demais corpos JSON. */
+const MAX_CONFIRM = 1024 * 1024;
+/** Extrato de até 5 MB (o backend impõe o limite exato) mais o envelope do multipart. */
+const MAX_UPLOAD = 5.5 * 1024 * 1024;
 const MAX_QUERY = 2000;
 const NO_STORE = { "Cache-Control": "no-store" };
 
 type Ctx = { params: Promise<{ path: string[] }> };
+
+const isUpload = (method: string, path: string[]) =>
+  method === "POST" && path[0] === "imports" && (path.length === 1 || (path.length === 2 && path[1] === "suggest-mapping"));
+const isConfirm = (method: string, path: string[]) => method === "POST" && path[0] === "imports" && path.length === 3 && path[2] === "confirm";
+
+const tooBig = () => NextResponse.json({ error: "corpo grande demais" }, { status: 413, headers: NO_STORE });
+
+/**
+ * Lê o corpo em pedaços e para ao passar do limite, sem nunca guardar mais que `max` bytes. O Content-Length declarado
+ * só serve de recusa antecipada: quem manda chunked ou mente no cabeçalho também é cortado aqui.
+ */
+async function readLimited(req: Request, max: number): Promise<Uint8Array | null> {
+  const declared = Number(req.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > max) return null;
+  if (!req.body) return new Uint8Array(0);
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    out.set(c, offset);
+    offset += c.byteLength;
+  }
+  return out;
+}
 
 async function handle(req: Request, ctx: Ctx): Promise<Response> {
   const { path } = await ctx.params;
@@ -32,10 +72,22 @@ async function handle(req: Request, ctx: Ctx): Promise<Response> {
   const search = new URL(req.url).search;
   if (search.length > MAX_QUERY) return NextResponse.json({ error: "consulta longa demais" }, { status: 414, headers: NO_STORE });
 
-  let body: string | undefined;
-  if (req.method === "POST" || req.method === "PATCH") {
-    body = await req.text();
-    if (body.length > MAX_BODY) return NextResponse.json({ error: "corpo grande demais" }, { status: 413, headers: NO_STORE });
+  let body: Uint8Array | string | undefined;
+  let contentType = "application/json";
+  if (isUpload(req.method, path)) {
+    // upload de extrato: só multipart, repassado com o Content-Type original (que traz o boundary)
+    const ct = req.headers.get("content-type") ?? "";
+    if (!ct.toLowerCase().startsWith("multipart/form-data")) {
+      return NextResponse.json({ error: "esperado multipart/form-data" }, { status: 415, headers: NO_STORE });
+    }
+    const bytes = await readLimited(req, MAX_UPLOAD);
+    if (!bytes) return tooBig();
+    body = bytes;
+    contentType = ct;
+  } else if (req.method === "POST" || req.method === "PATCH") {
+    const bytes = await readLimited(req, isConfirm(req.method, path) ? MAX_CONFIRM : MAX_JSON);
+    if (!bytes) return tooBig();
+    body = bytes.byteLength === 0 ? undefined : new TextDecoder().decode(bytes);
   }
 
   let res: Response;
@@ -44,8 +96,8 @@ async function handle(req: Request, ctx: Ctx): Promise<Response> {
       method: req.method,
       token,
       ip: clientIp(req),
-      headers: body === undefined ? undefined : { "Content-Type": "application/json" },
-      body,
+      headers: body === undefined ? undefined : { "Content-Type": contentType },
+      body: body as BodyInit | undefined,
     });
   } catch {
     return NextResponse.json({ error: "indisponível" }, { status: 503, headers: NO_STORE });

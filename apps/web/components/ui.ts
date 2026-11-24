@@ -13,3 +13,8 @@ export const errorCls = "text-sm text-red-700 dark:text-red-400";
 export const mutedCls = "text-sm text-zinc-600 dark:text-zinc-400";
 export const negCls = "text-red-700 dark:text-red-400";
 export const posCls = "text-emerald-700 dark:text-emerald-400";
+
+// Célula de tabela que no celular vira uma pilha de cartões: cada célula mostra seu rótulo (data-label) à esquerda.
+// A tabela, o thead, o tbody e o tr precisam de max-md:block (e o thead de max-md:sr-only) e o contêiner de `relative`.
+export const stackedCell =
+  "px-3 py-3 max-md:flex max-md:items-start max-md:justify-between max-md:gap-4 max-md:px-0 max-md:py-1 max-md:before:shrink-0 max-md:before:font-medium max-md:before:text-zinc-500 max-md:before:content-[attr(data-label)] dark:max-md:before:text-zinc-400";

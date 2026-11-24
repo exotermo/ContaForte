@@ -1,18 +1,17 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { formatDate } from "@/lib/datetime";
 import { deleteTransaction, listAccounts, listCategories, listContexts, listTransactions } from "@/lib/finance";
-import { TRANSACTION_TYPES, transactionTypeLabel } from "@/lib/labels";
+import { SOURCE_LABEL, TRANSACTION_TYPES, transactionTypeLabel } from "@/lib/labels";
 import { formatMoney } from "@/lib/money";
 import type { Account, CategoryNode, ContextItem, Transaction, TransactionFilter } from "@/lib/types";
 import { TransactionForm } from "./transaction-form";
-import { btnDanger, btnPrimary, btnSecondary, cardCls, errorCls, inputCls, labelCls, mutedCls, negCls, posCls } from "./ui";
+import { btnDanger, btnPrimary, btnSecondary, cardCls, errorCls, inputCls, labelCls, mutedCls, negCls, posCls, stackedCell } from "./ui";
 
-// Célula da tabela. No celular a tabela vira uma pilha de cartões: cada célula mostra seu rótulo (data-label) à esquerda.
-const CELL =
-  "px-3 py-3 max-md:flex max-md:items-start max-md:justify-between max-md:gap-4 max-md:px-0 max-md:py-1 max-md:before:shrink-0 max-md:before:font-medium max-md:before:text-zinc-500 max-md:before:content-[attr(data-label)] dark:max-md:before:text-zinc-400";
+const CELL = stackedCell;
 
 // referências estáveis: um `?? []` novo a cada render invalidaria os useMemo abaixo
 const NO_ACCOUNTS: Account[] = [];
@@ -61,6 +60,11 @@ function Row({ t, accountName, category }: { t: Transaction; accountName: (id: s
           <p className={mutedCls}>
             {transactionTypeLabel(t.type)}
             {t.description && t.merchant ? ` · ${t.merchant}` : ""}
+            {t.source !== "MANUAL" && (
+              <span className="ml-2 rounded bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800" title="Veio de uma importação">
+                {SOURCE_LABEL[t.source] ?? t.source}
+              </span>
+            )}
           </p>
         </div>
       </td>
@@ -100,9 +104,12 @@ function Row({ t, accountName, category }: { t: Transaction; accountName: (id: s
 }
 
 export function TransactionsView() {
+  const router = useRouter();
+  // vindo do histórico de importações: /transacoes?importId=... mostra só as transações daquela importação
+  const importIdFromUrl = useSearchParams().get("importId") ?? undefined;
   const [showForm, setShowForm] = useState(false);
-  const [draft, setDraft] = useState<TransactionFilter>({});
-  const [applied, setApplied] = useState<TransactionFilter>({});
+  const [draft, setDraft] = useState<TransactionFilter>({ importId: importIdFromUrl });
+  const [applied, setApplied] = useState<TransactionFilter>({ importId: importIdFromUrl });
   const [page, setPage] = useState(0);
 
   // todas as contas (inclusive arquivadas) para nomear lançamentos antigos; só as ativas entram no formulário
@@ -132,6 +139,7 @@ export function TransactionsView() {
     setDraft({});
     setApplied({});
     setPage(0);
+    if (importIdFromUrl) router.replace("/transacoes");
   }
 
   const data = txQ.data;
@@ -155,6 +163,15 @@ export function TransactionsView() {
           contexts={contexts}
           onDone={() => setShowForm(false)}
         />
+      )}
+
+      {applied.importId && (
+        <p role="status" className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-emerald-50 p-3 text-sm dark:bg-emerald-950/40">
+          <span>Mostrando só as transações de uma importação.</span>
+          <button type="button" onClick={clearFilters} className={btnSecondary}>
+            Ver todas
+          </button>
+        </p>
       )}
 
       <form onSubmit={applyFilters} className={`${cardCls} grid gap-3 sm:grid-cols-2 lg:grid-cols-4`} aria-label="Filtros">
