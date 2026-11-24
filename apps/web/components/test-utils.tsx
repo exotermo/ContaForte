@@ -37,6 +37,11 @@ export const tx = (over: Partial<Transaction> = {}): Transaction => ({
   occurredAt: "2026-05-10T15:00:00Z",
   source: "MANUAL",
   importId: null,
+  classificationStatus: "NONE",
+  classificationSource: null,
+  classificationConfidence: null,
+  suggestedCategoryId: null,
+  suggestedContextId: null,
   createdAt: "2026-05-10T15:00:00Z",
   updatedAt: "2026-05-10T15:00:00Z",
   ...over,
@@ -137,5 +142,47 @@ export const suggestionA = (over: Partial<CsvSuggestion> = {}): CsvSuggestion =>
     invertSign: "false",
   },
   warnings: [],
+  ...over,
+});
+
+import type { ItemClassification, Recipient, Rule } from "@/lib/types";
+
+/** Classificação de uma linha de prévia: por padrão, "sem sugestão". */
+export const classif = (over: Partial<ItemClassification> = {}): ItemClassification => ({
+  decision: "NONE",
+  source: null,
+  confidence: null,
+  categoryId: null,
+  categoryDecision: null,
+  contextId: null,
+  contextDecision: null,
+  chosen: false,
+  chosenCategoryId: null,
+  chosenContextId: null,
+  ...over,
+});
+
+export const rule = (over: Partial<Rule> = {}): Rule => ({
+  id: "r1",
+  matchType: "CONTAINS",
+  pattern: "mercadinho do ze",
+  transactionType: "EXPENSE",
+  categoryId: "c2",
+  contextId: null,
+  priority: 100,
+  enabled: true,
+  createdAt: "2026-11-24T12:00:00Z",
+  updatedAt: "2026-11-24T12:00:00Z",
+  ...over,
+});
+
+export const recipient = (over: Partial<Recipient> = {}): Recipient => ({
+  id: "f1",
+  displayName: "Café da Praça",
+  transactionCount: 6,
+  averageAmount: "8.00",
+  lastTransactionAt: "2026-11-20T15:00:00Z",
+  expense: { category: { id: "c2", votes: 6, totalVotes: 6, confidence: 0.85, decision: "AUTO" }, context: null },
+  income: { category: null, context: null },
   ...over,
 });

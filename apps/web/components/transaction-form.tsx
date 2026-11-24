@@ -1,11 +1,11 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { localInputToIso, nowLocalInput } from "@/lib/datetime";
-import { createTransaction } from "@/lib/finance";
-import { TRANSACTION_TYPES, hasCounterpart } from "@/lib/labels";
+import { createTransaction, testRule } from "@/lib/finance";
+import { CLASS_SOURCE_LABEL, TRANSACTION_TYPES, hasCounterpart, percent } from "@/lib/labels";
 import { parseMoney } from "@/lib/money";
 import type { Account, CategoryNode, ContextItem, NewTransaction, TransactionType } from "@/lib/types";
 import { MoneyField } from "./money-field";
@@ -34,6 +34,23 @@ export function TransactionForm({ accounts, categories, contexts, onDone }: Prop
   const [contextId, setContextId] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [saved, setSaved] = useState(false);
+
+  // sugestão de categoria enquanto a descrição é digitada (só receita e despesa, só com a categoria ainda vazia)
+  const [typed, setTyped] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setTyped(description.trim()), 500);
+    return () => clearTimeout(timer);
+  }, [description]);
+  const suggestable = (type === "EXPENSE" || type === "INCOME") && typed.length >= 3 && !categoryId;
+  const suggestionQ = useQuery({
+    queryKey: ["category-suggestion", type, typed],
+    queryFn: () => testRule({ description: typed, type: type as "INCOME" | "EXPENSE" }),
+    enabled: suggestable,
+    staleTime: 60_000,
+    retry: false,
+  });
+  const suggestion = suggestable && suggestionQ.data && suggestionQ.data.category.id ? suggestionQ.data : null;
+  const suggestedLabel = suggestion ? (categories.flatMap((c) => [c, ...c.children]).find((c) => c.id === suggestion.category.id)?.name ?? "") : "";
 
   const mutation = useMutation({
     mutationFn: createTransaction,
@@ -206,6 +223,24 @@ export function TransactionForm({ accounts, categories, contexts, onDone }: Prop
           </label>
           <input id={`${id}-descricao`} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={200} className={inputCls} />
         </div>
+        {suggestion && suggestedLabel && (
+          <p className="text-sm sm:col-span-2" role="status">
+            Sugestão de categoria: <strong>{suggestedLabel}</strong>{" "}
+            <span className={mutedCls}>
+              ({suggestion.category.source ? CLASS_SOURCE_LABEL[suggestion.category.source] : ""} · {percent(suggestion.category.confidence)})
+            </span>{" "}
+            <button
+              type="button"
+              className="font-medium text-emerald-700 underline dark:text-emerald-400"
+              onClick={() => {
+                setCategoryId(suggestion.category.id as string);
+                if (suggestion.context.id && !contextId) setContextId(suggestion.context.id);
+              }}
+            >
+              Usar
+            </button>
+          </p>
+        )}
         <div>
           <label htmlFor={`${id}-estab`} className={labelCls}>
             Estabelecimento

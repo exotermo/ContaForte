@@ -64,3 +64,21 @@ export const DATE_FORMATS: { value: string; label: string }[] = [
 ];
 
 export const DELIMITER_LABEL: Record<string, string> = { ";": "ponto e vírgula (;)", ",": "vírgula (,)", "\t": "tabulação", "|": "barra vertical (|)" };
+
+// ---- classificação (M4)
+export const CLASS_SOURCE_LABEL: Record<string, string> = {
+  USER: "Você",
+  RULE: "Sua regra",
+  DEFAULT_RULE: "Regra do sistema",
+  RECIPIENT: "Favorecido conhecido",
+};
+
+export const MATCH_TYPES: { value: "CONTAINS" | "STARTS_WITH" | "EQUALS"; label: string; help: string }[] = [
+  { value: "CONTAINS", label: "Contém", help: "O trecho aparece na descrição, como palavra inteira." },
+  { value: "STARTS_WITH", label: "Começa com", help: "A descrição começa pelo trecho." },
+  { value: "EQUALS", label: "É exatamente", help: "A descrição é só o trecho." },
+];
+export const matchTypeLabel = (m: string) => MATCH_TYPES.find((x) => x.value === m)?.label ?? m;
+
+/** 0,857 vira "85%": truncado, nunca arredondado para cima (a confiança mostrada não pode superar a real). */
+export const percent = (confidence: number | null | undefined) => (confidence == null ? "" : `${Math.floor(confidence * 100 + 1e-9)}%`);

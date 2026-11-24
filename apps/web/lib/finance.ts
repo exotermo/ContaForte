@@ -8,6 +8,14 @@ import type {
   ImportBatch,
   ImportItem,
   ImportItemStatus,
+  DecisionBody,
+  NewRule,
+  ReclassifyOutcome,
+  ReclassifyPreview,
+  Recipient,
+  ReviewCounts,
+  Rule,
+  RuleTestResult,
   NewTransaction,
   Page,
   Summary,
@@ -121,3 +129,28 @@ export const confirmImport = (id: string, body: { includePossible: string[]; exc
   request<ImportBatch>(`/imports/${id}/confirm`, { method: "POST", body });
 export const rollbackImport = (id: string) => request<ImportBatch>(`/imports/${id}/rollback`, { method: "POST" });
 export const discardImport = (id: string) => request<void>(`/imports/${id}`, { method: "DELETE" });
+
+export const classifyImportItem = (importId: string, itemId: string, body: { categoryId?: string | null; contextId?: string | null; reset?: boolean }) =>
+  request<ImportItem>(`/imports/${importId}/items/${itemId}`, { method: "PATCH", body: { categoryId: null, contextId: null, reset: false, ...body } });
+
+// ---- regras do usuário
+export const listRules = () => request<Rule[]>("/categorization-rules");
+export const createRule = (body: NewRule) => request<Rule>("/categorization-rules", { method: "POST", body });
+export const updateRule = (id: string, body: Partial<Omit<Rule, "id" | "createdAt" | "updatedAt">>) =>
+  request<Rule>(`/categorization-rules/${id}`, { method: "PATCH", body });
+export const deleteRule = (id: string) => request<void>(`/categorization-rules/${id}`, { method: "DELETE" });
+export const testRule = (body: { description: string; type: "INCOME" | "EXPENSE" }) =>
+  request<RuleTestResult>("/categorization-rules/test", { method: "POST", body });
+
+// ---- favorecidos PIX
+export const listRecipients = (q: string, page = 0, size = 20) => request<Page<Recipient>>(`/pix-recipients${query({ q, page, size })}`);
+export const forgetRecipient = (id: string) => request<void>(`/pix-recipients/${id}`, { method: "DELETE" });
+
+// ---- revisão e reclassificação
+export const reviewQueue = (page = 0, size = 20) => request<Page<Transaction>>(`/classification/review${query({ page, size })}`);
+export const reviewCount = () => request<ReviewCounts>("/classification/review/count");
+export const decideClassification = (transactionId: string, body: DecisionBody) =>
+  request<Transaction>(`/transactions/${transactionId}/classification`, { method: "POST", body });
+export const reclassifyPreview = () => request<ReclassifyPreview>("/classification/reclassify/preview", { method: "POST" });
+export const reclassify = (body: { expectedAuto: number; expectedSuggest: number }) =>
+  request<ReclassifyOutcome>("/classification/reclassify", { method: "POST", body });

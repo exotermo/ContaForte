@@ -6,9 +6,17 @@ import { account, categories, contexts, renderWithQuery } from "./test-utils";
 import { TransactionForm } from "./transaction-form";
 
 const createTransaction = vi.fn();
-vi.mock("@/lib/finance", async (orig) => ({ ...(await orig<typeof import("@/lib/finance")>()), createTransaction: (...a: unknown[]) => createTransaction(...a) }));
+const testRule = vi.fn();
+vi.mock("@/lib/finance", async (orig) => ({
+  ...(await orig<typeof import("@/lib/finance")>()),
+  createTransaction: (...a: unknown[]) => createTransaction(...a),
+  testRule: (...a: unknown[]) => testRule(...a),
+}));
 
-afterEach(() => createTransaction.mockReset());
+afterEach(() => {
+  createTransaction.mockReset();
+  testRule.mockReset();
+});
 
 const contas = [
   account({ id: "a1", name: "Corrente" }),
@@ -146,5 +154,65 @@ describe("TransactionForm", () => {
     renderWithQuery(<TransactionForm accounts={[]} categories={categories} contexts={contexts} />);
     expect(screen.getByText(/Cadastre uma conta antes/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ir para Contas" })).toHaveAttribute("href", "/contas");
+  });
+
+  // ---------------------------------------------------------------- sugestão de categoria ao digitar
+
+  const sugestao = { category: { id: "c2", confidence: 0.9, source: "DEFAULT_RULE", decision: "AUTO" }, context: { id: "x1", confidence: 0.66, source: "RECIPIENT", decision: "SUGGEST" }, decision: "SUGGEST" };
+
+  it("sugere a categoria depois de um instante de digitação e 'Usar' preenche categoria e contexto", async () => {
+    testRule.mockResolvedValue(sugestao);
+    const user = userEvent.setup();
+    form();
+    await user.type(screen.getByLabelText("Descrição"), "COMPRA POSTO ABC");
+
+    const dica = await screen.findByText(/Sugestão de categoria/, {}, { timeout: 3000 });
+    expect(dica).toHaveTextContent("Sugestão de categoria: Restaurante (Regra do sistema · 90%)");
+    expect(testRule).toHaveBeenCalledTimes(1);   // espera parar de digitar, não pergunta a cada letra
+    expect(testRule).toHaveBeenCalledWith({ description: "COMPRA POSTO ABC", type: "EXPENSE" });
+    await user.click(screen.getByRole("button", { name: "Usar" }));
+
+    expect(screen.getByLabelText("Categoria")).toHaveValue("c2");
+    expect(screen.getByLabelText("Contexto")).toHaveValue("x1");
+    expect(screen.queryByText(/Sugestão de categoria/)).not.toBeInTheDocument();   // já escolhida: some
+  });
+
+  it("não sugere quando o motor não conhece o texto, nem quando a categoria já foi escolhida", async () => {
+    testRule.mockResolvedValue({ category: { id: null, confidence: null, source: null, decision: "NONE" }, context: { id: null, confidence: null, source: null, decision: "NONE" }, decision: "NONE" });
+    const user = userEvent.setup();
+    form();
+    await user.type(screen.getByLabelText("Descrição"), "LOJA QUALQUER");
+    await waitFor(() => expect(testRule).toHaveBeenCalled(), { timeout: 3000 });
+    expect(screen.queryByText(/Sugestão de categoria/)).not.toBeInTheDocument();
+
+    testRule.mockClear();
+    await user.selectOptions(screen.getByLabelText("Categoria"), "c2");
+    await user.type(screen.getByLabelText("Descrição"), " 2");
+    await new Promise((r) => setTimeout(r, 800));
+    expect(testRule).not.toHaveBeenCalled();   // com categoria escolhida, não pergunta
+  });
+
+  it("não consulta com descrição curta nem para transferência", async () => {
+    const user = userEvent.setup();
+    form();
+    await user.type(screen.getByLabelText("Descrição"), "ab");
+    await new Promise((r) => setTimeout(r, 800));
+    expect(testRule).not.toHaveBeenCalled();
+
+    await user.click(screen.getByLabelText("Transferência"));
+    await user.type(screen.getByLabelText("Descrição"), "cdefgh");
+    await new Promise((r) => setTimeout(r, 800));
+    expect(testRule).not.toHaveBeenCalled();
+  });
+
+  it("se a consulta de sugestão falhar, o formulário segue normal", async () => {
+    testRule.mockRejectedValue(new Error("falhou"));
+    const user = userEvent.setup();
+    form();
+    await user.type(screen.getByLabelText("Descrição"), "COMPRA POSTO ABC");
+    await waitFor(() => expect(testRule).toHaveBeenCalled(), { timeout: 3000 });
+
+    expect(screen.queryByText(/Sugestão de categoria/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Registrar" })).toBeEnabled();
   });
 });

@@ -2,16 +2,29 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { UnauthorizedError } from "./api";
 import {
   ApiError,
+  classifyImportItem,
   confirmImport,
   createAccount,
   createImport,
+  createRule,
+  decideClassification,
+  deleteRule,
   deleteTransaction,
   discardImport,
+  forgetRecipient,
   listAccounts,
   listImportItems,
+  listRecipients,
+  listRules,
   listTransactions,
+  reclassify,
+  reclassifyPreview,
+  reviewCount,
+  reviewQueue,
   rollbackImport,
   suggestMapping,
+  testRule,
+  updateRule,
 } from "./finance";
 
 const json = (status: number, body: unknown = {}) =>
@@ -152,5 +165,76 @@ describe("cliente de dados (/bff)", () => {
   it("usa a mensagem do backend para extrato recusado (422)", async () => {
     vi.stubGlobal("fetch", vi.fn(() => json(422, { detail: "Só extratos em reais (BRL) são aceitos." })));
     await expect(createImport({ file: new File(["x"], "a.ofx"), accountId: "a" })).rejects.toMatchObject({ status: 422, message: "Só extratos em reais (BRL) são aceitos." });
+  });
+});
+
+describe("cliente da classificação (M4)", () => {
+  it("troca a classificação de uma linha da prévia (PATCH) com nulo = nenhuma e reset", async () => {
+    const fetchMock = vi.fn(() => json(200, {}));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await classifyImportItem("i1", "n1", { categoryId: "c2" });
+    await classifyImportItem("i1", "n1", { reset: true });
+
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("/bff/imports/i1/items/n1");
+    expect(init.method).toBe("PATCH");
+    expect(JSON.parse(init.body as string)).toEqual({ categoryId: "c2", contextId: null, reset: false });
+    expect(JSON.parse((fetchMock.mock.calls[1] as unknown as [string, RequestInit])[1].body as string)).toEqual({ categoryId: null, contextId: null, reset: true });
+  });
+
+  it("regras: lista, cria, edita com nulo que limpa, apaga e testa um texto", async () => {
+    const fetchMock = vi.fn(() => json(200, {}));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await listRules();
+    await createRule({ matchType: "CONTAINS", pattern: "posto", categoryId: "c2" });
+    await updateRule("r1", { transactionType: null, enabled: false });
+    await testRule({ description: "PIX ENVIADO X", type: "EXPENSE" });
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(null, { status: 204 }))));
+    await deleteRule("r1");
+
+    const calls = fetchMock.mock.calls as unknown as [string, RequestInit][];
+    expect(calls[0][0]).toBe("/bff/categorization-rules");
+    expect(calls[1][1].method).toBe("POST");
+    expect(calls[2][0]).toBe("/bff/categorization-rules/r1");
+    expect(JSON.parse(calls[2][1].body as string)).toEqual({ transactionType: null, enabled: false });   // nulo explícito vai no corpo
+    expect(calls[3][0]).toBe("/bff/categorization-rules/test");
+  });
+
+  it("favorecidos: busca com q e paginação, e esquecer", async () => {
+    const fetchMock = vi.fn(() => json(200, {}));
+    vi.stubGlobal("fetch", fetchMock);
+    await listRecipients("joa", 1);
+    expect((fetchMock.mock.calls[0] as unknown as [string])[0]).toBe("/bff/pix-recipients?q=joa&page=1&size=20");
+    await listRecipients("");
+    expect((fetchMock.mock.calls[1] as unknown as [string])[0]).toBe("/bff/pix-recipients?page=0&size=20");   // q vazio não vai
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(null, { status: 204 }))));
+    await expect(forgetRecipient("f1")).resolves.toBeUndefined();
+  });
+
+  it("revisão e reclassificação: fila, contadores, decisão e as duas fases", async () => {
+    const fetchMock = vi.fn(() => json(200, {}));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await reviewQueue(2);
+    await reviewCount();
+    await decideClassification("t1", { action: "CORRECT", categoryId: "c2", createRule: { matchType: "CONTAINS", pattern: "cafe" } });
+    await reclassifyPreview();
+    await reclassify({ expectedAuto: 2, expectedSuggest: 1 });
+
+    const calls = fetchMock.mock.calls as unknown as [string, RequestInit][];
+    expect(calls[0][0]).toBe("/bff/classification/review?page=2&size=20");
+    expect(calls[1][0]).toBe("/bff/classification/review/count");
+    expect(calls[2][0]).toBe("/bff/transactions/t1/classification");
+    expect(JSON.parse(calls[2][1].body as string)).toEqual({ action: "CORRECT", categoryId: "c2", createRule: { matchType: "CONTAINS", pattern: "cafe" } });
+    expect(calls[3][0]).toBe("/bff/classification/reclassify/preview");
+    expect(calls[3][1].method).toBe("POST");
+    expect(JSON.parse(calls[4][1].body as string)).toEqual({ expectedAuto: 2, expectedSuggest: 1 });
+  });
+
+  it("409 da reclassificação traz a mensagem do backend", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => json(409, { detail: "O resultado mudou desde a prévia. Confira a prévia de novo antes de aplicar." })));
+    await expect(reclassify({ expectedAuto: 1, expectedSuggest: 0 })).rejects.toMatchObject({ status: 409, message: expect.stringContaining("mudou desde a prévia") });
   });
 });

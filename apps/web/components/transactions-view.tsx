@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { formatDate } from "@/lib/datetime";
 import { deleteTransaction, listAccounts, listCategories, listContexts, listTransactions } from "@/lib/finance";
-import { SOURCE_LABEL, TRANSACTION_TYPES, transactionTypeLabel } from "@/lib/labels";
+import { CLASS_SOURCE_LABEL, SOURCE_LABEL, TRANSACTION_TYPES, percent, transactionTypeLabel } from "@/lib/labels";
 import { formatMoney } from "@/lib/money";
 import type { Account, CategoryNode, ContextItem, Transaction, TransactionFilter } from "@/lib/types";
 import { TransactionForm } from "./transaction-form";
@@ -35,7 +35,7 @@ function amountView(t: Transaction): { text: string; cls: string } {
   return { text: money, cls: "" };
 }
 
-function Row({ t, accountName, category }: { t: Transaction; accountName: (id: string) => string; category: string }) {
+function Row({ t, accountName, category, suggestion }: { t: Transaction; accountName: (id: string) => string; category: string; suggestion: string }) {
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState(false);
   const mutation = useMutation({
@@ -69,7 +69,25 @@ function Row({ t, accountName, category }: { t: Transaction; accountName: (id: s
         </div>
       </td>
       <td data-label="Categoria" className={CELL}>
-        <span className="max-md:text-right">{category}</span>
+        <div className="max-md:text-right">
+          <span>{category}</span>
+          {t.classificationStatus === "AUTO" && (
+            <p className="mt-0.5">
+              <span
+                className="rounded bg-emerald-100 px-1.5 py-0.5 text-xs text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200"
+                title={`Aplicada sozinha: ${CLASS_SOURCE_LABEL[t.classificationSource ?? ""] ?? ""} · ${percent(t.classificationConfidence)}`}
+              >
+                Automática
+              </span>
+            </p>
+          )}
+          {t.classificationStatus === "SUGGESTED" && (
+            <p className="mt-0.5 text-xs">
+              <span className="rounded bg-amber-100 px-1.5 py-0.5 text-amber-900 dark:bg-amber-950 dark:text-amber-200">Sugerida</span>{" "}
+              <span className={mutedCls}>{suggestion || "ver em Revisão"}</span>
+            </p>
+          )}
+        </div>
       </td>
       <td data-label="Conta" className={CELL}>
         <div className="max-md:text-right">
@@ -128,6 +146,10 @@ export function TransactionsView() {
   const names = useMemo(() => new Map(accounts.map((a) => [a.id, a.name])), [accounts]);
   const categoryLabel = useMemo(() => categoryNames(categories), [categories]);
   const accountName = (id: string) => names.get(id) ?? "Conta";
+  const contextLabel = useMemo(() => new Map(contexts.map((c) => [c.id, c.name])), [contexts]);
+  /** "Restaurante · Família": o que foi sugerido para a transação (a Revisão é onde se decide). */
+  const suggestionOf = (t: Transaction) =>
+    [t.suggestedCategoryId ? categoryLabel.get(t.suggestedCategoryId) : "", t.suggestedContextId ? contextLabel.get(t.suggestedContextId) : ""].filter(Boolean).join(" · ");
   const set = <K extends keyof TransactionFilter>(key: K, value: TransactionFilter[K]) => setDraft((d) => ({ ...d, [key]: value }));
 
   function applyFilters(e: React.FormEvent) {
@@ -247,7 +269,7 @@ export function TransactionsView() {
             </thead>
             <tbody className="divide-y divide-zinc-200 max-md:block dark:divide-zinc-800">
               {data.items.map((t) => (
-                <Row key={t.id} t={t} accountName={accountName} category={t.categoryId ? (categoryLabel.get(t.categoryId) ?? "—") : "—"} />
+                <Row key={t.id} t={t} accountName={accountName} category={t.categoryId ? (categoryLabel.get(t.categoryId) ?? "—") : "—"} suggestion={suggestionOf(t)} />
               ))}
             </tbody>
           </table>

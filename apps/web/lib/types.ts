@@ -37,6 +37,12 @@ export type ContextItem = { id: string; code: string | null; name: string; syste
 
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER" | "INVESTMENT" | "REFUND";
 
+// ---- classificação (M4)
+export type ClassificationStatus = "NONE" | "AUTO" | "SUGGESTED" | "CONFIRMED";
+export type ClassificationSource = "USER" | "RULE" | "DEFAULT_RULE" | "RECIPIENT";
+export type Decision = "AUTO" | "SUGGEST" | "NONE";
+export type MatchType = "CONTAINS" | "STARTS_WITH" | "EQUALS";
+
 export type Transaction = {
   id: string;
   accountId: string;
@@ -51,6 +57,11 @@ export type Transaction = {
   occurredAt: string;
   source: string;
   importId: string | null;
+  classificationStatus: ClassificationStatus;
+  classificationSource: ClassificationSource | null;
+  classificationConfidence: number | null;
+  suggestedCategoryId: string | null;
+  suggestedContextId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -117,6 +128,9 @@ export type ImportBatch = {
   warnings?: string[];
   /** só na confirmação */
   skippedByConflict?: number;
+  /** só na prévia: linhas novas ou possíveis que o motor categorizou sozinho / só sugeriu */
+  autoClassified?: number;
+  suggested?: number;
 };
 
 export type ExistingSnapshot = {
@@ -141,6 +155,21 @@ export type ImportItem = {
   selected: boolean;
   duplicateOf: string | null;
   existing: ExistingSnapshot | null;
+  /** só linhas novas e possíveis duplicatas */
+  classification?: ItemClassification;
+};
+
+export type ItemClassification = {
+  decision: Decision;
+  source: ClassificationSource | null;
+  confidence: number | null;
+  categoryId: string | null;
+  categoryDecision: Decision | null;
+  contextId: string | null;
+  contextDecision: Decision | null;
+  chosen: boolean;
+  chosenCategoryId: string | null;
+  chosenContextId: string | null;
 };
 
 export type CsvSuggestion = {
@@ -151,4 +180,62 @@ export type CsvSuggestion = {
   sample: string[][];
   mapping: Record<string, string>;
   warnings: string[];
+};
+
+export type Rule = {
+  id: string;
+  matchType: MatchType;
+  pattern: string;
+  transactionType: "INCOME" | "EXPENSE" | null;
+  categoryId: string | null;
+  contextId: string | null;
+  priority: number;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NewRule = {
+  matchType: MatchType;
+  pattern: string;
+  transactionType?: "INCOME" | "EXPENSE";
+  categoryId?: string;
+  contextId?: string;
+  priority?: number;
+  enabled?: boolean;
+};
+
+/** Um lado da decisão do motor (categoria ou contexto). */
+export type EnginePart = { id: string | null; confidence: number | null; source: ClassificationSource | null; decision: Decision };
+export type RuleTestResult = { category: EnginePart; context: EnginePart; decision: Decision };
+
+export type Learned = { id: string; votes: number; totalVotes: number; confidence: number; decision: Decision };
+export type RecipientDirection = { category: Learned | null; context: Learned | null };
+export type Recipient = {
+  id: string;
+  displayName: string;
+  transactionCount: number;
+  averageAmount: string | null;
+  lastTransactionAt: string | null;
+  expense: RecipientDirection;
+  income: RecipientDirection;
+};
+
+export type ReviewCounts = { suggested: number; uncategorized: number };
+export type Proposal = {
+  transactionId: string;
+  categoryId: string | null;
+  contextId: string | null;
+  decision: Decision;
+  source: ClassificationSource | null;
+  confidence: number | null;
+};
+export type ReclassifyPreview = { eligible: number; auto: number; suggest: number; none: number; truncated: boolean; sample: Proposal[] };
+export type ReclassifyOutcome = { auto: number; suggest: number; unchanged: number };
+
+export type DecisionBody = {
+  action: "CONFIRM" | "CORRECT";
+  categoryId?: string;
+  contextId?: string;
+  createRule?: { matchType: MatchType; pattern: string };
 };

@@ -3,10 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { formatDate } from "@/lib/datetime";
-import { confirmImport, discardImport, listImportItems } from "@/lib/finance";
+import { classifyImportItem, confirmImport, discardImport, listImportItems } from "@/lib/finance";
 import { ITEM_STATUS, SOURCE_LABEL } from "@/lib/labels";
 import { formatMoney } from "@/lib/money";
 import type { ImportBatch, ImportItem, ImportItemStatus } from "@/lib/types";
+import { ClassificationBadge, CategorySelect, ContextSelect, useCatalog } from "./catalog";
 import { btnDanger, btnPrimary, btnSecondary, cardCls, errorCls, mutedCls, negCls, posCls, stackedCell } from "./ui";
 
 type Props = {
@@ -30,12 +31,84 @@ function signed(item: ImportItem): { text: string; cls: string } {
   return item.type === "INCOME" ? { text: `+${money}`, cls: posCls } : { text: `-${money}`, cls: negCls };
 }
 
+type Catalog = ReturnType<typeof useCatalog>;
+
+/**
+ * Categoria e contexto de uma linha: o que o motor decidiu (com quem decidiu e a confiança) e os seletores para trocar.
+ * A escolha vira uma requisição na hora (fica na prévia) e só ensina o favorecido quando a importação é confirmada.
+ */
+function ClassificationCell({ batchId, item, catalog }: { batchId: string; item: ImportItem; catalog: Catalog }) {
+  const queryClient = useQueryClient();
+  const c = item.classification;
+  const choose = useMutation({
+    mutationFn: (body: { categoryId?: string | null; contextId?: string | null; reset?: boolean }) => classifyImportItem(batchId, item.id, body),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["import-items", batchId] }),
+  });
+  if (!c) return <span className={mutedCls}>—</span>;
+
+  // o que a transação terá se nada mudar: a escolha do usuário, ou o que o motor aplicaria sozinho
+  const category = c.chosen ? (c.chosenCategoryId ?? "") : c.categoryDecision === "AUTO" ? (c.categoryId ?? "") : "";
+  const context = c.chosen ? (c.chosenContextId ?? "") : c.contextDecision === "AUTO" ? (c.contextId ?? "") : "";
+  const suggestion = !c.chosen && c.decision === "SUGGEST";
+
+  return (
+    <div className="space-y-1.5 max-md:text-right">
+      <div>
+        <ClassificationBadge decision={c.chosen ? "CONFIRMED" : c.decision} source={c.chosen ? null : c.source} confidence={c.chosen ? null : c.confidence} />
+      </div>
+      {suggestion && (
+        <p className={mutedCls}>
+          Sugerido: {[catalog.categoryName(c.categoryId), catalog.contextName(c.contextId)].filter(Boolean).join(" · ")}{" "}
+          <button
+            type="button"
+            className="font-medium text-emerald-700 underline dark:text-emerald-400"
+            onClick={() => choose.mutate({ categoryId: c.categoryId, contextId: c.contextId })}
+            disabled={choose.isPending}
+            aria-label={`Aceitar a sugestão da linha ${item.lineNo}`}
+          >
+            Aceitar
+          </button>
+        </p>
+      )}
+      <div className="grid gap-1 sm:grid-cols-2">
+        <CategorySelect
+          compact
+          categories={catalog.categories}
+          label={`Categoria da linha ${item.lineNo}`}
+          value={category}
+          disabled={choose.isPending}
+          onChange={(v) => choose.mutate({ categoryId: v || null, contextId: context || null })}
+        />
+        <ContextSelect
+          compact
+          contexts={catalog.contexts}
+          label={`Contexto da linha ${item.lineNo}`}
+          value={context}
+          disabled={choose.isPending}
+          onChange={(v) => choose.mutate({ categoryId: category || null, contextId: v || null })}
+        />
+      </div>
+      {c.chosen && (
+        <button type="button" className="text-sm text-zinc-600 underline dark:text-zinc-400" onClick={() => choose.mutate({ reset: true })} disabled={choose.isPending} aria-label={`Voltar a linha ${item.lineNo} ao que o sistema decidiu`}>
+          Voltar ao que o sistema decidiu
+        </button>
+      )}
+      {choose.error && (
+        <p role="alert" className={errorCls}>
+          {choose.error.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
 /**
  * Revisão da prévia: o que será importado, o que já existe e o que não deu para ler. Nada é criado até confirmar. As
  * escolhas (desmarcar linhas novas, aceitar possíveis duplicatas) ficam aqui e só viram requisição ao confirmar.
  */
 export function ImportReview({ batch, onConfirmed, onDiscarded }: Props) {
   const queryClient = useQueryClient();
+  const catalog = useCatalog();
   const firstTab = TABS.find((s) => COUNT[s](batch) > 0) ?? "NEW";
   const [tab, setTab] = useState<ImportItemStatus>(firstTab);
   const [page, setPage] = useState(0);
@@ -105,6 +178,11 @@ export function ImportReview({ batch, onConfirmed, onDiscarded }: Props) {
             {w}
           </p>
         ))}
+        {((batch.autoClassified ?? 0) > 0 || (batch.suggested ?? 0) > 0) && (
+          <p className="mt-3 text-sm">
+            Categorizadas sozinhas: <strong>{batch.autoClassified ?? 0}</strong> · Só sugeridas: <strong>{batch.suggested ?? 0}</strong>. Confira ou troque na coluna Categoria.
+          </p>
+        )}
         <div role="group" aria-label="Filtrar linhas" className="mt-4 flex flex-wrap gap-2">
           {TABS.map((s) => (
             <button
@@ -141,6 +219,7 @@ export function ImportReview({ batch, onConfirmed, onDiscarded }: Props) {
                 <th scope="col" className="px-3 py-2 font-medium">Data</th>
                 <th scope="col" className="px-3 py-2 font-medium">Descrição</th>
                 <th scope="col" className="px-3 py-2 text-right font-medium">Valor</th>
+                {selectable && <th scope="col" className="px-3 py-2 font-medium">Categoria</th>}
                 {(tab === "DUPLICATE" || tab === "POSSIBLE_DUPLICATE") && <th scope="col" className="px-3 py-2 font-medium">Comparada com</th>}
               </tr>
             </thead>
@@ -164,6 +243,11 @@ export function ImportReview({ batch, onConfirmed, onDiscarded }: Props) {
                       </div>
                     </td>
                     <td data-label="Valor" className={`${stackedCell} whitespace-nowrap font-medium tabular-nums md:text-right ${amount.cls}`}>{amount.text}</td>
+                    {selectable && (
+                      <td data-label="Categoria" className={`${stackedCell} md:min-w-64`}>
+                        <ClassificationCell batchId={batch.id} item={i} catalog={catalog} />
+                      </td>
+                    )}
                     {(tab === "DUPLICATE" || tab === "POSSIBLE_DUPLICATE") && (
                       <td data-label="Comparada com" className={stackedCell}>
                         {i.existing ? (

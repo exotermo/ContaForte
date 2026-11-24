@@ -184,4 +184,22 @@ describe("TransactionsView", () => {
     expect(importada).toHaveTextContent("OFX");
     expect(screen.getByText("Digitada").closest("tr")).not.toHaveTextContent("Manual");
   });
+
+  it("transação aplicada sozinha ganha o selo 'Automática'; a sugerida mostra o que foi sugerido", async () => {
+    setup([
+      tx({ id: "t1", description: "Automática", classificationStatus: "AUTO", classificationSource: "DEFAULT_RULE", classificationConfidence: 0.9 }),
+      tx({ id: "t2", description: "Pendente", categoryId: null, classificationStatus: "SUGGESTED", classificationSource: "RECIPIENT", classificationConfidence: 0.66, suggestedCategoryId: "c2", suggestedContextId: "x1" }),
+      tx({ id: "t3", description: "Manual", classificationStatus: "NONE" }),
+    ]);
+
+    const auto = (await screen.findByText("Automática", { selector: "p.font-medium" })).closest("tr")!;
+    expect(within(auto).getByText("Automática", { selector: "span" })).toHaveAttribute("title", "Aplicada sozinha: Regra do sistema · 90%");
+    const pendente = screen.getByText("Pendente").closest("tr")!;
+    expect(within(pendente).getByText("Sugerida")).toBeInTheDocument();
+    expect(pendente).toHaveTextContent("Alimentação › Restaurante · Família");
+    expect(pendente).toHaveTextContent("—");   // a categoria continua vazia: sugestão não é aplicação
+    const manual = screen.getByText("Manual").closest("tr")!;
+    expect(manual).not.toHaveTextContent("Automática");
+    expect(manual).not.toHaveTextContent("Sugerida");
+  });
 });

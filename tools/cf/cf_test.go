@@ -172,7 +172,7 @@ func TestTunnelEnabled(t *testing.T) {
 
 func TestE2ECleanupSQLSoTocaNoPrefixoDeTeste(t *testing.T) {
 	sql := strings.ToLower(e2eCleanupSQL)
-	if strings.Count(sql, "like 'e2e-%'") != 3 {
+	if strings.Count(sql, "like 'e2e-%'") != 4 {
 		t.Fatalf("toda exclusão precisa ser limitada ao prefixo %q: %s", e2ePrefix, e2eCleanupSQL)
 	}
 	for _, stmt := range strings.Split(sql, ";") {
@@ -181,10 +181,13 @@ func TestE2ECleanupSQLSoTocaNoPrefixoDeTeste(t *testing.T) {
 			t.Fatalf("delete sem o filtro de prefixo: %s", stmt)
 		}
 	}
-	// ordem exigida pelas chaves estrangeiras: transações, depois importações, depois contas
-	tx, imp, acc := strings.Index(sql, "delete from transactions"), strings.Index(sql, "delete from imports"), strings.Index(sql, "delete from accounts")
-	if tx < 0 || imp < 0 || acc < 0 || !(tx < imp && imp < acc) {
-		t.Fatalf("ordem inválida (transações < importações < contas): %s", e2eCleanupSQL)
+	// ordem exigida pelas chaves estrangeiras: transações, importações, contas e por fim os usuários de teste
+	tx, imp, acc, usr := strings.Index(sql, "delete from transactions"), strings.Index(sql, "delete from imports"), strings.Index(sql, "delete from accounts"), strings.Index(sql, "delete from users")
+	if tx < 0 || imp < 0 || acc < 0 || usr < 0 || !(tx < imp && imp < acc && acc < usr) {
+		t.Fatalf("ordem inválida (transações < importações < contas < usuários): %s", e2eCleanupSQL)
+	}
+	if !strings.Contains(sql, "delete from users where email like 'e2e-%'") {
+		t.Fatalf("a exclusão de usuários precisa ser pelo prefixo do e-mail: %s", e2eCleanupSQL)
 	}
 }
 

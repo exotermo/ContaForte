@@ -88,6 +88,24 @@ Em **Importações** você traz o extrato do banco. O fluxo é sempre em duas fa
 
 **Limites:** 20 prévias por hora por usuário (as descartadas contam). Acima disso a tela mostra em quantos minutos tentar de novo.
 
+## Categorias sugeridas, regras e favorecidos
+
+O sistema sugere a categoria e o contexto de cada receita e despesa, de três jeitos, nesta ordem: **suas regras**, o que ele **aprendeu dos favorecidos de PIX** e as **regras do sistema** (palavras comuns como "supermercado", "farmácia", "posto"). Ele só aplica sozinho quando tem muita certeza; no meio-termo, sugere e espera você confirmar; sem base, não sugere nada.
+
+| Confiança | O que acontece | Como aparece |
+|---|---|---|
+| 85% ou mais | A categoria é aplicada sozinha | Selo **Automática** (com quem decidiu e a confiança) |
+| de 50% a menos de 85% | Nada é aplicado: fica uma **sugestão** para você confirmar | Selo **Sugestão** e a transação entra na **Revisão** |
+| menos de 50% | Sem sugestão | "Sem sugestão" |
+
+- **Na importação:** a coluna **Categoria** da prévia mostra o que o sistema decidiu. Você troca a categoria ou o contexto de qualquer linha, ou clica em **Aceitar** na sugestão. Nada é aprendido até você confirmar a importação.
+- **Revisão:** reúne as sugestões e o que ficou sem categoria. **Confirmar sugestão** com um clique, ou **Escolher…**, e marque "aplicar sempre que a descrição tiver este trecho" para criar uma regra. O número ao lado de "Revisão" no menu é quantas sugestões esperam por você. Em **Categorizar o que está sem categoria** você vê antes o que seria feito e só depois aplica; o que você já classificou nunca é alterado.
+- **Regras:** "se a descrição tiver este trecho, a categoria é esta". O trecho ignora maiúsculas, acentos e pontuação e vale por palavras inteiras ("posto" casa com "COMPRA POSTO ABC", não com "COMPOSTO"). Suas regras valem antes de tudo e são aplicadas sozinhas; menor prioridade vale primeiro. Use **Testar um texto** para conferir antes de confiar.
+- **Favorecidos:** o sistema aprende **só com as suas decisões** (confirmar, escolher, lançar com categoria), nunca com o que ele mesmo aplicou. Um único caso só gera sugestão; são precisas cerca de 6 decisões iguais para ele passar a aplicar sozinho, e discordâncias baixam a confiança. O que você paga a alguém e o que essa pessoa te paga são aprendidos separadamente.
+- **Desfazer uma importação** também desfaz o que ela ensinou.
+
+**Privacidade:** o nome de um favorecido é dado de outra pessoa. Ele fica só na sua conta, não vai para logs nem métricas e some quando você apaga o usuário. Em **Favorecidos** há "Esquecer", que apaga o aprendizado de uma pessoa sem mexer nas transações.
+
 ## Observabilidade
 
 Grafana em `http://127.0.0.1:8080/grafana/` (usuário `admin`, senha `GRAFANA_PASSWORD` do `.env`). Três dashboards vêm provisionados como código (Visão geral, PostgreSQL, Redis). Prometheus guarda 15 dias de métricas e o Loki 7 dias de logs. Decisões em [ADR-012](../02_Arquitetura/Arquitetura/ADR/012-observabilidade-com-stack-grafana-e-docker-proxy.md).

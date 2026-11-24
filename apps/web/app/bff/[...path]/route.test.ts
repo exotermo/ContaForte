@@ -237,4 +237,38 @@ describe("proxy de dados /bff", () => {
     expect((await GET(req("GET", "/bff/x"), ctx(["admin", "imports"]))).status).toBe(404);
     expect((await GET(req("GET", "/bff/x"), ctx(["imports", ".."]))).status).toBe(404);
   });
+
+  it("alcança as rotas de classificação (regras, favorecidos, revisão) e repassa PATCH e DELETE", async () => {
+    const fetchMock = backend(200, {});
+
+    await GET(req("GET", "/bff/categorization-rules"), ctx(["categorization-rules"]));
+    await POST(req("POST", "/bff/categorization-rules/test", { body: '{"description":"x","type":"EXPENSE"}' }), ctx(["categorization-rules", "test"]));
+    await GET(req("GET", "/bff/pix-recipients?q=joa"), ctx(["pix-recipients"]));
+    await DELETE(req("DELETE", "/bff/pix-recipients/f1"), ctx(["pix-recipients", "f1"]));
+    await GET(req("GET", "/bff/classification/review/count"), ctx(["classification", "review", "count"]));
+    await POST(req("POST", "/bff/transactions/t1/classification", { body: '{"action":"CONFIRM"}' }), ctx(["transactions", "t1", "classification"]));
+    await PATCH(req("PATCH", "/bff/imports/i1/items/n1", { body: '{"categoryId":null}' }), ctx(["imports", "i1", "items", "n1"]));
+
+    const calls = fetchMock.mock.calls as unknown as [string, RequestInit][];
+    expect(calls.map((c) => c[0].replace("http://backend:8080/api/v1", ""))).toEqual([
+      "/categorization-rules",
+      "/categorization-rules/test",
+      "/pix-recipients?q=joa",
+      "/pix-recipients/f1",
+      "/classification/review/count",
+      "/transactions/t1/classification",
+      "/imports/i1/items/n1",
+    ]);
+    expect(calls[3][1].method).toBe("DELETE");
+    expect(calls[6][1].method).toBe("PATCH");
+    expect(calls[6][1].body).toBe('{"categoryId":null}');
+  });
+
+  it("as rotas de classificação também exigem sessão e origem confiável nas escritas", async () => {
+    const fetchMock = backend();
+
+    expect((await GET(req("GET", "/bff/pix-recipients", { cookie: null }), ctx(["pix-recipients"]))).status).toBe(401);
+    expect((await POST(req("POST", "/bff/classification/reclassify", { body: "{}", headers: { origin: "http://evil.example" } }), ctx(["classification", "reclassify"]))).status).toBe(403);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

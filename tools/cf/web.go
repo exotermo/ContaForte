@@ -104,11 +104,14 @@ func cmdE2E() error {
 // e2ePrefix marca tudo o que os testes E2E criam; a limpeza só toca nisso.
 const e2ePrefix = "e2e-"
 
-// e2eCleanupSQL apaga transações, importações (e as linhas delas, em cascata) e contas de teste, nessa ordem por causa das
-// chaves estrangeiras. As contas de teste são identificadas só pelo prefixo.
+// e2eCleanupSQL apaga transações, importações (e as linhas delas, em cascata), contas e usuários de teste, nessa ordem por
+// causa das chaves estrangeiras. Tudo é identificado só pelo prefixo. Os testes de classificação rodam com um usuário
+// descartável (e-mail "e2e-...") para não deixar regras, favorecidos e feedback na conta real: apagar o usuário leva tudo
+// em cascata (LGPD).
 const e2eCleanupSQL = "delete from transactions where account_id in (select id from accounts where name like 'e2e-%'); " +
 	"delete from imports where account_id in (select id from accounts where name like 'e2e-%'); " +
-	"delete from accounts where name like 'e2e-%';"
+	"delete from accounts where name like 'e2e-%'; " +
+	"delete from users where email like 'e2e-%';"
 
 // clearImportLimits zera os contadores de limite de importação no Redis (chaves rl:import:*). Só mexe nessas chaves.
 func clearImportLimits(root string) {

@@ -6,10 +6,20 @@ export const dynamic = "force-dynamic";
 
 /**
  * Proxy de dados (BFF): injeta o access token do cookie httpOnly e repassa ao backend. O navegador nunca vê o token.
- * Só as rotas financeiras e de importação são alcançáveis (nada de /auth ou /admin) e cada segmento do caminho é
+ * Só as rotas financeiras, de importação e de classificação são alcançáveis (nada de /auth ou /admin) e cada segmento do caminho é
  * validado, então o proxy não serve para chegar em outros endereços do backend.
  */
-const ALLOWED_ROOTS = new Set(["accounts", "categories", "contexts", "transactions", "summary", "imports"]);
+const ALLOWED_ROOTS = new Set([
+  "accounts",
+  "categories",
+  "contexts",
+  "transactions",
+  "summary",
+  "imports",
+  "categorization-rules",
+  "pix-recipients",
+  "classification",
+]);
 const SEGMENT = /^[A-Za-z0-9_-]{1,64}$/;
 const MAX_JSON = 64 * 1024;
 /** A confirmação de uma importação leva listas de ids de linhas (até milhares): limite maior que o dos demais corpos JSON. */
