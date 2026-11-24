@@ -11,8 +11,8 @@ Derivados do [SDD](../02_Arquitetura/SDD/SDD_Personal_Financial_Copilot.md). Pri
 | RF-03 | M2 | O usuário cria contas e carteiras dos tipos CHECKING, SAVINGS, CASH, CREDIT_CARD, VA, VR, INVESTMENT e OTHER | ✅ v0.2.0 |
 | RF-04 | M2 | O usuário registra transações (INCOME, EXPENSE, TRANSFER, INVESTMENT, REFUND) com categoria, subcategoria e contexto | ✅ v0.2.0 |
 | RF-05 | M2 | O sistema calcula available_cash, restricted_balance, invested_assets e total_net_worth | ✅ v0.2.0 |
-| RF-06 | M3 | O usuário importa OFX e CSV, e cada importação tem um ID e permite rollback lógico | ⏳ |
-| RF-07 | M3 | O sistema deduplica transações por conta, valor, data, identificador, descrição e PIX | ⏳ |
+| RF-06 | M3 | O usuário importa OFX e CSV, e cada importação tem um ID e permite rollback lógico | ✅ |
+| RF-07 | M3 | O sistema deduplica transações por conta, valor, data, identificador, descrição e PIX | ✅ |
 | RF-08 | M4 | O sistema mantém `PixRecipient` com categoria e contexto padrão | ⏳ |
 | RF-09 | M4 | O sistema categoriza por regras e favorecidos conhecidos e, com baixa confiança, pede confirmação | ⏳ |
 | RF-10 | M4 | Cada correção do usuário é gravada como `ClassificationFeedback` | ⏳ |
