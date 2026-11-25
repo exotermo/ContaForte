@@ -23,7 +23,7 @@ Porta de entrada da documentação do **ContaForte — Personal Financial Copilo
 | `02_Arquitetura` | SDD, arquitetura, ADRs | ✅ iniciado |
 | `03_Desenvolvimento` | Guia de desenvolvimento, modelo de dados e API | ✅ |
 | `04_Testes` | Estratégia e evidências de teste | ✅ |
-| `05_Encerramento` | Lições aprendidas | ✅ M1, M2 |
+| `05_Encerramento` | Lições aprendidas | ✅ M1, M2, M3, M4 |
 | `06_Operacao` | Instalação, operação, monitoramento, backup | ✅ |
 | `07_Referencias` | Normas, LGPD, links | ✅ iniciado |
 

@@ -2,11 +2,11 @@
 
 Plataforma open source e auto-hospedável de gestão financeira pessoal para o contexto brasileiro. Organiza contas e transações, separa dinheiro disponível de benefícios como VA/VR e permite analisar gastos por **categoria e contexto**.
 
-A visão do produto é evoluir para um copiloto com categorização de PIX, previsões e recomendações explicáveis. Esses recursos fazem parte do roadmap; ainda não estão disponíveis.
+A visão do produto é evoluir para um copiloto com previsões e recomendações explicáveis. A categorização de PIX e de transações já funciona (por regras e por favorecidos que o sistema aprende com as suas decisões); previsões e recomendações fazem parte do roadmap e ainda não estão disponíveis.
 
 [![CI](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml/badge.svg)](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml)
 
-> **Status — revisão de 24/11/2026:** M1, M2 e M3 entregues, com tags `v0.1.0`, `v0.2.0` e `v0.3.0`. O MVP completo corresponde a M1–M5.
+> **Status — revisão de 24/11/2026:** M1 a M4 entregues, com tags `v0.1.0`, `v0.2.0`, `v0.3.0` e `v0.4.0`. O MVP completo corresponde a M1–M5.
 
 ## O que já funciona
 
@@ -16,6 +16,7 @@ A visão do produto é evoluir para um copiloto com categorização de PIX, prev
 - Resumo financeiro que separa caixa disponível, saldo restrito (VA/VR), investimentos e patrimônio líquido. O caixa disponível não é uma previsão de quanto sobra após compromissos futuros.
 - Ambiente Docker, CLI de operação, dados sintéticos de demonstração e monitoramento provisionado.
 - **Importação de extratos OFX e CSV:** envie o arquivo, revise a prévia (novas, duplicadas, possíveis duplicatas e inválidas), confirme e, se precisar, desfaça a importação inteira. O arquivo não é guardado. Limites: BRL, até 5 MB e 20 mil linhas. Transferências entre contas próprias importadas ainda aparecem como receita numa conta e despesa na outra, sem conciliação automática.
+- **Categorização que aprende com você:** cada linha da prévia chega com categoria e contexto sugeridos; o que o sistema tem muita certeza (regras suas, favorecidos que você já confirmou várias vezes, 40 regras padrão) é aplicado sozinho, o resto fica em **Revisão** para um clique. Você cria **regras** (palavra, prefixo ou expressão exata), esquece favorecidos quando quiser e reclassifica o histórico em duas fases. Nomes de favorecidos ficam só na sua conta, sem aparecer em log ou métrica.
 
 ## Stack atual
 
@@ -68,7 +69,7 @@ O CLI `./cf` também cuida de `status`, `doctor`, `logs`, `test`, `e2e`, `bench`
 | M1 — Foundation | Docker, autenticação, CI e observabilidade | Entregue (`v0.1.0`) |
 | M2 — Financial Core | Contas, transações, categorias, contextos e resumo de liquidez | Entregue (`v0.2.0`) |
 | M3 — Imports | OFX/CSV, normalização, deduplicação e desfazimento | Entregue (`v0.3.0`) |
-| M4 — PIX Intelligence | Favorecidos, regras, categorização e feedback | Planejado |
+| M4 — PIX Intelligence | Favorecidos, regras, categorização e feedback | Entregue (`v0.4.0`) |
 | M5 — Dashboard | Gastos por categoria/contexto, VA/VR e caixa disponível | Planejado; o resumo básico já existe no M2 |
 | M6 — Intelligence | Python, previsões, anomalias e insights explicáveis | Futuro |
 | M7 — Goals | Orçamentos, reserva, metas e capacidade de investimento | Futuro |

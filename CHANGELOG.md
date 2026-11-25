@@ -2,6 +2,31 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com versionamento semântico.
 
+## [0.4.0] — Milestone 4: PIX Intelligence
+
+### Adicionado
+- **Classificação em estágios** de categoria e contexto, em cada dimensão: regra do usuário, favorecido PIX conhecido e regra padrão do sistema (40 regras em pt-BR). Cada resposta traz a **confiança** e a origem; decisão em três faixas: **aplicada sozinha** (≥ 0,85), **sugerida** (0,50 a menos de 0,85) ou sem palpite ([ADR-017](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/Arquitetura/ADR/017-classificacao-em-estagios-com-confianca-calibrada.md)).
+- **Favorecidos PIX** aprendidos só com as decisões do usuário, com votos por direção (recebido e enviado) e confiança suavizada `k/(n+1)`: de 1 a 5 confirmações apenas sugere; **esquecer favorecido** apaga o que foi aprendido ([ADR-018](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/Arquitetura/ADR/018-privacidade-de-favorecidos-e-feedback.md)).
+- **Regras do usuário** (palavra inteira, prefixo ou expressão exata; até 200), com ativar e desativar, e **teste de texto** que mostra qual estágio decidiria e por quê.
+- **Feedback**: toda confirmação ou correção é gravada (`ClassificationFeedback`) e o aprendizado é **revertido** quando a importação é desfeita.
+- **Prévia de importação classificada**: cada linha chega com categoria e contexto sugeridos e pode ser ajustada antes de confirmar.
+- **Fila de Revisão** de sugestões com decisão de um clique, contagem no menu e **reclassificação do histórico em duas fases** (prévia com contagens, aplicar só se nada mudou).
+- Telas **Revisão**, **Regras** e **Favorecidos**; chips "Automática" e "Sugerida" nas transações e sugestão ao digitar uma transação manual.
+- API `/api/v1/categorization-rules`, `/pix-recipients` e `/classification` (revisão, decisão, reclassificação) e `PATCH /imports/{id}/items/{itemId}`.
+- `./cf seed` ensina duas regras e três favorecidos de demonstração e **se autoverifica**; `./cf bench` importa 20 mil linhas com 51 regras e confere a contagem exata de categorizadas.
+- Métricas `contaforte_classifications_total{source,decision}` e `contaforte_classification_feedback_total{kind}` e seção **Classificação de transações** no painel Negócio.
+- Conjunto sintético de 766 casos com resposta conhecida (`datasets/synthetic/classification`), regenerado e conferido no CI.
+
+### Segurança e privacidade
+- Nomes de favorecidos pertencem a cada usuário e **nunca** aparecem em log, métrica ou auditoria; apagar o usuário apaga tudo o que foi aprendido.
+- Só decisão do usuário ensina: o que o sistema aplicou sozinho não reforça a si mesmo.
+- Integridade no banco: restrições de coerência entre estado, origem e sugestão e chaves compostas por dono (migrações V7 a V9).
+
+### Desempenho e qualidade
+- Precisão medida no conjunto sintético: **98,1%** das categorias e **100%** dos contextos aplicados sozinhos (o teste exige 95%).
+- Motor: 20 mil linhas em cerca de 0,4 s; prévia de 20 mil linhas classificada em 3,6 a 4,1 s, confirmação em 4,2 a 4,8 s, desfazer em 0,4 s e pico de 500 MiB no backend (limite 768 MiB).
+- 617 testes de backend, 229 de frontend e 19 E2E.
+
 ## [0.3.0] — Milestone 3: Imports
 
 ### Adicionado
