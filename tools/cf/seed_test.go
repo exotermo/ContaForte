@@ -265,3 +265,36 @@ func TestBenchInsertSQLValidaOEmailEUsaAQuantidadePedida(t *testing.T) {
 		t.Error("e-mail com aspas deveria ser recusado")
 	}
 }
+
+func TestScenarioTotalsSomaPorTipoEmCentavos(t *testing.T) {
+	sc := &scenario{Transactions: []scTx{
+		{Type: "INCOME", Amount: "100.10"}, {Type: "INCOME", Amount: "0.20"},
+		{Type: "EXPENSE", Amount: "33.33"}, {Type: "REFUND", Amount: "3.33"}, {Type: "TRANSFER", Amount: "999.00"},
+	}}
+	got, err := scenarioTotals(sc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got["INCOME"] != 10030 || got["EXPENSE"] != 3333 || got["REFUND"] != 333 || got["INVESTMENT"] != 0 {
+		t.Fatalf("totais errados: %v", got)
+	}
+	if _, err := scenarioTotals(&scenario{Transactions: []scTx{{Type: "INCOME", Amount: "1,00"}}}); err == nil {
+		t.Fatal("valor fora do formato deveria falhar")
+	}
+}
+
+func TestScenarioCommittedTemOsQuatroTiposQueODashboardSoma(t *testing.T) {
+	sc, err := loadScenario(filepath.Join("..", "..", "datasets", "synthetic", "scenario.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	totals, err := scenarioTotals(sc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, typ := range []string{"INCOME", "EXPENSE", "REFUND", "INVESTMENT"} {
+		if totals[typ] <= 0 {
+			t.Errorf("o cenário não tem %s: o dashboard não teria o que conferir", typ)
+		}
+	}
+}

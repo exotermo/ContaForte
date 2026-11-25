@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getSummary } from "@/lib/finance";
 import { LIQUIDITY, accountTypeLabel } from "@/lib/labels";
 import { formatMoney, isNegative } from "@/lib/money";
+import { MonthView } from "./month-view";
 import { cardCls, errorCls, mutedCls, negCls } from "./ui";
 
 type CardProps = { testId: string; title: string; value: string; help: string; highlight?: boolean };
@@ -71,6 +72,8 @@ export function SummaryView() {
           {hasOther && <Card testId="card-other" title="Outros" value={data.otherBalance} help={LIQUIDITY.OTHER.help} />}
         </div>
       )}
+
+      <MonthView />
 
       <section aria-labelledby="contas-titulo">
         <h2 id="contas-titulo" className="mb-3 text-lg font-semibold">

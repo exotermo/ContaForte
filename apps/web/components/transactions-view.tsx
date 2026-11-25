@@ -121,13 +121,27 @@ function Row({ t, accountName, category, suggestion }: { t: Transaction; account
   );
 }
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function TransactionsView() {
   const router = useRouter();
   // vindo do histórico de importações: /transacoes?importId=... mostra só as transações daquela importação
-  const importIdFromUrl = useSearchParams().get("importId") ?? undefined;
+  const params = useSearchParams();
+  const importIdFromUrl = params.get("importId") ?? undefined;
+  // vindo do dashboard: /transacoes?type=EXPENSE&from=2026-05-01&to=2026-05-31&categoryId=... (filtros prontos)
+  const initial: TransactionFilter = {
+    importId: importIdFromUrl,
+    from: DATE_RE.test(params.get("from") ?? "") ? params.get("from")! : undefined,
+    to: DATE_RE.test(params.get("to") ?? "") ? params.get("to")! : undefined,
+    type: TRANSACTION_TYPES.find((t) => t.value === params.get("type"))?.value,
+    categoryId: UUID_RE.test(params.get("categoryId") ?? "") ? params.get("categoryId")! : undefined,
+    contextId: UUID_RE.test(params.get("contextId") ?? "") ? params.get("contextId")! : undefined,
+  };
+  const hasUrlFilters = [...params.keys()].length > 0;
   const [showForm, setShowForm] = useState(false);
-  const [draft, setDraft] = useState<TransactionFilter>({ importId: importIdFromUrl });
-  const [applied, setApplied] = useState<TransactionFilter>({ importId: importIdFromUrl });
+  const [draft, setDraft] = useState<TransactionFilter>(initial);
+  const [applied, setApplied] = useState<TransactionFilter>(initial);
   const [page, setPage] = useState(0);
 
   // todas as contas (inclusive arquivadas) para nomear lançamentos antigos; só as ativas entram no formulário
@@ -161,7 +175,7 @@ export function TransactionsView() {
     setDraft({});
     setApplied({});
     setPage(0);
-    if (importIdFromUrl) router.replace("/transacoes");
+    if (hasUrlFilters) router.replace("/transacoes");
   }
 
   const data = txQ.data;

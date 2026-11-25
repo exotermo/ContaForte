@@ -13,6 +13,7 @@ const ROUTES = {
   filtros: `/api/v1/transactions?size=20&type=EXPENSE&from=${day(120)}&to=${day(0)}&q=loja`,
   resumo: "/api/v1/summary",
   mensal: "/api/v1/summary/monthly",
+  historico: "/api/v1/summary/history?months=24",
 };
 
 // declarar o limiar é o que faz o k6 publicar o p95 de cada rota (sub-métrica por tag)

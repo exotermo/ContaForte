@@ -38,4 +38,14 @@ class SummaryController {
                                    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
         return service.monthly(UUID.fromString(jwt.getSubject()), month);
     }
+
+    @GetMapping("/history")
+    @Operation(summary = "Série mensal de receitas, gastos líquidos e investido (dashboard)",
+            description = "months de 1 a 24 (padrão 6), terminando em end (AAAA-MM; padrão: mês atual em America/Sao_Paulo). "
+                    + "Meses sem movimento vêm zerados; do mais antigo para o mais recente.")
+    HistoryResponse history(@AuthenticationPrincipal Jwt jwt,
+                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth end,
+                            @RequestParam(defaultValue = "6") int months) {
+        return service.history(UUID.fromString(jwt.getSubject()), end, months);
+    }
 }

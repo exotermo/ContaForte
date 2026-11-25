@@ -4,7 +4,13 @@ import { renderWithQuery, summary } from "./test-utils";
 import { SummaryView } from "./summary-view";
 
 const getSummary = vi.fn();
-vi.mock("@/lib/finance", async (orig) => ({ ...(await orig<typeof import("@/lib/finance")>()), getSummary: () => getSummary() }));
+vi.mock("@/lib/finance", async (orig) => ({
+  ...(await orig<typeof import("@/lib/finance")>()),
+  getSummary: () => getSummary(),
+  // o painel do mês tem testes próprios (month-view.test.tsx); aqui só não pode chamar a rede
+  getMonthly: () => new Promise(() => {}),
+  getHistory: () => new Promise(() => {}),
+}));
 
 afterEach(() => getSummary.mockReset());
 

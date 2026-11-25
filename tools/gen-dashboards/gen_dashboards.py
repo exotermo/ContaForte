@@ -146,6 +146,11 @@ n.stat("Resumo","histogram_quantile(0.95, sum by (le) (rate(http_server_requests
 n.stat("Resumo mensal","histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/summary/monthly\"}[1h]))) * 1000",unit="ms",w=6,decimals=0,thresholds=[{"color":"green","value":None},{"color":"orange","value":300},{"color":"red","value":1000}])
 n.stat("Criar transação","histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/transactions\",method=\"POST\"}[1h]))) * 1000",unit="ms",w=6,decimals=0,thresholds=[{"color":"green","value":None},{"color":"orange","value":300},{"color":"red","value":1000}])
 n.ts("p95 por rota",[(f"histogram_quantile(0.95, sum by (le, uri, method) (rate(http_server_requests_seconds_bucket{{job=\"backend\",{FIN}}}[5m])))","{{method}} {{uri}}")],unit="s",w=24)
+n.row("Dashboard (resumo e série mensal)")
+# só contagens e latência por rota: o conteúdo do mês nunca vai para métrica ou log
+n.stat("Aberturas do mês (24h)","sum(increase(http_server_requests_seconds_count{job=\"backend\",uri=\"/api/v1/summary/monthly\",status=\"200\"}[24h])) or vector(0)",w=6,decimals=0)
+n.stat("Série mensal: p95 (última hora)","histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/summary/history\"}[1h]))) * 1000",unit="ms",w=6,decimals=0,thresholds=[{"color":"green","value":None},{"color":"orange","value":300},{"color":"red","value":1000}])
+n.ts("Acessos por rota do dashboard (5 min)",[("sum by (uri) (rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/summary.*\"}[5m]))","{{uri}}")],unit="reqps",w=12)
 n.row("Importações de extrato")
 # só contagens por formato, status e resultado: nunca nome de arquivo, descrição ou valor
 n.stat("Importações confirmadas (24h)","sum(increase(contaforte_imports_total{status=\"CONFIRMED\"}[24h])) or vector(0)",w=6,decimals=0)

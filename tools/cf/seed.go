@@ -479,6 +479,85 @@ func loadInto(demo *apiClient, sc *scenario, now time.Time) error {
 	}
 	ok("resumo confere: disponível %s, restrito %s, investido %s, patrimônio %s",
 		sc.Expected["availableCash"], sc.Expected["restrictedBalance"], sc.Expected["investedAssets"], sc.Expected["totalNetWorth"])
+	return checkDashboard(demo, sc)
+}
+
+// historyMonth é um mês da série do dashboard (/summary/history).
+type historyMonth struct {
+	Month      string `json:"month"`
+	Income     string `json:"income"`
+	Expense    string `json:"expense"`
+	Refunds    string `json:"refunds"`
+	NetExpense string `json:"netExpense"`
+	Invested   string `json:"invested"`
+	Net        string `json:"net"`
+}
+
+// scenarioTotals soma o cenário por tipo (em centavos): receitas, despesas, estornos e investimentos. É independente
+// da data de hoje, então serve para conferir a série mensal do dashboard sem saber em que mês cada compra caiu.
+func scenarioTotals(sc *scenario) (map[string]int64, error) {
+	totals := map[string]int64{}
+	for i, t := range sc.Transactions {
+		c, err := centsOf(t.Amount)
+		if err != nil {
+			return nil, fmt.Errorf("transação %d: %w", i+1, err)
+		}
+		totals[t.Type] += c
+	}
+	return totals, nil
+}
+
+// checkDashboard confere o que o dashboard mostra: a soma de 24 meses da série bate com o cenário carregado, cada mês
+// fecha as próprias contas (gasto líquido = despesas - estornos; sobra = receitas - gasto líquido) e o último mês da
+// série é igual ao resumo mensal.
+func checkDashboard(demo *apiClient, sc *scenario) error {
+	var h struct {
+		Months []historyMonth `json:"months"`
+	}
+	if _, err := demo.call("GET", "/api/v1/summary/history?months=24", nil, &h); err != nil {
+		return err
+	}
+	want, err := scenarioTotals(sc)
+	if err != nil {
+		return err
+	}
+	var income, expense, refunds, invested int64
+	for _, m := range h.Months {
+		vals := map[string]*int64{"income": &income, "expense": &expense, "refunds": &refunds, "invested": &invested}
+		for name, raw := range map[string]string{"income": m.Income, "expense": m.Expense, "refunds": m.Refunds, "invested": m.Invested} {
+			c, err := centsOf(raw)
+			if err != nil {
+				return fmt.Errorf("série mensal %s: %w", m.Month, err)
+			}
+			*vals[name] += c
+		}
+		ne, _ := centsOf(m.NetExpense)
+		e, _ := centsOf(m.Expense)
+		r, _ := centsOf(m.Refunds)
+		inc, _ := centsOf(m.Income)
+		net, _ := centsOf(m.Net)
+		if ne != e-r || net != inc-ne {
+			return fmt.Errorf("série mensal %s: as contas do mês não fecham", m.Month)
+		}
+	}
+	got := map[string]int64{"INCOME": income, "EXPENSE": expense, "REFUND": refunds, "INVESTMENT": invested}
+	for typ, g := range got {
+		if g != want[typ] {
+			return fmt.Errorf("dashboard: a série de 24 meses soma %d centavos de %s, o cenário tem %d", g, typ, want[typ])
+		}
+	}
+	if len(h.Months) == 0 {
+		return fmt.Errorf("dashboard: a série mensal veio vazia")
+	}
+	last := h.Months[len(h.Months)-1]
+	var cur historyMonth
+	if _, err := demo.call("GET", "/api/v1/summary/monthly?month="+last.Month, nil, &cur); err != nil {
+		return err
+	}
+	if cur.Income != last.Income || cur.NetExpense != last.NetExpense || cur.Net != last.Net || cur.Invested != last.Invested {
+		return fmt.Errorf("dashboard: o resumo mensal de %s não bate com a série", last.Month)
+	}
+	ok("dashboard confere: 24 meses somam as receitas e despesas do cenário; mês atual (%s) igual ao resumo mensal", last.Month)
 	return nil
 }
 

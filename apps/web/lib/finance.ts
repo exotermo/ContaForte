@@ -18,6 +18,8 @@ import type {
   RuleTestResult,
   NewTransaction,
   Page,
+  History,
+  MonthlySummary,
   Summary,
   Transaction,
   TransactionFilter,
@@ -105,6 +107,9 @@ export const deleteTransaction = (id: string) => request<void>(`/transactions/${
 
 // ---- resumo
 export const getSummary = () => request<Summary>("/summary");
+export const getMonthly = (month: string) => request<MonthlySummary>(`/summary/monthly?month=${encodeURIComponent(month)}`);
+export const getHistory = (end: string, months = 6) =>
+  request<History>(`/summary/history?end=${encodeURIComponent(end)}&months=${months}`);
 
 // ---- importação de extratos
 export const suggestMapping = (file: File) => {

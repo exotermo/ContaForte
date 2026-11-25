@@ -674,7 +674,7 @@
     },
     {
       "type": "row",
-      "title": "Importações de extrato",
+      "title": "Dashboard (resumo e série mensal)",
       "collapsed": false,
       "id": 14,
       "gridPos": {
@@ -686,7 +686,7 @@
     },
     {
       "type": "stat",
-      "title": "Importações confirmadas (24h)",
+      "title": "Aberturas do mês (24h)",
       "id": 15,
       "datasource": {
         "type": "prometheus",
@@ -697,6 +697,182 @@
         "w": 6,
         "x": 0,
         "y": 25
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(http_server_requests_seconds_count{job=\"backend\",uri=\"/api/v1/summary/monthly\",status=\"200\"}[24h])) or vector(0)",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Série mensal: p95 (última hora)",
+      "id": 16,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 25
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=\"/api/v1/summary/history\"}[1h]))) * 1000",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 300
+              },
+              {
+                "color": "red",
+                "value": 1000
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Acessos por rota do dashboard (5 min)",
+      "id": 17,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 25
+      },
+      "targets": [
+        {
+          "expr": "sum by (uri) (rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/summary.*\"}[5m]))",
+          "legendFormat": "{{uri}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Importações de extrato",
+      "collapsed": false,
+      "id": 18,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Importações confirmadas (24h)",
+      "id": 19,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 33
       },
       "targets": [
         {
@@ -740,7 +916,7 @@
     {
       "type": "stat",
       "title": "Importações desfeitas (24h)",
-      "id": 16,
+      "id": 20,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -749,7 +925,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 25
+        "y": 33
       },
       "targets": [
         {
@@ -793,7 +969,7 @@
     {
       "type": "stat",
       "title": "Extratos recusados (24h)",
-      "id": 17,
+      "id": 21,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -802,7 +978,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 25
+        "y": 33
       },
       "targets": [
         {
@@ -846,7 +1022,7 @@
     {
       "type": "stat",
       "title": "Prévia: p95 (última hora)",
-      "id": 18,
+      "id": 22,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -855,7 +1031,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 25
+        "y": 33
       },
       "targets": [
         {
@@ -907,7 +1083,7 @@
     {
       "type": "timeseries",
       "title": "Importações por formato e status (5 min)",
-      "id": 19,
+      "id": 23,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -916,7 +1092,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 37
       },
       "targets": [
         {
@@ -957,7 +1133,7 @@
     {
       "type": "timeseries",
       "title": "Linhas por resultado (5 min)",
-      "id": 20,
+      "id": 24,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -966,7 +1142,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 37
       },
       "targets": [
         {
@@ -1007,7 +1183,7 @@
     {
       "type": "timeseries",
       "title": "Duração da prévia (p50 e p95)",
-      "id": 21,
+      "id": 25,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1016,7 +1192,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 44
       },
       "targets": [
         {
@@ -1066,7 +1242,7 @@
     {
       "type": "timeseries",
       "title": "Requisições de importação por status HTTP",
-      "id": 22,
+      "id": 26,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1075,7 +1251,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 44
       },
       "targets": [
         {
@@ -1117,18 +1293,18 @@
       "type": "row",
       "title": "Classificação de transações",
       "collapsed": false,
-      "id": 23,
+      "id": 27,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 51
       }
     },
     {
       "type": "stat",
       "title": "Categorizadas sozinhas (24h)",
-      "id": 24,
+      "id": 28,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1137,7 +1313,7 @@
         "h": 4,
         "w": 6,
         "x": 0,
-        "y": 44
+        "y": 52
       },
       "targets": [
         {
@@ -1181,7 +1357,7 @@
     {
       "type": "stat",
       "title": "Só sugeridas (24h)",
-      "id": 25,
+      "id": 29,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1190,7 +1366,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 44
+        "y": 52
       },
       "targets": [
         {
@@ -1234,7 +1410,7 @@
     {
       "type": "stat",
       "title": "Cobertura automática (24h)",
-      "id": 26,
+      "id": 30,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1243,7 +1419,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 44
+        "y": 52
       },
       "targets": [
         {
@@ -1287,7 +1463,7 @@
     {
       "type": "stat",
       "title": "Taxa de correção (24h)",
-      "id": 27,
+      "id": 31,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1296,7 +1472,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 44
+        "y": 52
       },
       "targets": [
         {
@@ -1348,7 +1524,7 @@
     {
       "type": "timeseries",
       "title": "Decisões do motor por origem (5 min)",
-      "id": 28,
+      "id": 32,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1357,7 +1533,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 48
+        "y": 56
       },
       "targets": [
         {
@@ -1398,7 +1574,7 @@
     {
       "type": "timeseries",
       "title": "Feedback: confirmações e correções (5 min)",
-      "id": 29,
+      "id": 33,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1407,7 +1583,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 48
+        "y": 56
       },
       "targets": [
         {
@@ -1449,18 +1625,18 @@
       "type": "row",
       "title": "Rejeições e erros",
       "collapsed": false,
-      "id": 30,
+      "id": 34,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 55
+        "y": 63
       }
     },
     {
       "type": "timeseries",
       "title": "Respostas 4xx por rota (validação, conflito, não encontrado)",
-      "id": 31,
+      "id": 35,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1469,7 +1645,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 64
       },
       "targets": [
         {
@@ -1510,7 +1686,7 @@
     {
       "type": "timeseries",
       "title": "Respostas 5xx por rota",
-      "id": 32,
+      "id": 36,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1519,7 +1695,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 64
       },
       "targets": [
         {

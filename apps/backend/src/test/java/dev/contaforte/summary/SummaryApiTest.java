@@ -27,6 +27,12 @@ class SummaryApiTest extends ApiTestSupport {
         return r.getBody();
     }
 
+    private Map historico(Pessoa p, String query) {
+        var r = call(HttpMethod.GET, "/api/v1/summary/history" + query, null, p);
+        assertThat(r.getStatusCode()).as(query + " -> " + r.getBody()).isEqualTo(HttpStatus.OK);
+        return r.getBody();
+    }
+
     private Map<String, Object> em(Map<String, Object> corpo, String instante) {
         corpo.put("occurredAt", instante);
         return corpo;
@@ -47,10 +53,12 @@ class SummaryApiTest extends ApiTestSupport {
     void semTokenEhNaoAutorizadoEServicoEDispositivoRecebem403() {
         assertThat(status(HttpMethod.GET, "/api/v1/summary", null, null)).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(status(HttpMethod.GET, "/api/v1/summary/monthly", null, null)).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(status(HttpMethod.GET, "/api/v1/summary/history", null, null)).isEqualTo(HttpStatus.UNAUTHORIZED);
         for (Role role : new Role[] {Role.SERVICE, Role.DEVICE}) {
             Pessoa p = pessoa(role);
             assertThat(status(HttpMethod.GET, "/api/v1/summary", null, p)).as(role.name()).isEqualTo(HttpStatus.FORBIDDEN);
             assertThat(status(HttpMethod.GET, "/api/v1/summary/monthly", null, p)).as(role.name()).isEqualTo(HttpStatus.FORBIDDEN);
+            assertThat(status(HttpMethod.GET, "/api/v1/summary/history", null, p)).as(role.name()).isEqualTo(HttpStatus.FORBIDDEN);
         }
     }
 
@@ -333,9 +341,101 @@ class SummaryApiTest extends ApiTestSupport {
         assertThat(mes(ana, "2026-05")).containsEntry("expense", "10.00");   // histórico preservado; excluída fora
     }
 
+    // ---------------------------------------------------------------- série mensal
+
+    @Test
+    void historicoTrazOsMesesEmOrdemComMesesVaziosZerados() {
+        Pessoa ana = pessoa();
+        String banco = conta(ana, "Banco", "CHECKING_ACCOUNT", null);
+        String corretora = conta(ana, "Corretora", "INVESTMENT_ACCOUNT", null);
+        criada(ana, em(corpo("INCOME", banco, "5000.00"), "2026-03-10T15:00:00Z"));
+        criada(ana, em(corpo("EXPENSE", banco, "1200.50"), "2026-03-12T15:00:00Z"));
+        criada(ana, em(corpo("REFUND", banco, "200.50"), "2026-03-20T15:00:00Z"));
+        criada(ana, em(com(corpo("INVESTMENT", banco, "800.00"), "counterpartAccountId", corretora), "2026-03-21T15:00:00Z"));
+        criada(ana, em(corpo("EXPENSE", banco, "300.00"), "2026-05-02T15:00:00Z"));
+        criada(ana, em(com(corpo("TRANSFER", banco, "999.00"), "counterpartAccountId", corretora), "2026-05-03T15:00:00Z"));
+
+        Map h = historico(ana, "?end=2026-05&months=4");
+
+        assertThat(h).containsEntry("from", "2026-02").containsEntry("to", "2026-05");
+        List<Map> meses = (List<Map>) h.get("months");
+        assertThat(meses).extracting(m -> m.get("month")).containsExactly("2026-02", "2026-03", "2026-04", "2026-05");
+        assertThat(meses.get(0)).containsEntry("income", "0.00").containsEntry("net", "0.00");   // sem movimento
+        assertThat(meses.get(1)).containsEntry("income", "5000.00").containsEntry("expense", "1200.50")
+                .containsEntry("refunds", "200.50").containsEntry("netExpense", "1000.00")
+                .containsEntry("invested", "800.00").containsEntry("net", "4000.00");
+        assertThat(meses.get(2)).containsEntry("expense", "0.00");
+        assertThat(meses.get(3)).containsEntry("expense", "300.00").containsEntry("net", "-300.00");   // transferência fora
+    }
+
+    @Test
+    void historicoBateComOResumoMensalDeCadaMes() {
+        Pessoa ana = pessoa();
+        String banco = conta(ana, "Banco", "CHECKING_ACCOUNT", null);
+        criada(ana, em(corpo("INCOME", banco, "100.10"), "2026-01-15T15:00:00Z"));
+        criada(ana, em(corpo("EXPENSE", banco, "33.33"), "2026-02-15T15:00:00Z"));
+        criada(ana, em(corpo("EXPENSE", banco, "0.07"), "2026-02-16T15:00:00Z"));
+
+        List<Map> meses = (List<Map>) historico(ana, "?end=2026-02&months=2").get("months");
+
+        for (Map m : meses) {
+            Map doMes = mes(ana, (String) m.get("month"));
+            for (String campo : new String[] {"income", "expense", "refunds", "netExpense", "invested", "net"}) {
+                assertThat(m.get(campo)).as(m.get("month") + "." + campo).isEqualTo(doMes.get(campo));
+            }
+        }
+    }
+
+    @Test
+    void historicoUsaOFusoDeSaoPauloNosLimitesDoMes() {
+        Pessoa ana = pessoa();
+        String banco = conta(ana, "Banco", "CHECKING_ACCOUNT", null);
+        criada(ana, em(corpo("EXPENSE", banco, "11.00"), "2026-04-01T02:30:00Z"));   // 31/03 23:30 em São Paulo
+        criada(ana, em(corpo("EXPENSE", banco, "22.00"), "2026-04-01T03:00:00Z"));   // 01/04 00:00
+        criada(ana, em(corpo("EXPENSE", banco, "33.00"), "2026-05-01T02:59:00Z"));   // 30/04 23:59
+
+        List<Map> meses = (List<Map>) historico(ana, "?end=2026-05&months=3").get("months");
+
+        assertThat(meses).extracting(m -> m.get("expense")).containsExactly("11.00", "55.00", "0.00");
+    }
+
+    @Test
+    void historicoSemParametrosTemSeisMesesTerminandoNoMesAtual() {
+        Map h = historico(pessoa(), "");
+
+        List<Map> meses = (List<Map>) h.get("months");
+        assertThat(meses).hasSize(6);
+        assertThat(meses.get(5).get("month")).isEqualTo(h.get("to"));
+        assertThat(meses.get(5).get("month")).isEqualTo(YearMonth.now(ZoneId.of("America/Sao_Paulo")).toString());
+    }
+
+    @Test
+    void historicoIgnoraTransacaoExcluidaENaoMisturaUsuarios() {
+        Pessoa ana = pessoa(), bia = pessoa();
+        String contaAna = conta(ana, "Banco", "CHECKING_ACCOUNT", null);
+        String contaBia = conta(bia, "Banco", "CHECKING_ACCOUNT", null);
+        criada(ana, em(corpo("EXPENSE", contaAna, "10.00"), "2026-05-10T15:00:00Z"));
+        Map excluida = criada(ana, em(corpo("EXPENSE", contaAna, "99.00"), "2026-05-11T15:00:00Z"));
+        criada(bia, em(corpo("EXPENSE", contaBia, "777.00"), "2026-05-10T15:00:00Z"));
+        call(HttpMethod.DELETE, "/api/v1/transactions/" + excluida.get("id"), null, ana);
+
+        assertThat(((List<Map>) historico(ana, "?end=2026-05&months=1").get("months")).get(0)).containsEntry("expense", "10.00");
+        assertThat(((List<Map>) historico(bia, "?end=2026-05&months=1").get("months")).get(0)).containsEntry("expense", "777.00");
+    }
+
+    @Test
+    void historicoValidaOsParametros() {
+        Pessoa ana = pessoa();
+        for (String q : new String[] {"?months=0", "?months=25", "?end=1999-12&months=1", "?end=2101-01&months=1"}) {
+            assertThat(status(HttpMethod.GET, "/api/v1/summary/history" + q, null, ana)).as(q).isIn(HttpStatus.UNPROCESSABLE_ENTITY, HttpStatus.BAD_REQUEST);
+        }
+        assertThat(status(HttpMethod.GET, "/api/v1/summary/history?end=2000-01&months=24", null, ana)).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(status(HttpMethod.GET, "/api/v1/summary/history?months=24", null, ana)).isEqualTo(HttpStatus.OK);
+    }
+
     @Test
     void openApiDocumentaOsEndpointsDeResumo() {
         Map paths = (Map) rest.getForEntity("/api/v1/openapi", Map.class).getBody().get("paths");
-        assertThat(paths).containsKeys("/api/v1/summary", "/api/v1/summary/monthly");
+        assertThat(paths).containsKeys("/api/v1/summary", "/api/v1/summary/monthly", "/api/v1/summary/history");
     }
 }

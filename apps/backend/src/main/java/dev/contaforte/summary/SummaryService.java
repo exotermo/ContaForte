@@ -47,6 +47,18 @@ class SummaryService {
              group by type, category_id, context_id
             """;
 
+    private static final int MAX_HISTORY_MONTHS = 24;
+
+    private static final String HISTORY_SQL = """
+            select to_char(date_trunc('month', occurred_at at time zone 'America/Sao_Paulo'), 'YYYY-MM') as month,
+                   type, sum(amount) as total
+              from transactions
+             where user_id = ? and deleted_at is null
+               and occurred_at >= ? and occurred_at < ?
+               and type in ('INCOME', 'EXPENSE', 'REFUND', 'INVESTMENT')
+             group by 1, 2
+            """;
+
     private final AccountBalances balances;
     private final CategoryRepository categories;
     private final ContextRepository contexts;
@@ -118,6 +130,40 @@ class SummaryService {
         return new MonthlySummaryResponse(month.toString(), income, expense, refunds, netExpense, invested,
                 income.subtract(netExpense), categorySpend(userId, spendByCategory, uncategorized),
                 contextSpend(userId, spendByContext, noContext));
+    }
+
+    // ---------------------------------------------------------------- série mensal
+
+    /** Os {@code months} meses que terminam em {@code end} (padrão: mês atual), numa única consulta agrupada. */
+    @Transactional(readOnly = true)
+    HistoryResponse history(UUID userId, YearMonth end, int months) {
+        if (months < 1 || months > MAX_HISTORY_MONTHS) {
+            throw new ApiException(HttpStatus.UNPROCESSABLE_ENTITY, "months deve estar entre 1 e " + MAX_HISTORY_MONTHS + ".");
+        }
+        YearMonth last = end != null ? end : YearMonth.now(clock.withZone(AppTime.ZONE));
+        YearMonth first = last.minusMonths(months - 1L);
+        if (first.isBefore(MIN_MONTH) || last.isAfter(MAX_MONTH)) {
+            throw new ApiException(HttpStatus.UNPROCESSABLE_ENTITY, "O período deve estar entre 2000-01 e 2100-12.");
+        }
+        Map<String, Map<String, BigDecimal>> byMonth = new HashMap<>();
+        jdbc.query(HISTORY_SQL, (ResultSet rs) -> {
+            byMonth.computeIfAbsent(rs.getString("month"), k -> new HashMap<>()).put(rs.getString("type"), rs.getBigDecimal("total"));
+        }, userId, startOf(first), startOf(last.plusMonths(1)));
+
+        List<HistoryResponse.Month> result = new ArrayList<>();
+        for (YearMonth m = first; !m.isAfter(last); m = m.plusMonths(1)) {
+            Map<String, BigDecimal> t = byMonth.getOrDefault(m.toString(), Map.of());
+            BigDecimal income = t.getOrDefault("INCOME", ZERO), expense = t.getOrDefault("EXPENSE", ZERO);
+            BigDecimal refunds = t.getOrDefault("REFUND", ZERO), invested = t.getOrDefault("INVESTMENT", ZERO);
+            BigDecimal netExpense = expense.subtract(refunds);
+            result.add(new HistoryResponse.Month(m.toString(), income, expense, refunds, netExpense, invested,
+                    income.subtract(netExpense)));
+        }
+        return new HistoryResponse(first.toString(), last.toString(), result);
+    }
+
+    private static OffsetDateTime startOf(YearMonth month) {
+        return month.atDay(1).atStartOfDay(AppTime.ZONE).toOffsetDateTime().withOffsetSameInstant(ZoneOffset.UTC);
     }
 
     /** Soma as subcategorias na categoria de 1º nível e ordena do maior gasto para o menor. */

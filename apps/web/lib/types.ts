@@ -78,6 +78,31 @@ export type Summary = {
   accounts: { id: string; name: string; type: AccountType; liquidity: Liquidity; balance: string }[];
 };
 
+export type MonthTotals = {
+  income: string;
+  expense: string;
+  refunds: string;
+  netExpense: string;
+  invested: string;
+  net: string;
+};
+
+export type MonthlySummary = MonthTotals & {
+  month: string;
+  byCategory: {
+    categoryId: string | null;
+    name: string;
+    code: string | null;
+    system: boolean;
+    total: string;
+    directTotal: string;
+    children: { categoryId: string; name: string; total: string }[];
+  }[];
+  byContext: { contextId: string | null; name: string; total: string }[];
+};
+
+export type History = { from: string; to: string; months: (MonthTotals & { month: string })[] };
+
 export type TransactionFilter = {
   from?: string;
   to?: string;

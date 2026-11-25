@@ -177,6 +177,18 @@ describe("TransactionsView", () => {
     expect(screen.queryByText("Mostrando só as transações de uma importação.")).not.toBeInTheDocument();
   });
 
+  it("vindo do painel, já aplica período, tipo, categoria e contexto da URL e ignora valores inválidos", async () => {
+    urlParams = new URLSearchParams("type=EXPENSE&from=2026-05-01&to=2026-05-31&categoryId=11111111-1111-4111-8111-111111111111&contextId=lixo");
+    setup([tx({ id: "t1", description: "Almoço" })]);
+
+    expect(await screen.findByText("Almoço")).toBeInTheDocument();
+    expect(listTransactions).toHaveBeenCalledWith(
+      { type: "EXPENSE", from: "2026-05-01", to: "2026-05-31", categoryId: "11111111-1111-4111-8111-111111111111" },
+      0,
+    );
+    expect(screen.getByLabelText("De")).toHaveValue("2026-05-01");
+  });
+
   it("transação importada ganha a etiqueta da origem; lançamento manual não", async () => {
     setup([tx({ id: "t1", source: "OFX", description: "Importada" }), tx({ id: "t2", source: "MANUAL", description: "Digitada" })]);
 
