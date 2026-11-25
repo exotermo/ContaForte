@@ -26,7 +26,7 @@ Operação
   doctor                             Diagnóstico: isolamento de rede, portas, segredos, RAM
   logs [serviço]                     Acompanha os logs
   open [app|grafana]                 Abre o app (ou o Grafana) no navegador
-  seed [--reset] [--with-imports]    Carrega dados FICTÍCIOS (90 dias) num usuário demo; com --with-imports, também importa extratos OFX sintéticos
+  seed [--reset] [--with-imports]    Carrega dados FICTÍCIOS (90 dias) e regras/favorecidos de demonstração num usuário demo; com --with-imports, importa também extratos OFX sintéticos
   bench [--import-rows N]            Mede a latência (p95) das telas com 10 mil transações (k6) e a importação de N linhas (padrão 20000)
   backup                             pg_dump comprimido em backups/
   restore <arquivo.sql.gz>           Restaura um backup (pede confirmação)

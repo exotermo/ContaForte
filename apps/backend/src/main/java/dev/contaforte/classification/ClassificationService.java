@@ -47,16 +47,19 @@ public class ClassificationService {
     private final CategoryRepository categories;
     private final ContextRepository contexts;
     private final AuditService audit;
+    private final ClassificationMetrics metrics;
     private volatile List<Rule> defaultRules;
 
     ClassificationService(CategorizationRuleRepository rules, RecipientStore recipients, TransactionRepository transactions,
-                          CategoryRepository categories, ContextRepository contexts, AuditService audit) {
+                          CategoryRepository categories, ContextRepository contexts, AuditService audit,
+                          ClassificationMetrics metrics) {
         this.rules = rules;
         this.recipients = recipients;
         this.transactions = transactions;
         this.categories = categories;
         this.contexts = contexts;
         this.audit = audit;
+        this.metrics = metrics;
     }
 
     // ---------------------------------------------------------------- motor
@@ -161,7 +164,7 @@ public class ClassificationService {
         learn(userId, t, t.getCategoryId(), t.getContextId());
         if (predicted != null) {
             boolean same = Objects.equals(predicted.categoryId(), t.getCategoryId()) && Objects.equals(predicted.contextId(), t.getContextId());
-            recipients.insertFeedback(userId, t.getId(), same ? "CONFIRMED" : "CORRECTED", predicted.categoryId(), t.getCategoryId(),
+            feedback(userId, t.getId(), same ? "CONFIRMED" : "CORRECTED", predicted.categoryId(), t.getCategoryId(),
                     predicted.contextId(), t.getContextId(), predicted.source(), predicted.confidence());
         }
     }
@@ -273,8 +276,14 @@ public class ClassificationService {
         }
         if (predicted) {
             boolean same = Objects.equals(prevCat, cat) && Objects.equals(prevCtx, ctx);
-            recipients.insertFeedback(userId, t.getId(), same ? "CONFIRMED" : "CORRECTED", prevCat, cat, prevCtx, ctx, predSource, predConfidence);
+            feedback(userId, t.getId(), same ? "CONFIRMED" : "CORRECTED", prevCat, cat, prevCtx, ctx, predSource, predConfidence);
         }
+    }
+
+    private void feedback(UUID userId, UUID transactionId, String kind, UUID prevCat, UUID newCat, UUID prevCtx, UUID newCtx,
+                          String source, BigDecimal confidence) {
+        recipients.insertFeedback(userId, transactionId, kind, prevCat, newCat, prevCtx, newCtx, source, confidence);
+        metrics.feedback(kind);
     }
 
     private void learn(UUID userId, Transaction t, UUID cat, UUID ctx) {
@@ -368,8 +377,13 @@ public class ClassificationService {
         if (auto != expectedAuto || suggest != expectedSuggest) {
             throw new ApiException(HttpStatus.CONFLICT, "O resultado mudou desde a prévia. Confira a prévia de novo antes de aplicar.");
         }
-        for (int i = 0; i < touched.size(); i++) applyResult(touched.get(i), results.get(i));
+        ClassificationMetrics.Tally tally = metrics.tally();
+        for (int i = 0; i < touched.size(); i++) {
+            tally.add(effective(touched.get(i), results.get(i)));   // antes de aplicar: depois, a categoria já estaria preenchida
+            applyResult(touched.get(i), results.get(i));
+        }
         transactions.saveAll(touched);
+        tally.flush();
         audit.record(userId, "TRANSACTIONS_RECLASSIFIED", "user:" + userId, Map.of("auto", auto, "suggest", suggest));
         return new ReclassifyOutcome(auto, suggest, unchanged);
     }

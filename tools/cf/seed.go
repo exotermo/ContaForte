@@ -376,6 +376,9 @@ func cmdSeed(args []string) error {
 	if err := loadInto(demo, sc, time.Now()); err != nil {
 		return err
 	}
+	if err := seedClassification(demo); err != nil {
+		return err
+	}
 	if *withImports {
 		if err := seedImports(demo, filepath.Join(root, "datasets", "synthetic", "imports")); err != nil {
 			return err
@@ -504,13 +507,15 @@ func centsOf(s string) (int64, error) {
 
 // importResp é o pedaço da resposta de importação que a conferência usa.
 type importResp struct {
-	ID            string `json:"id"`
-	Status        string `json:"status"`
-	NewRows       int    `json:"newRows"`
-	DuplicateRows int    `json:"duplicateRows"`
-	PossibleRows  int    `json:"possibleRows"`
-	InvalidRows   int    `json:"invalidRows"`
-	ImportedRows  int    `json:"importedRows"`
+	ID             string `json:"id"`
+	Status         string `json:"status"`
+	NewRows        int    `json:"newRows"`
+	DuplicateRows  int    `json:"duplicateRows"`
+	PossibleRows   int    `json:"possibleRows"`
+	InvalidRows    int    `json:"invalidRows"`
+	AutoClassified int    `json:"autoClassified"`
+	Suggested      int    `json:"suggested"`
+	ImportedRows   int    `json:"importedRows"`
 }
 
 // seedImports importa dois extratos OFX sintéticos (o segundo repete 4 lançamentos do primeiro) numa conta própria e
@@ -527,9 +532,11 @@ func seedImports(demo *apiClient, dir string) error {
 		wantNew     int
 		wantDup     int
 		wantBalance string
+		wantAuto    int // linhas que o motor categoriza sozinho (regras padrão); -1 = não confere
+		wantSuggest int // linhas só sugeridas (favorecidos que o seed ensinou)
 	}{
-		{"conta-corrente-1.ofx", 12, 0, "4179.53"},
-		{"conta-corrente-2.ofx", 3, 4, "3954.62"},
+		{"conta-corrente-1.ofx", 12, 0, "4179.53", 9, 2},
+		{"conta-corrente-2.ofx", 3, 4, "3954.62", -1, -1},
 	}
 	for _, st := range steps {
 		content, err := os.ReadFile(filepath.Join(dir, st.file))
@@ -542,6 +549,10 @@ func seedImports(demo *apiClient, dir string) error {
 		}
 		if prev.NewRows != st.wantNew || prev.DuplicateRows != st.wantDup {
 			return fmt.Errorf("%s: prévia com %d novas e %d duplicadas, esperado %d e %d", st.file, prev.NewRows, prev.DuplicateRows, st.wantNew, st.wantDup)
+		}
+		if st.wantAuto >= 0 && (prev.AutoClassified != st.wantAuto || prev.Suggested != st.wantSuggest) {
+			return fmt.Errorf("%s: o motor categorizou %d sozinho e sugeriu %d, esperado %d e %d (a demonstração de classificação mudou?)",
+				st.file, prev.AutoClassified, prev.Suggested, st.wantAuto, st.wantSuggest)
 		}
 		var done importResp
 		if _, err := demo.call("POST", "/api/v1/imports/"+prev.ID+"/confirm", map[string]any{}, &done); err != nil {
@@ -561,5 +572,141 @@ func seedImports(demo *apiClient, dir string) error {
 		}
 		ok("%s importado: %d novas, %d duplicadas puladas, saldo %s", st.file, prev.NewRows, prev.DuplicateRows, bal.Balance)
 	}
+	var counts struct {
+		Suggested int `json:"suggested"`
+	}
+	if _, err := demo.call("GET", "/api/v1/classification/review/count", nil, &counts); err != nil {
+		return err
+	}
+	if counts.Suggested < 2 {
+		return fmt.Errorf("esperava ao menos 2 sugestões na Revisão depois das importações, vieram %d", counts.Suggested)
+	}
+	ok("Revisão: %d sugestões aguardam confirmação (confirme na tela Revisão)", counts.Suggested)
+	return nil
+}
+
+// demoCatalog guarda os ids das categorias e dos contextos padrão do usuário, pelo código estável.
+type demoCatalog struct {
+	category map[string]string
+	context  map[string]string
+}
+
+func loadCatalog(demo *apiClient) (*demoCatalog, error) {
+	var tree []idNode
+	if _, err := demo.call("GET", "/api/v1/categories", nil, &tree); err != nil {
+		return nil, err
+	}
+	var ctxs []idNode
+	if _, err := demo.call("GET", "/api/v1/contexts", nil, &ctxs); err != nil {
+		return nil, err
+	}
+	c := &demoCatalog{category: map[string]string{}, context: map[string]string{}}
+	for _, n := range tree {
+		if n.Code != nil {
+			c.category[*n.Code] = n.ID
+		}
+		for _, f := range n.Children {
+			if f.Code != nil {
+				c.category[*f.Code] = f.ID
+			}
+		}
+	}
+	for _, n := range ctxs {
+		if n.Code != nil {
+			c.context[*n.Code] = n.ID
+		}
+	}
+	return c, nil
+}
+
+func (c *demoCatalog) cat(code string) (string, error) {
+	id, found := c.category[code]
+	if !found {
+		return "", fmt.Errorf("categoria padrão desconhecida: %s", code)
+	}
+	return id, nil
+}
+
+// demoRule e demoTeach descrevem a demonstração de classificação (tudo fictício): duas regras do usuário e três
+// favorecidos com um histórico de decisões. Com isso, o extrato sintético mostra os três comportamentos do motor: regra
+// do sistema aplica sozinha, favorecido com poucas decisões só sugere, favorecido novo não sugere nada.
+var demoRules = []struct{ match, pattern, txType, category string }{
+	{"CONTAINS", "mercadinho do ze", "EXPENSE", "FOOD_GROCERIES"},
+	{"STARTS_WITH", "academia forca", "EXPENSE", "HEALTH_WELLNESS"},
+}
+
+var demoTeach = []struct {
+	description, txType, category, context string
+	times                                  int
+}{
+	{"PIX ENVIADO CAFÉ DA PRAÇA", "EXPENSE", "FOOD_SNACKS", "", 2},                // 2 decisões: 2/3, só sugere
+	{"PIX ENVIADO JOANA EXEMPLO", "EXPENSE", "LEISURE_EVENTS", "RELATIONSHIP", 6}, // 6 decisões: 6/7, aplica sozinho
+	{"PIX RECEBIDO JOANA EXEMPLO", "INCOME", "INCOME_OTHER", "", 1},               // outra direção, 1 decisão: só sugere
+}
+
+// seedClassification cria as regras e ensina os favorecidos da demonstração pela API (lançando com categoria, que é uma
+// decisão do usuário), numa conta própria, e confere o resultado pelo teste de texto do motor.
+func seedClassification(demo *apiClient) error {
+	cat, err := loadCatalog(demo)
+	if err != nil {
+		return err
+	}
+	for _, r := range demoRules {
+		id, err := cat.cat(r.category)
+		if err != nil {
+			return err
+		}
+		body := map[string]any{"matchType": r.match, "pattern": r.pattern, "transactionType": r.txType, "categoryId": id}
+		if _, err := demo.call("POST", "/api/v1/categorization-rules", body, nil); err != nil {
+			return fmt.Errorf("regra %q: %w", r.pattern, err)
+		}
+	}
+	var acc struct {
+		ID string `json:"id"`
+	}
+	if _, err := demo.call("POST", "/api/v1/accounts", map[string]string{"name": "Conta PIX (demonstração)", "type": "CHECKING_ACCOUNT"}, &acc); err != nil {
+		return err
+	}
+	for _, t := range demoTeach {
+		id, err := cat.cat(t.category)
+		if err != nil {
+			return err
+		}
+		for i := 0; i < t.times; i++ {
+			body := map[string]any{"type": t.txType, "accountId": acc.ID, "amount": "10.00", "description": t.description, "categoryId": id}
+			if t.context != "" {
+				body["contextId"] = cat.context[t.context]
+			}
+			if _, err := demo.call("POST", "/api/v1/transactions", body, nil); err != nil {
+				return fmt.Errorf("favorecido %q: %w", t.description, err)
+			}
+		}
+	}
+
+	// autoverificação: o motor precisa decidir exatamente como a demonstração promete
+	checks := []struct {
+		text, txType, source, decision string
+	}{
+		{"COMPRA MERCADINHO DO ZE 12/03", "EXPENSE", "RULE", "AUTO"},
+		{"PIX ENVIADO JOANA EXEMPLO", "EXPENSE", "RECIPIENT", "AUTO"},
+		{"PIX ENVIADO CAFÉ DA PRAÇA", "EXPENSE", "RECIPIENT", "SUGGEST"},
+		{"PIX RECEBIDO JOANA EXEMPLO", "INCOME", "RECIPIENT", "SUGGEST"},
+		{"COMPRA POSTO ABC", "EXPENSE", "DEFAULT_RULE", "AUTO"},
+	}
+	for _, c := range checks {
+		var out struct {
+			Category struct {
+				Source   string `json:"source"`
+				Decision string `json:"decision"`
+			} `json:"category"`
+		}
+		if _, err := demo.call("POST", "/api/v1/categorization-rules/test", map[string]string{"description": c.text, "type": c.txType}, &out); err != nil {
+			return err
+		}
+		if out.Category.Source != c.source || out.Category.Decision != c.decision {
+			return fmt.Errorf("classificação de %q: %s/%s, esperado %s/%s", c.text, out.Category.Source, out.Category.Decision, c.source, c.decision)
+		}
+	}
+	ok("%d regras e %d favorecidos de demonstração criados; o motor decide como esperado", len(demoRules), len(demoTeach))
 	return nil
 }

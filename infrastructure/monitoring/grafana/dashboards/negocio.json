@@ -638,7 +638,7 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum by (le, uri, method) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=~\"/api/v1/(accounts|transactions|summary|categories|contexts|imports).*\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le, uri, method) (rate(http_server_requests_seconds_bucket{job=\"backend\",uri=~\"/api/v1/(accounts|transactions|summary|categories|contexts|imports|classification|categorization-rules|pix-recipients).*\"}[5m])))",
           "legendFormat": "{{method}} {{uri}}",
           "refId": "A",
           "datasource": {
@@ -1115,7 +1115,7 @@
     },
     {
       "type": "row",
-      "title": "Rejeições e erros",
+      "title": "Classificação de transações",
       "collapsed": false,
       "id": 23,
       "gridPos": {
@@ -1126,9 +1126,229 @@
       }
     },
     {
-      "type": "timeseries",
-      "title": "Respostas 4xx por rota (validação, conflito, não encontrado)",
+      "type": "stat",
+      "title": "Categorizadas sozinhas (24h)",
       "id": 24,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 44
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(contaforte_classifications_total{decision=\"AUTO\"}[24h])) or vector(0)",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Só sugeridas (24h)",
+      "id": 25,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 44
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(contaforte_classifications_total{decision=\"SUGGEST\"}[24h])) or vector(0)",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Cobertura automática (24h)",
+      "id": 26,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 44
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(contaforte_classifications_total{decision=\"AUTO\"}[24h])) / clamp_min(sum(increase(contaforte_classifications_total[24h])), 1)",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Taxa de correção (24h)",
+      "id": 27,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 44
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(contaforte_classification_feedback_total{kind=\"CORRECTED\"}[24h])) / clamp_min(sum(increase(contaforte_classification_feedback_total[24h])), 1)",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.2
+              },
+              {
+                "color": "red",
+                "value": 0.4
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Decisões do motor por origem (5 min)",
+      "id": 28,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1137,11 +1357,123 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 44
+        "y": 48
       },
       "targets": [
         {
-          "expr": "sum by (status, uri) (rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/(accounts|transactions|summary|categories|contexts|imports).*\",status=~\"4..\"}[5m]))",
+          "expr": "sum by (source, decision) (increase(contaforte_classifications_total[5m])) > 0",
+          "legendFormat": "{{source}} {{decision}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 40,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Feedback: confirmações e correções (5 min)",
+      "id": 29,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 48
+      },
+      "targets": [
+        {
+          "expr": "sum by (kind) (increase(contaforte_classification_feedback_total[5m]))",
+          "legendFormat": "{{kind}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 40,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Rejeições e erros",
+      "collapsed": false,
+      "id": 30,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Respostas 4xx por rota (validação, conflito, não encontrado)",
+      "id": 31,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 56
+      },
+      "targets": [
+        {
+          "expr": "sum by (status, uri) (rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/(accounts|transactions|summary|categories|contexts|imports|classification|categorization-rules|pix-recipients).*\",status=~\"4..\"}[5m]))",
           "legendFormat": "{{status}} {{uri}}",
           "refId": "A",
           "datasource": {
@@ -1178,7 +1510,7 @@
     {
       "type": "timeseries",
       "title": "Respostas 5xx por rota",
-      "id": 25,
+      "id": 32,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1187,11 +1519,11 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 44
+        "y": 56
       },
       "targets": [
         {
-          "expr": "sum by (status, uri) (rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/(accounts|transactions|summary|categories|contexts|imports).*\",status=~\"5..\"}[5m]))",
+          "expr": "sum by (status, uri) (rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/(accounts|transactions|summary|categories|contexts|imports|classification|categorization-rules|pix-recipients).*\",status=~\"5..\"}[5m]))",
           "legendFormat": "{{status}} {{uri}}",
           "refId": "A",
           "datasource": {

@@ -8,6 +8,7 @@ import dev.contaforte.accounts.AccountRepository;
 import dev.contaforte.audit.AuditService;
 import dev.contaforte.categories.CategoryRepository;
 import dev.contaforte.categories.ContextRepository;
+import dev.contaforte.classification.ClassificationMetrics;
 import dev.contaforte.classification.ClassificationService;
 import dev.contaforte.classification.Decision;
 import dev.contaforte.classification.Result;
@@ -95,6 +96,7 @@ public class ImportService {
     private final ObjectMapper mapper;
     private final TransactionTemplate tx;
     private final ClassificationService classification;
+    private final ClassificationMetrics classificationMetrics;
     private final CategoryRepository categories;
     private final ContextRepository contexts;
 
@@ -102,7 +104,7 @@ public class ImportService {
                   TransactionRepository transactions, ImportClassifier classifier, OfxParser ofx, CsvParser csv,
                   ImportRateLimiter limiter, ImportMetrics metrics, AuditService audit, MeterRegistry meters,
                   ApplicationEventPublisher events, Clock clock, ObjectMapper mapper, PlatformTransactionManager txManager,
-                  ClassificationService classification, CategoryRepository categories, ContextRepository contexts) {
+                  ClassificationService classification, ClassificationMetrics classificationMetrics, CategoryRepository categories, ContextRepository contexts) {
         this.imports = imports;
         this.items = items;
         this.accounts = accounts;
@@ -119,6 +121,7 @@ public class ImportService {
         this.mapper = mapper;
         this.tx = new TransactionTemplate(txManager);
         this.classification = classification;
+        this.classificationMetrics = classificationMetrics;
         this.categories = categories;
         this.contexts = contexts;
     }
@@ -164,17 +167,21 @@ public class ImportService {
 
         // a classificação das linhas (CPU) também acontece fora da transação: o snapshot do usuário é lido uma vez
         ClassificationService.Snapshot snapshot = this.classification.snapshot(userId);
+        ClassificationMetrics.Tally tally = classificationMetrics.tally();
         ImportBatch saved = tx.execute(status -> {
             ImportBatch b = imports.save(batch);
             List<ImportItem> rows = ImportClassifier.toItems(b.getId(), dedup);
             for (ImportItem i : rows) {
                 if (i.getStatus() != ImportItemStatus.NEW && i.getStatus() != ImportItemStatus.POSSIBLE_DUPLICATE) continue;
-                i.setEngine(this.classification.classify(snapshot, i.getDescription(), i.getMerchant(), i.getType()));
+                dev.contaforte.classification.Result decided = this.classification.classify(snapshot, i.getDescription(), i.getMerchant(), i.getType());
+                i.setEngine(decided);
+                tally.add(decided);
             }
             items.saveAll(rows);
             return b;
         });
 
+        tally.flush();   // só depois de gravar: uma prévia que falhou não conta
         metrics.imports(format.name(), "PREVIEW");
         metrics.rows("NEW", saved.getNewRows());
         metrics.rows("DUPLICATE", saved.getDuplicateRows());

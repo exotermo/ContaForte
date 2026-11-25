@@ -191,6 +191,42 @@ func TestE2ECleanupSQLSoTocaNoPrefixoDeTeste(t *testing.T) {
 	}
 }
 
+func TestBenchCSVTemOQueOMotorReconhece(t *testing.T) {
+	const n = 5000
+	auto := 0
+	for _, l := range strings.Split(strings.TrimSpace(string(benchCSV(n))), "\n")[1:] {
+		d := strings.ToLower(strings.Split(l, ";")[1])
+		if strings.Contains(d, "supermercado") || strings.Contains(d, "posto bench") {
+			auto++
+		}
+	}
+	if want := benchExpectedAuto(n); auto != want || want != 2000 {
+		t.Fatalf("linhas reconhecíveis: %d, esperado %d (2 em cada 5)", auto, want)
+	}
+}
+
+func TestDemoDeClassificacaoEhConsistente(t *testing.T) {
+	// tudo que o seed cita precisa ser válido: tipos, códigos em maiúsculas e ao menos 6 decisões no favorecido que "aplica sozinho"
+	maxTimes := map[string]int{}
+	for _, d := range demoTeach {
+		if d.txType != "EXPENSE" && d.txType != "INCOME" {
+			t.Fatalf("tipo inválido: %q", d.txType)
+		}
+		if d.category != strings.ToUpper(d.category) || d.times < 1 {
+			t.Fatalf("entrada inválida: %+v", d)
+		}
+		maxTimes[d.description] += d.times
+	}
+	if maxTimes["PIX ENVIADO JOANA EXEMPLO"] < 6 || maxTimes["PIX ENVIADO CAFÉ DA PRAÇA"] >= 6 {
+		t.Fatalf("a demonstração precisa de um favorecido que aplica sozinho (6 ou mais) e um que só sugere (menos de 6): %v", maxTimes)
+	}
+	for _, r := range demoRules {
+		if len(r.pattern) < 3 || (r.match != "CONTAINS" && r.match != "STARTS_WITH" && r.match != "EQUALS") {
+			t.Fatalf("regra inválida: %+v", r)
+		}
+	}
+}
+
 func writeFile(t *testing.T, path, content string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {

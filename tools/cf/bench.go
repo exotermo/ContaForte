@@ -198,7 +198,9 @@ func cmdBench(args []string) error {
 	return nil
 }
 
-// benchCSV gera um CSV sintético (data;descrição;valor) com n linhas, todas distintas entre si.
+// benchCSV gera um CSV sintético (data;descrição;valor) com n linhas, todas distintas entre si. As descrições imitam um
+// extrato de verdade para o motor de classificação trabalhar: 2 em cada 5 linhas são reconhecidas (uma pela regra padrão
+// "supermercado", outra pela regra do usuário "posto bench") e as demais não são.
 func benchCSV(n int) []byte {
 	var b strings.Builder
 	b.WriteString("Data;Descricao;Valor\n")
@@ -206,9 +208,54 @@ func benchCSV(n int) []byte {
 	for i := 0; i < n; i++ {
 		d := base.AddDate(0, 0, -(i % 700))
 		cents := (i*7919)%99000 + 100
-		fmt.Fprintf(&b, "%s;IMPORTA %d LOJA %d;-%d,%02d\n", d.Format("02/01/2006"), i, i%50, cents/100, cents%100)
+		var desc string
+		switch i % 5 {
+		case 0:
+			desc = fmt.Sprintf("COMPRA SUPERMERCADO BENCH %d", i)
+		case 1:
+			desc = fmt.Sprintf("PIX ENVIADO FAVORECIDO BENCH %d", i%40)
+		case 2:
+			desc = fmt.Sprintf("COMPRA POSTO BENCH %d", i)
+		case 3:
+			desc = fmt.Sprintf("IMPORTA %d LOJA %d", i, i%50)
+		default:
+			desc = fmt.Sprintf("DEBITO DIVERSOS %d", i)
+		}
+		fmt.Fprintf(&b, "%s;%s;-%d,%02d\n", d.Format("02/01/2006"), desc, cents/100, cents%100)
 	}
 	return []byte(b.String())
+}
+
+// benchExpectedAuto é quantas das n linhas de benchCSV o motor categoriza sozinho (supermercado e posto).
+func benchExpectedAuto(n int) int {
+	auto := 0
+	for i := 0; i < n; i++ {
+		if i%5 == 0 || i%5 == 2 {
+			auto++
+		}
+	}
+	return auto
+}
+
+// benchRules cria as regras do usuário do bench: 50 que não casam com nada (o motor precisa percorrê-las em toda linha,
+// que é o pior caso de custo) e uma que casa ("posto bench").
+func benchRules(user *apiClient) error {
+	cat, err := loadCatalog(user)
+	if err != nil {
+		return err
+	}
+	fuel, err := cat.cat("TRANSPORT_FUEL")
+	if err != nil {
+		return err
+	}
+	for i := 0; i < 50; i++ {
+		body := map[string]any{"matchType": "CONTAINS", "pattern": fmt.Sprintf("regra sem uso numero %d", i), "categoryId": fuel}
+		if _, err := user.call("POST", "/api/v1/categorization-rules", body, nil); err != nil {
+			return err
+		}
+	}
+	_, err = user.call("POST", "/api/v1/categorization-rules", map[string]any{"matchType": "CONTAINS", "pattern": "posto bench", "transactionType": "EXPENSE", "categoryId": fuel}, nil)
+	return err
 }
 
 // memMiB lê o uso atual de memória do contêiner do backend (docker stats), em MiB.
@@ -238,6 +285,9 @@ func benchImport(root string, env map[string]string, user *apiClient, rows int) 
 	}
 	if _, err := user.call("POST", "/api/v1/accounts", map[string]string{"name": "Bench importação", "type": "CHECKING_ACCOUNT"}, &acc); err != nil {
 		return err
+	}
+	if err := benchRules(user); err != nil {
+		return fmt.Errorf("regras do bench: %w", err)
 	}
 	csv := benchCSV(rows)
 	if len(csv) > 5*1024*1024 {
@@ -290,12 +340,16 @@ func benchImport(root string, env map[string]string, user *apiClient, rows int) 
 	if err != nil {
 		return fmt.Errorf("desfazer falhou: %w", err)
 	}
+	if want := benchExpectedAuto(rows); prev.AutoClassified != want {
+		return fmt.Errorf("o motor categorizou %d linhas sozinho, esperado %d (supermercado e posto)", prev.AutoClassified, want)
+	}
 	if prev.NewRows != rows || conf.ImportedRows != rows {
 		return fmt.Errorf("contagens inesperadas: %d novas, %d duplicadas, %d possíveis, %d inválidas, %d importadas, esperado %d novas", prev.NewRows, prev.DuplicateRows, prev.PossibleRows, prev.InvalidRows, conf.ImportedRows, rows)
 	}
 
 	fmt.Printf("\nImportação de %d linhas (CSV de %.0f KB):\n", rows, float64(len(csv))/1024)
-	fmt.Printf("  prévia      %7.2f s\n  confirmação %7.2f s\n  desfazer    %7.2f s\n", tPreview.Seconds(), tConfirm.Seconds(), tRollback.Seconds())
+	fmt.Printf("  prévia      %7.2f s (com 51 regras do usuário e as do sistema; %d de %d linhas categorizadas sozinhas)\n  confirmação %7.2f s\n  desfazer    %7.2f s\n",
+		tPreview.Seconds(), prev.AutoClassified, rows, tConfirm.Seconds(), tRollback.Seconds())
 	fmt.Printf("  memória do backend: %.0f MiB antes, pico %.0f MiB (limite 768 MiB)\n", memBefore, peak)
 	if tPreview > 10*time.Second {
 		return fmt.Errorf("a prévia de %d linhas levou %.1f s (meta: menos de 10 s)", rows, tPreview.Seconds())

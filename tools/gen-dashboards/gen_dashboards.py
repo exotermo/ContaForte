@@ -127,7 +127,7 @@ r.save("redis.json")
 # ---------------- Negócio ----------------
 # Métricas de uso do produto (transações registradas) e a experiência nas telas financeiras. Nenhuma métrica aqui
 # carrega valor, descrição ou qualquer dado pessoal: só tipo da transação, rota e status HTTP.
-FIN='uri=~"/api/v1/(accounts|transactions|summary|categories|contexts|imports).*"'
+FIN='uri=~"/api/v1/(accounts|transactions|summary|categories|contexts|imports|classification|categorization-rules|pix-recipients).*"'
 n=D("cf-negocio","ContaForte — Negócio",["contaforte","negocio"])
 n.row("Uso")
 n.stat("Transações registradas (desde o início do backend)","sum(contaforte_transactions_recorded_total) or vector(0)",w=6,decimals=0)
@@ -156,6 +156,14 @@ n.ts("Importações por formato e status (5 min)",[("sum by (format, status) (in
 n.ts("Linhas por resultado (5 min)",[("sum by (result) (increase(contaforte_import_rows_total[5m]))","{{result}}")],stack=True)
 n.ts("Duração da prévia (p50 e p95)",[("histogram_quantile(0.50, sum by (le, format) (rate(contaforte_import_preview_seconds_bucket[5m])))","p50 {{format}}"),("histogram_quantile(0.95, sum by (le, format) (rate(contaforte_import_preview_seconds_bucket[5m])))","p95 {{format}}")],unit="s")
 n.ts("Requisições de importação por status HTTP",[("sum by (status, method) (rate(http_server_requests_seconds_count{job=\"backend\",uri=~\"/api/v1/imports.*\"}[5m]))","{{method}} {{status}}")],unit="reqps")
+n.row("Classificação de transações")
+# só contagens por origem, decisão e tipo de feedback: nunca descrição, favorecido, regra, categoria ou valor
+n.stat("Categorizadas sozinhas (24h)","sum(increase(contaforte_classifications_total{decision=\"AUTO\"}[24h])) or vector(0)",w=6,decimals=0)
+n.stat("Só sugeridas (24h)","sum(increase(contaforte_classifications_total{decision=\"SUGGEST\"}[24h])) or vector(0)",w=6,decimals=0)
+n.stat("Cobertura automática (24h)","sum(increase(contaforte_classifications_total{decision=\"AUTO\"}[24h])) / clamp_min(sum(increase(contaforte_classifications_total[24h])), 1)",unit="percentunit",w=6,decimals=1)
+n.stat("Taxa de correção (24h)","sum(increase(contaforte_classification_feedback_total{kind=\"CORRECTED\"}[24h])) / clamp_min(sum(increase(contaforte_classification_feedback_total[24h])), 1)",unit="percentunit",w=6,decimals=1,thresholds=[{"color":"green","value":None},{"color":"orange","value":0.2},{"color":"red","value":0.4}])
+n.ts("Decisões do motor por origem (5 min)",[("sum by (source, decision) (increase(contaforte_classifications_total[5m])) > 0","{{source}} {{decision}}")],stack=True)
+n.ts("Feedback: confirmações e correções (5 min)",[("sum by (kind) (increase(contaforte_classification_feedback_total[5m]))","{{kind}}")],stack=True)
 n.row("Rejeições e erros")
 n.ts("Respostas 4xx por rota (validação, conflito, não encontrado)",[(f"sum by (status, uri) (rate(http_server_requests_seconds_count{{job=\"backend\",{FIN},status=~\"4..\"}}[5m]))","{{status}} {{uri}}")],unit="reqps")
 n.ts("Respostas 5xx por rota",[(f"sum by (status, uri) (rate(http_server_requests_seconds_count{{job=\"backend\",{FIN},status=~\"5..\"}}[5m]))","{{status}} {{uri}}")],unit="reqps")

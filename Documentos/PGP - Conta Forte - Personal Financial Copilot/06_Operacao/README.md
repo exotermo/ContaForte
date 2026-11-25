@@ -28,8 +28,8 @@ O administrador inicial é `ADMIN_EMAIL` (padrão `admin@contaforte.local`) com 
 | `open [app\|grafana]` | Abre o app ou o Grafana |
 | `test [backend\|web\|go\|all]` | Testes em container |
 | `e2e` | Testes de navegador (Playwright) contra a stack em execução |
-| `seed [--reset]` | Carrega 90 dias de dados **fictícios** num usuário demo e confere o resumo no final |
-| `bench` | Mede o p95 das telas com 10 mil transações sintéticas (k6 em container) |
+| `seed [--reset] [--with-imports]` | Carrega 90 dias de dados **fictícios** num usuário demo, com regras e favorecidos de classificação, e confere o resultado; com `--with-imports`, importa também dois extratos OFX sintéticos |
+| `bench [--import-rows N]` | Mede o p95 das telas com 10 mil transações sintéticas (k6 em container) e a importação de N linhas (padrão 20 mil), com o motor de classificação ligado |
 | `backup` / `restore <arquivo>` | `pg_dump` comprimido em `backups/` e restauração |
 
 ## Dados de demonstração (`./cf seed`)
@@ -40,8 +40,11 @@ Para ver o produto com números sem digitar nada: `./cf seed` cria o usuário `d
 - Rodar de novo recusa se o usuário demo já tem dados. `./cf seed --reset` apaga **só** o usuário demo (e os dados dele, em cascata) e recarrega.
 - **Só em ambiente local:** o comando recusa rodar com o perfil `tunnel` ativo.
 - O administrador do `.env` nunca recebe os dados de demonstração: eles ficam no usuário demo.
+- **Classificação de demonstração:** o seed cria 2 regras do usuário e ensina 3 favorecidos fictícios numa conta "Conta PIX (demonstração)" (um com 6 decisões, que aplica sozinho; um com 2, que só sugere; um na outra direção, com 1). Com `--with-imports`, o extrato sintético mostra os três comportamentos do motor (9 linhas categorizadas pelas regras do sistema, 2 só sugeridas) e a tela **Revisão** já abre com 2 sugestões esperando. O `cf` confere tudo isso pelo teste de texto do motor e pelas contagens da prévia, e falha se divergirem.
 
 ## Desempenho (`./cf bench`)
+
+Além das telas, o bench mede a **importação de 20 mil linhas** com o motor de classificação ligado, no pior caso de regras (51 regras do usuário percorridas em toda linha, mais as do sistema): tempo de prévia, confirmação e desfazer e a memória do backend. Falha se a prévia passar de 10 s, se a memória chegar perto dos 768 MiB ou se o número de linhas categorizadas sozinhas diferir do esperado (8 mil de 20 mil).
 
 Cria um usuário descartável com N transações sintéticas (padrão 10 mil), roda o k6 por 20 s com 10 usuários virtuais passando pelo gateway e remove tudo ao final. Medido na máquina de desenvolvimento (p95, em ms):
 
