@@ -4,28 +4,42 @@ Guia para instalar, operar e monitorar o ContaForte. Tudo roda em Docker, em red
 
 ## Quickstart
 
-Pré-requisitos: Docker com Compose v2 e cerca de 4 GB de RAM livre. Não é preciso Java, Node nem Go no host: os builds acontecem em containers (o Go só é baixado em container se não existir localmente).
+Pré-requisitos: Docker com Compose v2 e cerca de 1 GB de RAM livre para rodar (os builds e o monitoramento pedem bem mais). Não é preciso Java, Node nem Go no host: os builds acontecem em containers (o Go só é baixado em container se não existir localmente).
 
 ```bash
 ./cf init     # verifica pré-requisitos e gera o .env com segredos aleatórios
-./cf up       # constrói e sobe a stack, esperando todos os serviços ficarem saudáveis
+./cf up       # constrói e sobe o núcleo, esperando os serviços ficarem saudáveis
 ./cf open     # abre http://127.0.0.1:8080
 ./cf seed     # opcional: dados FICTÍCIOS de demonstração (veja abaixo)
 ```
 
 O administrador inicial é `ADMIN_EMAIL` (padrão `admin@contaforte.local`) com a senha de `ADMIN_PASSWORD` no `.env`.
 
+## Perfis: o que fica ligado
+
+| Perfil | Serviços | Como ligar |
+|---|---|---|
+| (nenhum) | **núcleo:** backend, web, Postgres, Redis, gateway | `./cf up` |
+| `obs` | Prometheus, Loki, Alloy, Grafana, exporters, docker-proxy | `./cf obs up` quando precisar e `./cf obs down` depois; sempre ligado: `COMPOSE_PROFILES=obs` no `.env` |
+| `tunnel` | cloudflared | `COMPOSE_PROFILES=tunnel` e `TUNNEL_TOKEN` (veja abaixo) |
+| `iot` | broker MQTT (ainda sem uso pela aplicação) | `COMPOSE_PROFILES=iot` |
+
+Vários perfis são separados por vírgula (`COMPOSE_PROFILES=tunnel,obs`). `./cf down` derruba todos, mantendo os dados. Cada serviço guarda no máximo 3 arquivos de log de 10 MB. Decisão em [ADR-020](../02_Arquitetura/Arquitetura/ADR/020-nucleo-enxuto-e-monitoramento-opcional.md).
+
+> **Atualizando de uma versão com tudo sempre ligado:** rode `./cf down` e `./cf up`. O monitoramento passa a ficar desligado (o histórico continua nos volumes) e o MQTT também.
+
 ## Comandos do `cf`
 
 | Comando | O que faz |
 |---|---|
-| `init [--force] [--admin-email E]` | Gera o `.env` (permissão 600) sem sobrescrever o que já existe. `--force` regenera tudo e pede confirmação |
-| `up` / `down` / `build` | Sobe, derruba e constrói imagens |
+| `init [--force] [--admin-email E] [--port N]` | Gera o `.env` (permissão 600) sem sobrescrever o que já existe. `--port` troca a porta local (padrão 8080). `--force` regenera tudo e pede confirmação |
+| `up` / `down` / `build` | Sobe (núcleo e perfis do `.env`), derruba tudo e constrói imagens. `down` não aceita opções e nunca apaga dados |
+| `obs up` / `obs down` | Liga e desliga o monitoramento sem recriar o núcleo; o histórico fica |
 | `reset` | Derruba e **apaga os volumes** (pede confirmação) |
 | `status` | Estado, saúde e consumo de cada serviço |
-| `doctor` | Segredos, RAM, redes internas, portas expostas, alvos do Prometheus e logs no Loki |
+| `doctor` | Segredos, RAM, redes internas, portas expostas e, com o monitoramento ligado, alvos do Prometheus e logs no Loki |
 | `logs [serviço]` | Acompanha os logs |
-| `open [app\|grafana]` | Abre o app ou o Grafana |
+| `open [app\|grafana]` | Abre o app ou o Grafana (este precisa do monitoramento ligado) |
 | `test [backend\|web\|go\|all]` | Testes em container |
 | `e2e` | Testes de navegador (Playwright) contra a stack em execução |
 | `seed [--reset] [--with-imports]` | Carrega 90 dias de dados **fictícios** num usuário demo, com regras e favorecidos de classificação, e confere o resultado; com `--with-imports`, importa também dois extratos OFX sintéticos |
@@ -79,7 +93,7 @@ Além de Visão geral, PostgreSQL e Redis, o painel **Negócio** mostra as trans
 | Rede | Tipo | Serviços |
 |---|---|---|
 | `edge` | bridge | `gateway`, `cloudflared` (opcional) |
-| `app` | internal (sem saída à Internet) | backend, web, Postgres, Redis, MQTT, gateway |
+| `app` | internal (sem saída à Internet) | backend, web, Postgres, Redis, gateway; MQTT no perfil `iot` |
 | `obs` | internal | Prometheus, Grafana, Loki, Alloy, exporters, gateway |
 
 Só o `gateway` publica porta, e apenas em `127.0.0.1:8080`. O `./cf doctor` confere isso.
@@ -123,9 +137,11 @@ O sistema sugere a categoria e o contexto de cada receita e despesa, de três je
 
 ## Observabilidade
 
+O monitoramento é opcional: ligue com `./cf obs up`. Para ver a memória sem ele, use `./cf mem`.
+
 Grafana em `http://127.0.0.1:8080/grafana/` (usuário `admin`, senha `GRAFANA_PASSWORD` do `.env`). Três dashboards vêm provisionados como código (Visão geral, PostgreSQL, Redis). Prometheus guarda 15 dias de métricas e o Loki 7 dias de logs. Decisões em [ADR-012](../02_Arquitetura/Arquitetura/ADR/012-observabilidade-com-stack-grafana-e-docker-proxy.md).
 
-- **Memória:** os limites dos containers somam cerca de 3,7 GB. O uso real fica em torno de 1,3 GB.
+- **Memória:** ligado, o monitoramento acrescenta cerca de 600 MiB ao núcleo (a stack completa mediu 1,3 GiB parada e 1,6 GiB sob carga, contando o swap). Não cabe junto com o núcleo em 1 GB.
 - **Sem Alertmanager:** os alertas só aparecem no Prometheus e no Grafana, não notificam ninguém.
 - **Postgres:** o `postgres-exporter` usa o mesmo usuário da aplicação. Um usuário dedicado com o papel `pg_monitor` é um endurecimento futuro.
 - **Dashboards como código:** o gerador está em `tools/gen-dashboards`. Edite lá e regenere os JSON.
@@ -136,7 +152,7 @@ Por padrão nada é exposto à Internet. Para publicar o app sem abrir portas:
 
 1. No painel Cloudflare Zero Trust → Networks → Tunnels, crie um túnel e copie o token.
 2. Em *Public hostname*, aponte seu domínio para `http://gateway:8081` (**8081**, não 80).
-3. No `.env`, adicione `COMPOSE_PROFILES=tunnel` e `TUNNEL_TOKEN=<token>`.
+3. No `.env`, adicione `tunnel` ao `COMPOSE_PROFILES` e `TUNNEL_TOKEN=<token>`.
 4. `./cf up` e depois `./cf doctor`.
 
 O Grafana **não** é publicado pelo túnel. Para proteger o app público, configure no painel do Cloudflare: Access (login por e-mail/SSO), regras de WAF e rate limit de borda. Detalhes em [ADR-007](../02_Arquitetura/Arquitetura/ADR/007-cloudflare-zero-trust-no-ingresso.md).

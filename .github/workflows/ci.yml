@@ -80,15 +80,19 @@ jobs:
           cache-dependency-path: tools/cf/go.mod
       - name: cf init (gera .env e segredos aleatórios)
         run: ./cf init
-      - name: Compose válido (com e sem o perfil do túnel)
+      - name: Compose válido (só o núcleo e com todos os perfis)
         run: |
           docker compose config -q
-          TUNNEL_TOKEN=ci docker compose --profile tunnel config -q
-      - name: Sobe a stack completa
+          TUNNEL_TOKEN=ci docker compose --profile '*' config -q
+      - name: Sobe só o núcleo
         run: ./cf up
+      - name: Sem perfil, só o núcleo fica de pé
+        run: |
+          set -euo pipefail
+          test "$(docker compose ps -a --format '{{.Service}}' | sort | paste -sd' ')" = "backend gateway postgres redis web"
       - name: Dados de demonstração (o cf seed confere o resumo contra o esperado pelo gerador)
         run: ./cf seed
-      - name: Smoke test (gateway, login e Grafana protegido)
+      - name: Smoke test (gateway e login; sem monitoramento o Grafana fica indisponível)
         run: |
           set -euo pipefail
           set -a; . ./.env; set +a
@@ -97,9 +101,22 @@ jobs:
             -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}" \
             http://127.0.0.1:8080/api/v1/auth/login | jq -er .accessToken)
           curl -fsS -H "Authorization: Bearer $token" http://127.0.0.1:8080/api/v1/users/me | jq -e .email
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/grafana/api/dashboards/home)" = 503
+          ./cf doctor
+      - name: Liga o monitoramento e o MQTT
+        run: |
+          ./cf obs up
+          docker compose --profile iot up -d --wait mqtt
+      - name: Diagnóstico com o monitoramento (alvos e logs levam alguns segundos) e Grafana protegido
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do ./cf doctor > doctor.log && break; sleep 10; done
+          ./cf doctor
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/grafana/api/dashboards/home)" = 401
       # A primeira subida não pega defeitos que só aparecem com arquivos da execução anterior (foi o caso do MQTT).
       - name: Reinicia tudo e exige a stack saudável de novo
+        env:
+          COMPOSE_PROFILES: obs,iot
         run: |
           set -euo pipefail
           docker compose restart
@@ -110,11 +127,16 @@ jobs:
             test "$(docker inspect --format '{{.State.Status}} {{.RestartCount}}' "$id")" = "running 0" \
               || { echo "$svc instável depois do reinício"; exit 1; }
           done
+      - name: cf down derruba também os serviços dos perfis
+        run: |
+          set -euo pipefail
+          ./cf down
+          test -z "$(docker ps -a -q --filter label=com.docker.compose.project=contaforte)"
       - name: Diagnóstico em caso de falha
         if: failure()
         run: |
-          docker compose ps -a
-          docker compose logs --tail=80
+          docker compose --profile '*' ps -a
+          docker compose --profile '*' logs --tail=80
 
   generated:
     name: Arquivos gerados em dia (cenário, fixtures e dashboards)

@@ -13,11 +13,13 @@ const usage = `cf — CLI do ContaForte
 Uso: cf <comando> [opções]
 
 Configuração
-  init [--force] [--admin-email E]   Verifica pré-requisitos e gera o .env com segredos
+  init [--force] [--admin-email E] [--port N]
+                                     Verifica pré-requisitos e gera o .env com segredos
 Ciclo de vida
   build [serviço...]                 Constrói as imagens
-  up                                 Sobe a stack e espera ficar saudável
-  down                               Derruba a stack (mantém os volumes)
+  up                                 Sobe o núcleo (e os perfis do COMPOSE_PROFILES) e espera ficar saudável
+  down                               Derruba tudo, de todos os perfis (mantém os volumes)
+  obs up|down                        Liga ou desliga o monitoramento (Prometheus, Grafana, Loki) sem mexer no núcleo
   reset                              Derruba a stack E apaga os volumes (pede confirmação)
 Operação
   test [backend|web|go|all]          Roda os testes em container (backend: Gradle+Testcontainers; web: lint, tipos e Vitest; go: cf e container-exporter)
@@ -49,7 +51,12 @@ func main() {
 	case "up":
 		err = cmdCompose([]string{"up", "-d", "--build", "--wait"})
 	case "down":
-		err = cmdCompose([]string{"down"})
+		var composeArgs []string
+		if composeArgs, err = downArgs(args); err == nil {
+			err = cmdCompose(composeArgs)
+		}
+	case "obs":
+		err = cmdObs(args)
 	case "reset":
 		err = cmdReset()
 	case "logs":

@@ -23,3 +23,4 @@ Formato: Contexto, Decisão, Consequências. Status: Proposto, Aceito ou Substit
 | [017](017-classificacao-em-estagios-com-confianca-calibrada.md) | Classificação em estágios, com limiares de confiança e aprendizado só por confirmação | Aceito |
 | [018](018-privacidade-de-favorecidos-e-feedback.md) | Privacidade de favorecidos PIX e do feedback de classificação | Aceito |
 | [019](019-dashboard-com-serie-mensal-e-caixa-disponivel-como-posicao.md) | Dashboard: série mensal agregada no banco e "caixa disponível" como posição, não previsão | Aceito |
+| [020](020-nucleo-enxuto-e-monitoramento-opcional.md) | Núcleo enxuto, com monitoramento e MQTT em perfis opcionais | Aceito |

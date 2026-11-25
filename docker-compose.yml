@@ -6,6 +6,17 @@
 
 name: contaforte
 
+# Perfis (COMPOSE_PROFILES no .env, ou ./cf obs up): sem nenhum, sobe só o núcleo.
+#   obs    : monitoramento (Prometheus, Loki, Alloy, Grafana, exporters)
+#   iot    : broker MQTT (ainda sem uso pela aplicação)
+#   tunnel : Cloudflare Tunnel
+# O Docker não limita o tamanho dos logs por padrão: sem rotação eles enchem o disco com o tempo.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 networks:
   edge:
     driver: bridge
@@ -27,6 +38,7 @@ volumes:
 
 services:
   postgres:
+    logging: *logging
     image: postgres:16-alpine
     restart: unless-stopped
     networks: [app]
@@ -45,6 +57,7 @@ services:
     mem_limit: 512m
 
   redis:
+    logging: *logging
     image: redis:7-alpine
     restart: unless-stopped
     networks: [app]
@@ -61,6 +74,8 @@ services:
     mem_limit: 256m
 
   mqtt:
+    profiles: [iot]
+    logging: *logging
     image: eclipse-mosquitto:2
     restart: unless-stopped
     networks: [app]
@@ -81,6 +96,7 @@ services:
     mem_limit: 128m
 
   backend:
+    logging: *logging
     build: ./apps/backend
     restart: unless-stopped
     networks: [app, obs]       # sem saída à Internet; obs = o Prometheus coleta a porta de gestão (8081)
@@ -107,6 +123,7 @@ services:
     mem_limit: 768m
 
   web:
+    logging: *logging
     build: ./apps/web
     restart: unless-stopped
     networks: [app]            # só o gateway o alcança; fala com o backend pela rede interna
@@ -126,6 +143,8 @@ services:
   # ---------------------------------------------------------------- observabilidade
   # Proxy somente-leitura da API do Docker: o Alloy e o container-exporter nunca montam o docker.sock diretamente.
   docker-proxy:
+    profiles: [obs]
+    logging: *logging
     image: tecnativa/docker-socket-proxy:v0.5.0
     restart: unless-stopped
     networks: [obs]
@@ -142,6 +161,8 @@ services:
     mem_limit: 64m
 
   prometheus:
+    profiles: [obs]
+    logging: *logging
     image: prom/prometheus:v3.16.0
     restart: unless-stopped
     networks: [obs]
@@ -162,6 +183,8 @@ services:
     mem_limit: 384m
 
   loki:
+    profiles: [obs]
+    logging: *logging
     image: grafana/loki:3.6.22
     restart: unless-stopped
     networks: [obs]
@@ -173,6 +196,8 @@ services:
     mem_limit: 384m
 
   alloy:
+    profiles: [obs]
+    logging: *logging
     image: grafana/alloy:v1.22.0
     restart: unless-stopped
     networks: [obs]
@@ -190,6 +215,8 @@ services:
   # Métricas por container (CPU, memória, rede) lidas pelo proxy somente-leitura. Substitui o cAdvisor,
   # que exigiria o docker.sock e o containerd montados (acesso root implícito ao host).
   container-exporter:
+    profiles: [obs]
+    logging: *logging
     build: ./tools/container-exporter
     restart: unless-stopped
     networks: [obs]
@@ -200,6 +227,8 @@ services:
     mem_limit: 32m
 
   postgres-exporter:
+    profiles: [obs]
+    logging: *logging
     image: quay.io/prometheuscommunity/postgres-exporter:v0.21.1
     restart: unless-stopped
     networks: [app, obs]
@@ -213,6 +242,8 @@ services:
     mem_limit: 64m
 
   redis-exporter:
+    profiles: [obs]
+    logging: *logging
     image: oliver006/redis_exporter:v1.98.0
     restart: unless-stopped
     networks: [app, obs]
@@ -225,6 +256,8 @@ services:
     mem_limit: 64m
 
   grafana:
+    profiles: [obs]
+    logging: *logging
     image: grafana/grafana:13.3.1
     restart: unless-stopped
     networks: [obs]
@@ -253,6 +286,7 @@ services:
     mem_limit: 384m
 
   gateway:
+    logging: *logging
     image: nginx:1.27-alpine
     restart: unless-stopped
     networks: [edge, app, obs]  # obs: para publicar o Grafana em /grafana/
@@ -272,6 +306,7 @@ services:
   # Só sobe com COMPOSE_PROFILES=tunnel no .env (ver docs 06_Operacao). Sem portas publicadas: a conexão é de saída.
   # No painel do Cloudflare Zero Trust, o "Public hostname" deve apontar para http://gateway:8081
   cloudflared:
+    logging: *logging
     image: cloudflare/cloudflared:2026.3.0
     profiles: [tunnel]
     restart: unless-stopped

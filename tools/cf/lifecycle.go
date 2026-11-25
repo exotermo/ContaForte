@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"time"
 )
@@ -32,7 +33,7 @@ func cmdReset() error {
 	if !confirm() {
 		return fmt.Errorf("cancelado")
 	}
-	return compose(root, "down", "-v", "--remove-orphans")
+	return compose(root, append(slices.Clone(allProfiles), "down", "-v", "--remove-orphans")...)
 }
 
 func cmdOpen(args []string) error {
@@ -49,6 +50,9 @@ func cmdOpen(args []string) error {
 	if len(args) > 0 {
 		switch args[0] {
 		case "grafana":
+			if !httpOK(url + "/grafana/api/health") {
+				return fmt.Errorf("o Grafana não responde: ligue o monitoramento com ./cf obs up")
+			}
 			url += "/grafana/"
 		case "app":
 		default:

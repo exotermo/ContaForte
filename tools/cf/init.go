@@ -16,9 +16,9 @@ import (
 	"strings"
 )
 
-// abaixo de minRAMMB a stack com monitoramento completo fica apertada
+// abaixo de minRAMMB sobra pouco para o sistema ao lado da stack (e quase nada com o monitoramento ligado)
 const (
-	minRAMMB   = 4096
+	minRAMMB   = 2048
 	jwtKeyName = "JWT_PRIVATE_KEY_B64"
 )
 
@@ -88,7 +88,11 @@ func cmdInit(args []string) error {
 	fs := flag.NewFlagSet("init", flag.ExitOnError)
 	force := fs.Bool("force", false, "regenera TODOS os segredos (invalida volumes existentes)")
 	adminEmail := fs.String("admin-email", "", "e-mail do administrador inicial")
+	gatewayPort := fs.Int("port", 0, "porta local do gateway (padrão 8080; use outra se estiver ocupada)")
 	fs.Parse(args)
+	if *gatewayPort != 0 && (*gatewayPort < 1024 || *gatewayPort > 65535) {
+		return fmt.Errorf("--port deve estar entre 1024 e 65535")
+	}
 
 	root, err := findRoot()
 	if err != nil {
@@ -107,7 +111,7 @@ func cmdInit(args []string) error {
 	}
 	if mb, err := totalRAMMB(); err == nil {
 		if mb < minRAMMB {
-			warn("RAM total %d MB (< %d MB): a stack completa pode ficar lenta", mb, minRAMMB)
+			warn("RAM total %d MB (< %d MB): evite ligar o monitoramento nesta máquina", mb, minRAMMB)
 		} else {
 			ok("RAM total %d MB", mb)
 		}
@@ -133,6 +137,9 @@ func cmdInit(args []string) error {
 	if *adminEmail != "" {
 		env["ADMIN_EMAIL"] = *adminEmail
 	}
+	if *gatewayPort != 0 {
+		env["GATEWAY_PORT"] = strconv.Itoa(*gatewayPort)
+	}
 	if err := writeEnv(envPath, env); err != nil {
 		return err
 	}
@@ -144,7 +151,7 @@ func cmdInit(args []string) error {
 
 	port, _ := strconv.Atoi(env["GATEWAY_PORT"])
 	if portBusy(port) && !stackRunning(root) {
-		fail("porta 127.0.0.1:%d ocupada: ajuste GATEWAY_PORT no .env", port)
+		fail("porta 127.0.0.1:%d ocupada: rode ./cf init --port %d", port, freePort(port+1, portBusy))
 		bad = true
 	} else {
 		ok("porta do gateway: 127.0.0.1:%d", port)
@@ -175,6 +182,16 @@ func portBusy(port int) bool {
 	}
 	l.Close()
 	return false
+}
+
+// freePort devolve a primeira porta livre a partir de from (ou from, se nenhuma das 100 seguintes estiver).
+func freePort(from int, busy func(int) bool) int {
+	for p := from; p < from+100 && p <= 65535; p++ {
+		if !busy(p) {
+			return p
+		}
+	}
+	return from
 }
 
 func stackRunning(root string) bool {

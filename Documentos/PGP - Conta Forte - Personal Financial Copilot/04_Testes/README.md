@@ -8,7 +8,7 @@ Estratégia e evidências (SDD §38). Tudo roda em container, sem exigir Java, N
 | Frontend: unidade e componente | dinheiro, cliente da API, proxy BFF, formulários, listas | `./cf test web` (lint, tipos e Vitest) | 243 |
 | Go: CLI e exporter | `cf`, cenário sintético, `container-exporter` | `./cf test go` | testes de `tools/cf` e `tools/container-exporter` |
 | E2E no navegador | login, fluxo conta → transações → saldos e resumo, proxy e CSRF, navegação, revisão, regras e favorecidos, dashboard e atalho para os lançamentos | `./cf e2e` (Playwright contra a stack em execução) | 21 |
-| Stack completa (CI) | `./cf init` + `./cf up` + `./cf seed` (com as importações) + login real | job `stack` do GitHub Actions | 1 fluxo |
+| Stack completa (CI) | `./cf init` + `./cf up` (só o núcleo) + seed e login real; depois liga o monitoramento e o MQTT, reinicia tudo e confere o `cf down` | job `stack` do GitHub Actions | 1 fluxo |
 | Carga leve | p95 das telas (inclusive a série mensal) com 10 mil transações e importação de 20 mil linhas já classificada, com 51 regras (tempo, memória e contagem exata de categorizadas) | `./cf bench` (k6 e API) | 5 rotas e 1 importação |
 
 ## Princípios adotados

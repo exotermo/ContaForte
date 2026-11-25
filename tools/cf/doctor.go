@@ -53,12 +53,7 @@ func jwtKeyBits(b64 string) (int, error) {
 
 // tunnelEnabled informa se o perfil opcional "tunnel" (cloudflared) está ativo no .env.
 func tunnelEnabled(env map[string]string) bool {
-	for _, p := range strings.Split(env["COMPOSE_PROFILES"], ",") {
-		if strings.TrimSpace(p) == "tunnel" {
-			return true
-		}
-	}
-	return false
+	return profileEnabled(env, "tunnel")
 }
 
 func cmdDoctor() error {
@@ -105,8 +100,8 @@ func cmdDoctor() error {
 
 	fmt.Println("\nRecursos")
 	if mb, err := availRAMMB(); err == nil {
-		if mb < 2048 {
-			warn("RAM disponível %d MB (< 2048): a stack de monitoramento pode ser morta por OOM", mb)
+		if mb < 1024 {
+			warn("RAM disponível %d MB (< 1024): pouca folga; ligar o monitoramento pode causar OOM", mb)
 		} else {
 			ok("RAM disponível %d MB", mb)
 		}
@@ -154,7 +149,12 @@ func cmdDoctor() error {
 		check(strings.TrimSpace(env["TUNNEL_TOKEN"]) != "", "TUNNEL_TOKEN definido", "perfil tunnel ativo sem TUNNEL_TOKEN no .env")
 	}
 
-	problems += doctorMonitoring(root)
+	if !obsRunning(svcs) && !profileEnabled(env, "obs") {
+		fmt.Println("\nMonitoramento")
+		ok("desligado (opcional): ligue com ./cf obs up")
+	} else {
+		problems += doctorMonitoring(root)
+	}
 
 	fmt.Println()
 	if problems > 0 {
