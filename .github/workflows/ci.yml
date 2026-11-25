@@ -98,6 +98,18 @@ jobs:
             http://127.0.0.1:8080/api/v1/auth/login | jq -er .accessToken)
           curl -fsS -H "Authorization: Bearer $token" http://127.0.0.1:8080/api/v1/users/me | jq -e .email
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/grafana/api/dashboards/home)" = 401
+      # A primeira subida não pega defeitos que só aparecem com arquivos da execução anterior (foi o caso do MQTT).
+      - name: Reinicia tudo e exige a stack saudável de novo
+        run: |
+          set -euo pipefail
+          docker compose restart
+          docker compose up -d --wait
+          sleep 20
+          docker compose ps --format '{{.Service}}' | while read -r svc; do
+            id=$(docker compose ps -q "$svc")
+            test "$(docker inspect --format '{{.State.Status}} {{.RestartCount}}' "$id")" = "running 0" \
+              || { echo "$svc instável depois do reinício"; exit 1; }
+          done
       - name: Diagnóstico em caso de falha
         if: failure()
         run: |

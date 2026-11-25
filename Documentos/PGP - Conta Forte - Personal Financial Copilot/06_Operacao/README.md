@@ -30,6 +30,7 @@ O administrador inicial é `ADMIN_EMAIL` (padrão `admin@contaforte.local`) com 
 | `e2e` | Testes de navegador (Playwright) contra a stack em execução |
 | `seed [--reset] [--with-imports]` | Carrega 90 dias de dados **fictícios** num usuário demo, com regras e favorecidos de classificação, e confere o resultado; com `--with-imports`, importa também dois extratos OFX sintéticos |
 | `bench [--import-rows N]` | Mede o p95 das telas com 10 mil transações sintéticas (k6 em container) e a importação de N linhas (padrão 20 mil), com o motor de classificação ligado |
+| `mem [--for 60s]` | Memória por contêiner somando o swap, limite, maior total simultâneo e mortes por falta de memória (Linux com cgroup v2) |
 | `backup` / `restore <arquivo>` | `pg_dump` comprimido em `backups/` e restauração |
 
 ## Dados de demonstração (`./cf seed`)

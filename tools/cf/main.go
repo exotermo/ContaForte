@@ -27,6 +27,7 @@ Operação
   logs [serviço]                     Acompanha os logs
   open [app|grafana]                 Abre o app (ou o Grafana) no navegador
   seed [--reset] [--with-imports]    Carrega dados FICTÍCIOS (90 dias) e regras/favorecidos de demonstração num usuário demo; com --with-imports, importa também extratos OFX sintéticos
+  mem [--for 60s]                    Memória por contêiner (uso + swap), limite e mortes por falta de memória
   bench [--import-rows N]            Mede a latência (p95) das telas com 10 mil transações (k6) e a importação de N linhas (padrão 20000)
   backup                             pg_dump comprimido em backups/
   restore <arquivo.sql.gz>           Restaura um backup (pede confirmação)
@@ -63,6 +64,8 @@ func main() {
 		err = cmdDoctor()
 	case "seed":
 		err = cmdSeed(args)
+	case "mem":
+		err = cmdMem(args)
 	case "bench":
 		err = cmdBench(args)
 	case "open":

@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -177,6 +176,11 @@ func cmdBench(args []string) error {
 		"-v", filepath.Join(root, "tools", "loadtest")+":/scripts:ro", "-v", out+":/out",
 		k6Image, "run", "--quiet", "/scripts/k6.js")
 	cmd.Stderr = os.Stderr
+	sampler, err := startMemSampler(root, cgroupRoot, 500*time.Millisecond)
+	if err != nil {
+		return err
+	}
+	defer sampler.Stop()
 	runErr := cmd.Run() // limiar estourado também sai com erro; os números ainda são lidos abaixo
 
 	raw, err := os.ReadFile(filepath.Join(out, "summary.json"))
@@ -190,6 +194,12 @@ func cmdBench(args []string) error {
 	fmt.Printf("\nLatência com %d transações no banco (p95 / média):\n", *rows)
 	for _, r := range result {
 		fmt.Printf("  %-16s %8.1f ms / %7.1f ms\n", r.Route, r.P95, r.Avg)
+	}
+	loadPeaks := sampler.Stop()
+	fmt.Println("\nMemória por serviço durante a carga do k6 (picos):")
+	writeMemTable(os.Stdout, loadPeaks)
+	if err := checkMemory(loadPeaks); err != nil {
+		return err
 	}
 	if runErr != nil {
 		return fmt.Errorf("algum limiar do k6 foi estourado (p95 < 1000 ms ou falhas > 1%%): veja os números acima")
@@ -258,26 +268,6 @@ func benchRules(user *apiClient) error {
 	return err
 }
 
-// memMiB lê o uso atual de memória do contêiner do backend (docker stats), em MiB.
-func memMiB(root string) float64 {
-	cmd := exec.Command("docker", "compose", "stats", "--no-stream", "--format", "{{.MemUsage}}", "backend")
-	cmd.Dir = root
-	out, err := cmd.Output()
-	if err != nil {
-		return -1
-	}
-	f := strings.Fields(string(out))
-	if len(f) == 0 {
-		return -1
-	}
-	v := strings.TrimSuffix(f[0], "MiB")
-	x, err := strconv.ParseFloat(v, 64)
-	if err != nil {
-		return -1
-	}
-	return x
-}
-
 // benchImport mede prévia, confirmação e desfazer de um CSV grande pela API e a memória do backend durante isso.
 func benchImport(root string, env map[string]string, user *apiClient, rows int) error {
 	var acc struct {
@@ -296,31 +286,18 @@ func benchImport(root string, env map[string]string, user *apiClient, rows int) 
 	mapping := `{"delimiter":";","hasHeader":"true","dateColumn":"#1","dateFormat":"DMY_SLASH","descriptionColumn":"#2","amountColumn":"#3"}`
 	fields := map[string]string{"accountId": acc.ID, "mapping": mapping}
 
-	memBefore := memMiB(root)
-	var peak float64
-	stop := make(chan struct{})
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		for {
-			select {
-			case <-stop:
-				return
-			case <-time.After(500 * time.Millisecond):
-				if m := memMiB(root); m > peak {
-					peak = m
-				}
-			}
-		}
-	}()
+	sampler, err := startMemSampler(root, cgroupRoot, 500*time.Millisecond)
+	if err != nil {
+		return err
+	}
+	defer sampler.Stop()
+	before := sampler.snapshot()
 
 	t0 := time.Now()
 	var prev importResp
-	_, err := user.upload("/api/v1/imports", fields, "bench.csv", csv, &prev)
+	_, err = user.upload("/api/v1/imports", fields, "bench.csv", csv, &prev)
 	tPreview := time.Since(t0)
 	if err != nil {
-		close(stop)
-		<-done
 		return fmt.Errorf("prévia de %d linhas falhou: %w", rows, err)
 	}
 	t1 := time.Now()
@@ -328,15 +305,12 @@ func benchImport(root string, env map[string]string, user *apiClient, rows int) 
 	_, err = user.call("POST", "/api/v1/imports/"+prev.ID+"/confirm", map[string]any{}, &conf)
 	tConfirm := time.Since(t1)
 	if err != nil {
-		close(stop)
-		<-done
 		return fmt.Errorf("confirmação falhou: %w", err)
 	}
 	t2 := time.Now()
 	_, err = user.call("POST", "/api/v1/imports/"+prev.ID+"/rollback", nil, nil)
 	tRollback := time.Since(t2)
-	close(stop)
-	<-done
+	peaks := sampler.Stop()
 	if err != nil {
 		return fmt.Errorf("desfazer falhou: %w", err)
 	}
@@ -350,12 +324,15 @@ func benchImport(root string, env map[string]string, user *apiClient, rows int) 
 	fmt.Printf("\nImportação de %d linhas (CSV de %.0f KB):\n", rows, float64(len(csv))/1024)
 	fmt.Printf("  prévia      %7.2f s (com 51 regras do usuário e as do sistema; %d de %d linhas categorizadas sozinhas)\n  confirmação %7.2f s\n  desfazer    %7.2f s\n",
 		tPreview.Seconds(), prev.AutoClassified, rows, tConfirm.Seconds(), tRollback.Seconds())
-	fmt.Printf("  memória do backend: %.0f MiB antes, pico %.0f MiB (limite 768 MiB)\n", memBefore, peak)
+	backend := peaks.By["backend"]
+	fmt.Printf("  memória do backend: %.0f MiB antes, pico %.0f MiB com swap (limite %.0f MiB)\n", mib(before.By["backend"].Total()), mib(backend.Total()), mib(backend.Limit))
+	fmt.Println("\nMemória por serviço durante a importação (picos):")
+	writeMemTable(os.Stdout, peaks)
 	if tPreview > 10*time.Second {
 		return fmt.Errorf("a prévia de %d linhas levou %.1f s (meta: menos de 10 s)", rows, tPreview.Seconds())
 	}
-	if peak > 700 {
-		return fmt.Errorf("memória do backend chegou a %.0f MiB, perto do limite de 768", peak)
+	if err := checkMemory(peaks); err != nil {
+		return err
 	}
 	ok("prévia dentro de 10 s e memória abaixo do limite")
 	return nil
