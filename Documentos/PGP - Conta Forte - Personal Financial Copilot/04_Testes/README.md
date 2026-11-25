@@ -2,14 +2,14 @@
 
 Estratégia e evidências (SDD §38). Tudo roda em container, sem exigir Java, Node ou Go no host, e no CI a cada push.
 
-| Camada | O que cobre | Como roda | Quantidade (v0.4.0) |
+| Camada | O que cobre | Como roda | Quantidade (v0.5.0) |
 |---|---|---|---|
-| Backend: unidade e integração | regras de negócio, motor de classificação (inclusive precisão e desempenho), API completa com login real, restrições do banco, isolamento entre usuários | `./cf test backend` (Gradle + Testcontainers com Postgres e Redis reais) | 617 |
-| Frontend: unidade e componente | dinheiro, cliente da API, proxy BFF, formulários, listas | `./cf test web` (lint, tipos e Vitest) | 229 |
+| Backend: unidade e integração | regras de negócio, motor de classificação (inclusive precisão e desempenho), API completa com login real, restrições do banco, isolamento entre usuários | `./cf test backend` (Gradle + Testcontainers com Postgres e Redis reais) | 623 |
+| Frontend: unidade e componente | dinheiro, cliente da API, proxy BFF, formulários, listas | `./cf test web` (lint, tipos e Vitest) | 243 |
 | Go: CLI e exporter | `cf`, cenário sintético, `container-exporter` | `./cf test go` | testes de `tools/cf` e `tools/container-exporter` |
-| E2E no navegador | login, fluxo conta → transações → saldos e resumo, proxy e CSRF, navegação, revisão, regras e favorecidos | `./cf e2e` (Playwright contra a stack em execução) | 19 |
+| E2E no navegador | login, fluxo conta → transações → saldos e resumo, proxy e CSRF, navegação, revisão, regras e favorecidos, dashboard e atalho para os lançamentos | `./cf e2e` (Playwright contra a stack em execução) | 21 |
 | Stack completa (CI) | `./cf init` + `./cf up` + `./cf seed` (com as importações) + login real | job `stack` do GitHub Actions | 1 fluxo |
-| Carga leve | p95 das telas com 10 mil transações e importação de 20 mil linhas já classificada, com 51 regras (tempo, memória e contagem exata de categorizadas) | `./cf bench` (k6 e API) | 5 rotas e 1 importação |
+| Carga leve | p95 das telas (inclusive a série mensal) com 10 mil transações e importação de 20 mil linhas já classificada, com 51 regras (tempo, memória e contagem exata de categorizadas) | `./cf bench` (k6 e API) | 5 rotas e 1 importação |
 
 ## Princípios adotados
 
@@ -25,4 +25,4 @@ Estratégia e evidências (SDD §38). Tudo roda em container, sem exigir Java, N
 
 ## Evidências por milestone
 
-Os números de cada fechamento estão nas lições aprendidas ([M1](../05_Encerramento/LICOES_APRENDIDAS_M1.md), [M2](../05_Encerramento/LICOES_APRENDIDAS_M2.md), [M3](../05_Encerramento/LICOES_APRENDIDAS_M3.md), [M4](../05_Encerramento/LICOES_APRENDIDAS_M4.md)) e no [CHANGELOG](../../../CHANGELOG.md).
+Os números de cada fechamento estão nas lições aprendidas ([M1](../05_Encerramento/LICOES_APRENDIDAS_M1.md), [M2](../05_Encerramento/LICOES_APRENDIDAS_M2.md), [M3](../05_Encerramento/LICOES_APRENDIDAS_M3.md), [M4](../05_Encerramento/LICOES_APRENDIDAS_M4.md), [M5](../05_Encerramento/LICOES_APRENDIDAS_M5.md)) e no [CHANGELOG](../../../CHANGELOG.md).

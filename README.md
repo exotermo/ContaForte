@@ -6,7 +6,7 @@ A visão do produto é evoluir para um copiloto com previsões e recomendações
 
 [![CI](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml/badge.svg)](https://github.com/exotermo/ContaForte/actions/workflows/ci.yml)
 
-> **Status — revisão de 24/11/2026:** M1 a M4 entregues, com tags `v0.1.0`, `v0.2.0`, `v0.3.0` e `v0.4.0`. O MVP completo corresponde a M1–M5.
+> **Status — revisão de 25/11/2026:** M1 a M5 entregues (MVP completo), com tags `v0.1.0` a `v0.5.0`.
 
 ## O que já funciona
 
@@ -70,7 +70,7 @@ O CLI `./cf` também cuida de `status`, `doctor`, `logs`, `test`, `e2e`, `bench`
 | M2 — Financial Core | Contas, transações, categorias, contextos e resumo de liquidez | Entregue (`v0.2.0`) |
 | M3 — Imports | OFX/CSV, normalização, deduplicação e desfazimento | Entregue (`v0.3.0`) |
 | M4 — PIX Intelligence | Favorecidos, regras, categorização e feedback | Entregue (`v0.4.0`) |
-| M5 — Dashboard | Gastos por categoria/contexto, VA/VR e caixa disponível | Planejado; o resumo básico já existe no M2 |
+| M5 — Dashboard | Movimentação do mês, série mensal, gastos por categoria/contexto, VA/VR e caixa disponível | Entregue (`v0.5.0`) |
 | M6 — Intelligence | Python, previsões, anomalias e insights explicáveis | Futuro |
 | M7 — Goals | Orçamentos, reserva, metas e capacidade de investimento | Futuro |
 | M8 — IoT | ESP32, OLED e impressora térmica via MQTT | Futuro |

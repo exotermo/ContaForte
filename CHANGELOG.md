@@ -2,6 +2,22 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), com versionamento semântico.
 
+## [0.5.0] — Milestone 5: Dashboard
+
+### Adicionado
+- **Movimentação do mês na tela inicial:** receitas, gastos (já sem estornos), sobra e investido, com seletor de mês e comparação escrita com o mês anterior.
+- **Série mensal** `GET /api/v1/summary/history?end=AAAA-MM&months=1..24` (padrão 6), numa única consulta agrupada no fuso de São Paulo, com meses sem movimento zerados ([ADR-019](Documentos/PGP%20-%20Conta%20Forte%20-%20Personal%20Financial%20Copilot/02_Arquitetura/Arquitetura/ADR/019-dashboard-com-serie-mensal-e-caixa-disponivel-como-posicao.md)).
+- **Gráficos em SVG** sem biblioteca: barras de receitas e gastos dos últimos 6 meses e gastos por categoria (com subcategorias) e por contexto; legenda em texto e tabela equivalente para leitor de tela.
+- **Do gráfico às transações:** "Ver lançamentos de X" abre `/transacoes` filtrada por tipo, período e categoria ou contexto (filtros da URL validados).
+- `./cf seed` confere o dashboard (24 meses somam o cenário; o mês atual bate com o resumo mensal); `./cf bench` mede a série mensal; seção **Dashboard** no painel Negócio.
+
+### Desempenho e qualidade
+- Série mensal com p95 de 48 ms com 10 mil transações; importação de 20 mil linhas sem regressão (prévia 3,5 s, confirmação 4,2 s, pico de 468 MiB).
+- 623 testes de backend, 243 de frontend e 21 E2E.
+
+### Limitações conhecidas
+- "Sem categoria" e "Sem contexto" sem atalho; o atalho lista só despesas; gráfico não clicável; sem teste com leitor de tela.
+
 ## [0.4.0] — Milestone 4: PIX Intelligence
 
 ### Adicionado

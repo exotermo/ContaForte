@@ -16,7 +16,7 @@ Derivados do [SDD](../02_Arquitetura/SDD/SDD_Personal_Financial_Copilot.md). Pri
 | RF-08 | M4 | O sistema mantém `PixRecipient` com categoria e contexto padrão | ✅ v0.4.0 |
 | RF-09 | M4 | O sistema categoriza por regras e favorecidos conhecidos e, com baixa confiança, pede confirmação | ✅ v0.4.0 |
 | RF-10 | M4 | Cada correção do usuário é gravada como `ClassificationFeedback` | ✅ v0.4.0 |
-| RF-11 | M5 | O dashboard mostra saldo, gastos mensais, distribuição por categoria e contexto, VA/VR e caixa disponível | ⏳ |
+| RF-11 | M5 | O dashboard mostra saldo, gastos mensais, distribuição por categoria e contexto, VA/VR e caixa disponível | ✅ v0.5.0 |
 | RF-12 | M6 | Previsão de saldo (7d, 30d, fim do mês, 90d) e detecção de anomalias | ⏳ |
 | RF-13 | M7 | Orçamentos por categoria e contexto com alertas de 50%, 80% e 100% | ⏳ |
 | RF-14 | M7 | Metas, reserva de emergência e capacidade de investimento | ⏳ |

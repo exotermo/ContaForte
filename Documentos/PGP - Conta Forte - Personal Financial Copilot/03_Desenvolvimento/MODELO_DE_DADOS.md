@@ -131,7 +131,7 @@ Todos exigem `Authorization: Bearer`, exceto login, refresh, logout, `system/inf
 | Categorias | `GET` (árvore), `POST`, `PATCH /{id}` em `/categories` | USER, ADMIN |
 | Contextos | `GET`, `POST`, `PATCH /{id}` em `/contexts` | USER, ADMIN |
 | Transações | `POST`, `GET` (filtros e paginação), `GET /{id}`, `PATCH /{id}`, `DELETE /{id}` em `/transactions` | USER, ADMIN |
-| Resumo | `GET /summary`, `GET /summary/monthly?month=AAAA-MM` | USER, ADMIN |
+| Resumo | `GET /summary`, `GET /summary/monthly?month=AAAA-MM`, `GET /summary/history?end=AAAA-MM&months=1..24` (série mensal, padrão 6 meses, meses sem movimento zerados) | USER, ADMIN |
 | Importações | `POST /imports` (multipart: prévia), `POST /imports/suggest-mapping`, `GET /imports`, `GET /imports/{id}`, `GET /imports/{id}/items`, `POST /imports/{id}/confirm`, `POST /imports/{id}/rollback`, `PATCH /imports/{id}/items/{itemId}` (troca categoria e contexto de uma linha da prévia), `DELETE /imports/{id}` (descartar prévia) | USER, ADMIN |
 | Regras de categorização | `GET`, `POST`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}` em `/categorization-rules`; `POST /categorization-rules/test` (mostra como o motor classificaria um texto, sem gravar) | USER, ADMIN |
 | Favorecidos PIX | `GET` (busca `q`, paginação), `GET /{id}`, `DELETE /{id}` (esquecer) em `/pix-recipients` | USER, ADMIN |

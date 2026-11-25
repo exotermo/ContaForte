@@ -55,12 +55,23 @@ Cria um usuário descartável com N transações sintéticas (padrão 10 mil), r
 | Página profunda (página 400) | 34 | 88 |
 | Resumo mensal | 24 | 20 |
 | Resumo atual | 45 | 301 |
+| Série mensal (6 meses) | 48 | — |
 
 Leitura: para uso pessoal (10 mil linhas equivalem a quase 3 anos com 10 lançamentos por dia) tudo fica abaixo de 50 ms. O `/summary` é o primeiro a crescer, porque soma todas as transações a cada leitura (saldo derivado, [ADR-013](../02_Arquitetura/Arquitetura/ADR/013-saldo-derivado-e-classes-de-liquidez.md)). Se um dia passar de ~300 ms em uso real, o caminho é uma visão materializada ou um cache do saldo.
 
+## Dashboard (tela inicial)
+
+A tela inicial mostra, de cima para baixo: a **posição de hoje** (caixa disponível, restrito em VA/VR, investido e patrimônio), a **movimentação do mês** e a lista de contas.
+
+- **Caixa disponível** é o que existe hoje em conta corrente, poupança e dinheiro. **Não é previsão** do que sobrará no mês, e VA/VR nunca entram nele ([ADR-019](../02_Arquitetura/Arquitetura/ADR/019-dashboard-com-serie-mensal-e-caixa-disponivel-como-posicao.md)).
+- **Movimentação do mês:** escolha o mês nas setas (não passa do mês atual). Mostra receitas, gastos (já descontados os estornos), sobra e investido, com a comparação escrita com o mês anterior. Transferências entre contas e investimentos não contam como receita nem gasto.
+- **Barras dos últimos 6 meses:** receitas e gastos lado a lado, com legenda em texto e tabela para leitor de tela.
+- **Gastos por categoria e por contexto:** a categoria abre as subcategorias. **Ver lançamentos de X** abre as transações já filtradas pelo mês e pela categoria ou contexto.
+- Limitações: "Sem categoria" e "Sem contexto" não têm atalho, e a lista do atalho mostra só despesas (o total pode diferir do gráfico por causa dos estornos).
+
 ## Painéis do Grafana
 
-Além de Visão geral, PostgreSQL e Redis, o painel **Negócio** mostra as transações registradas por tipo, o p95 das telas financeiras (última hora) e as respostas 4xx/5xx por rota. Nenhuma métrica carrega valor, descrição ou dado pessoal. Limitação do Prometheus a conhecer: a **primeira** ocorrência de uma série nova (por exemplo, o primeiro 404 de uma rota) não aparece em `rate()`/`increase()`; a partir da segunda aparece. Os contadores de negócio são registrados em 0 na partida justamente para evitar isso.
+Além de Visão geral, PostgreSQL e Redis, o painel **Negócio** mostra as transações registradas por tipo, as aberturas do mês e o p95 da série mensal na seção **Dashboard**, o p95 das telas financeiras (última hora) e as respostas 4xx/5xx por rota. Nenhuma métrica carrega valor, descrição ou dado pessoal. Limitação do Prometheus a conhecer: a **primeira** ocorrência de uma série nova (por exemplo, o primeiro 404 de uma rota) não aparece em `rate()`/`increase()`; a partir da segunda aparece. Os contadores de negócio são registrados em 0 na partida justamente para evitar isso.
 
 ## Rede e isolamento
 
