@@ -75,15 +75,15 @@ func TestProfileEnabledEObsRunning(t *testing.T) {
 }
 
 func TestObsEDownArgs(t *testing.T) {
-	up, err := obsArgs("up")
+	up, err := obsArgs("up", false)
 	if err != nil || up[0] != "--profile" || up[1] != "obs" || slices.Contains(up, "backend") || !slices.Contains(up, "grafana") {
 		t.Fatalf("up = %v, %v", up, err)
 	}
-	down, err := obsArgs("down")
+	down, err := obsArgs("down", false)
 	if err != nil || slices.Contains(down, "-v") || slices.Contains(down, "down") || !slices.Contains(down, "rm") {
 		t.Fatalf("desligar o monitoramento não pode derrubar a stack nem apagar volumes: %v, %v", down, err)
 	}
-	if _, err := obsArgs("restart"); err == nil {
+	if _, err := obsArgs("restart", false); err == nil {
 		t.Fatal("ação desconhecida deveria falhar")
 	}
 

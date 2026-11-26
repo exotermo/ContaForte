@@ -132,6 +132,27 @@ jobs:
           set -euo pipefail
           ./cf down
           test -z "$(docker ps -a -q --filter label=com.docker.compose.project=contaforte)"
+      # O caminho do deploy (ADR-022): o pacote precisa bastar. As imagens são apagadas antes, e nada pode ser construído.
+      - name: Pacote de release instala e sobe sem construir
+        run: |
+          set -euo pipefail
+          docker compose --profile '*' down -v
+          ./cf release --out /tmp/pacote
+          ver=$(git describe --tags --always)
+          docker image rm "contaforte-backend:$ver" "contaforte-web:$ver" "contaforte-container-exporter:$ver"
+          (cd /tmp/pacote && sha256sum -c SHA256SUMS)
+          gunzip -c "/tmp/pacote/contaforte-$ver-images.tar.gz" | docker load
+          mkdir /tmp/destino
+          tar -xzf "/tmp/pacote/contaforte-$ver.tar.gz" -C /tmp/destino
+          cd /tmp/destino
+          ./cf init
+          ./cf check-images
+          ./cf up 2>&1 | tee up.log
+          if grep -qiE 'building|load build definition| Built' up.log; then echo "o destino construiu uma imagem"; exit 1; fi
+          docker compose ps --format '{{.Image}}' | grep -qx "contaforte-backend:dev" && { echo "imagem de desenvolvimento no pacote"; exit 1; }
+          ./cf seed
+          ./cf obs up
+          ./cf down
       - name: Diagnóstico em caso de falha
         if: failure()
         run: |

@@ -93,7 +93,8 @@ func cmdDoctor() error {
 	} else {
 		check(bits >= 2048, fmt.Sprintf("chave JWT RSA de %d bits", bits), fmt.Sprintf("chave JWT fraca (%d bits)", bits))
 	}
-	if _, err := exec.LookPath("git"); err == nil {
+	// num pacote instalado não há repositório Git, e portanto não há como commitar o .env por engano
+	if exec.Command("git", "-C", root, "rev-parse", "--is-inside-work-tree").Run() == nil {
 		ignored := exec.Command("git", "-C", root, "check-ignore", "-q", ".env").Run() == nil
 		check(ignored, ".env ignorado pelo Git", ".env NÃO está no .gitignore")
 	}

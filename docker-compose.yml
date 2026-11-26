@@ -10,6 +10,8 @@ name: contaforte
 #   obs    : monitoramento (Prometheus, Loki, Alloy, Grafana, exporters)
 #   iot    : broker MQTT (ainda sem uso pela aplicação)
 #   tunnel : Cloudflare Tunnel
+# As três imagens daqui nunca são baixadas (pull_policy: never): são construídas no repositório ou carregadas do
+# pacote de instalação (./cf release), que define CONTAFORTE_VERSION.
 # O Docker não limita o tamanho dos logs por padrão: sem rotação eles enchem o disco com o tempo.
 x-logging: &logging
   driver: json-file
@@ -120,6 +122,8 @@ services:
   backend:
     logging: *logging
     build: ./apps/backend
+    image: contaforte-backend:${CONTAFORTE_VERSION:-dev}
+    pull_policy: never
     restart: unless-stopped
     networks: [app, obs]       # sem saída à Internet; obs = o Prometheus coleta a porta de gestão (8081)
     depends_on:
@@ -155,6 +159,8 @@ services:
   web:
     logging: *logging
     build: ./apps/web
+    image: contaforte-web:${CONTAFORTE_VERSION:-dev}
+    pull_policy: never
     restart: unless-stopped
     networks: [app]            # só o gateway o alcança; fala com o backend pela rede interna
     depends_on:
@@ -249,6 +255,8 @@ services:
     profiles: [obs]
     logging: *logging
     build: ./tools/container-exporter
+    image: contaforte-container-exporter:${CONTAFORTE_VERSION:-dev}
+    pull_policy: never
     restart: unless-stopped
     networks: [obs]
     depends_on: [docker-proxy]

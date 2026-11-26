@@ -33,6 +33,10 @@ Operação
   bench [--import-rows N]            Mede a latência (p95) das telas com 10 mil transações (k6) e a importação de N linhas (padrão 20000)
   backup                             pg_dump comprimido em backups/
   restore <arquivo.sql.gz>           Restaura um backup (pede confirmação)
+Instalação sem construir no destino
+  release [--out dist]               No repositório: monta o pacote do commit atual (imagens, arquivos, cf e checksums); nada é publicado
+  check-images                       No destino: confere que o processador executa cada imagem (depois do init)
+
   version                            Mostra a versão
 `
 
@@ -42,21 +46,38 @@ func main() {
 		os.Exit(2)
 	}
 	cmd, args := os.Args[1], os.Args[2:]
-	var err error
+	prebuilt, err := useRelease()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "erro:", err)
+		os.Exit(1)
+	}
 	switch cmd {
 	case "init":
 		err = cmdInit(args)
 	case "build":
-		err = cmdCompose(append([]string{"build"}, args...))
+		if prebuilt != "" {
+			err = fmt.Errorf("este é um pacote com imagens prontas (%s): construa no repositório com ./cf release", prebuilt)
+		} else {
+			err = cmdCompose(append([]string{"build"}, args...))
+		}
 	case "up":
-		err = cmdCompose([]string{"up", "-d", "--build", "--wait"})
+		if prebuilt != "" {
+			err = requireImages(prebuilt, "backend", "web")
+		}
+		if err == nil {
+			err = cmdCompose(upArgs(prebuilt != ""))
+		}
+	case "release":
+		err = cmdRelease(args)
+	case "check-images":
+		err = cmdCheckImages()
 	case "down":
 		var composeArgs []string
 		if composeArgs, err = downArgs(args); err == nil {
 			err = cmdCompose(composeArgs)
 		}
 	case "obs":
-		err = cmdObs(args)
+		err = cmdObs(prebuilt, args)
 	case "reset":
 		err = cmdReset()
 	case "logs":

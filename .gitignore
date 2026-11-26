@@ -43,4 +43,5 @@ __pycache__/
 
 # CLI e backups
 tools/cf/bin/
+.release
 backups/

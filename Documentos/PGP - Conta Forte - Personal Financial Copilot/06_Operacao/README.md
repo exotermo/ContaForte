@@ -46,6 +46,8 @@ Vários perfis são separados por vírgula (`COMPOSE_PROFILES=tunnel,obs`). `./c
 | `bench [--import-rows N]` | Mede o p95 das telas com 10 mil transações sintéticas (k6 em container) e a importação de N linhas (padrão 20 mil), com o motor de classificação ligado |
 | `mem [--for 60s]` | Memória por contêiner somando o swap, limite, maior total simultâneo e mortes por falta de memória (Linux com cgroup v2) |
 | `backup` / `restore <arquivo>` | `pg_dump` comprimido em `backups/` e restauração |
+| `release [--out dist]` | No repositório: monta o pacote de instalação do commit atual. Nada é publicado |
+| `check-images` | No destino, depois do `init`: confere que o processador executa cada imagem |
 
 ## Dados de demonstração (`./cf seed`)
 
@@ -153,6 +155,41 @@ Grafana em `http://127.0.0.1:8080/grafana/` (usuário `admin`, senha `GRAFANA_PA
 - **Sem Alertmanager:** os alertas só aparecem no Prometheus e no Grafana, não notificam ninguém.
 - **Postgres:** o `postgres-exporter` usa o mesmo usuário da aplicação. Um usuário dedicado com o papel `pg_monitor` é um endurecimento futuro.
 - **Dashboards como código:** o gerador está em `tools/gen-dashboards`. Edite lá e regenere os JSON.
+
+## Instalação por pacote (servidor sem construir)
+
+Para uma máquina modesta, as imagens são construídas em outra e levadas prontas ([ADR-022](../02_Arquitetura/Arquitetura/ADR/022-instalacao-por-pacote-sem-construir-no-servidor.md)). O destino precisa de Linux x86_64, Docker com Compose v2 e acesso à Internet para baixar as imagens de terceiros. Não precisa de Git, Go, Java nem Node.
+
+**Na máquina de desenvolvimento**, com o commit desejado:
+
+```bash
+./cf release          # gera dist/contaforte-<versão>.tar.gz, ...-images.tar.gz e SHA256SUMS
+scp dist/* usuario@servidor:pacote/
+```
+
+**No servidor**, primeira instalação. Escolha uma pasta num disco com espaço:
+
+```bash
+cd ~/pacote && sha256sum -c SHA256SUMS            # os dois arquivos precisam conferir
+gunzip -c contaforte-<versão>-images.tar.gz | docker load
+sudo mkdir -p /srv/contaforte && sudo chown "$USER" /srv/contaforte
+tar -xzf contaforte-<versão>.tar.gz -C /srv/contaforte
+cd /srv/contaforte
+./cf init --port 8090      # segredos novos, gerados aqui; nunca copie o .env de outra máquina
+./cf check-images          # baixa as imagens de terceiros e testa o processador
+./cf up && ./cf doctor
+```
+
+**Atualização:** copie o pacote novo, confira o `SHA256SUMS` e carregue as imagens como acima. Depois:
+
+```bash
+cd /srv/contaforte
+./cf backup && ./cf down
+tar -xzf ~/pacote/contaforte-<versão nova>.tar.gz -C /srv/contaforte   # o .env e os backups ficam
+./cf up && ./cf doctor
+```
+
+Para voltar à versão anterior, extraia o pacote antigo, **desde que a versão nova não tenha mudado o banco** (arquivos em `db/migration`). Se mudou, restaure o backup feito antes da atualização. Apague imagens antigas com `docker image rm`, uma a uma; evite comandos de limpeza geral numa máquina com outros projetos.
 
 ## Exposição pública com Cloudflare Tunnel (opcional)
 

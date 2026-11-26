@@ -28,24 +28,30 @@ func obsRunning(svcs []svcInfo) bool {
 }
 
 // obsArgs monta o comando do Compose que liga ou desliga só o monitoramento, sem mexer no núcleo nem no .env.
-func obsArgs(action string) ([]string, error) {
+func obsArgs(action string, prebuilt bool) ([]string, error) {
 	base := []string{"--profile", "obs"}
 	switch action {
 	case "up":
-		return append(append(base, "up", "-d", "--build", "--wait"), obsServices...), nil
+		return append(append(base, upArgs(prebuilt)...), obsServices...), nil
 	case "down":
 		return append(append(base, "rm", "--stop", "--force"), obsServices...), nil // os volumes (histórico) ficam
 	}
 	return nil, fmt.Errorf("uso: cf obs up|down")
 }
 
-func cmdObs(args []string) error {
+// cmdObs recebe a versão do pacote instalado, ou "" num repositório de desenvolvimento.
+func cmdObs(prebuilt string, args []string) error {
 	if len(args) != 1 {
 		return fmt.Errorf("uso: cf obs up|down")
 	}
-	composeArgs, err := obsArgs(args[0])
+	composeArgs, err := obsArgs(args[0], prebuilt != "")
 	if err != nil {
 		return err
+	}
+	if prebuilt != "" && args[0] == "up" {
+		if err := requireImages(prebuilt, "container-exporter"); err != nil {
+			return err
+		}
 	}
 	if err := cmdCompose(composeArgs); err != nil {
 		return err

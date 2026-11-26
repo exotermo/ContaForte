@@ -5,6 +5,12 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$ROOT/tools/cf"
 BIN="$SRC/bin/cf"
 
+# pacote instalado (cf release): o binário já vem pronto e nada é compilado aqui
+if [ -f "$ROOT/.release" ]; then
+  [ -x "$BIN" ] || { echo "Pacote incompleto: falta $BIN. Extraia o pacote de novo." >&2; exit 1; }
+  exec "$BIN" "$@"
+fi
+
 # versão embutida no binário: a tag mais próxima (ex.: v0.2.0) ou o hash do commit; "dev" fora de um repositório Git
 VERSION="$(git -C "$ROOT" describe --tags --always 2>/dev/null || echo dev)"
 
