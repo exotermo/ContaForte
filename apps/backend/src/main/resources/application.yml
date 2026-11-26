@@ -4,6 +4,9 @@ spring:
   datasource:
     # Em produção vêm do ambiente (SPRING_DATASOURCE_URL/USERNAME/PASSWORD), nunca daqui.
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/contaforte}
+    hikari:
+      maximum-pool-size: 5        # uso pessoal: o Postgres aceita 20 conexões no total
+      minimum-idle: 2
   jpa:
     open-in-view: false
     hibernate:
@@ -32,6 +35,9 @@ spring:
 server:
   tomcat:
     max-swallow-size: 10MB        # upload acima do limite recebe 413 em vez de a conexão ser derrubada
+    threads:
+      max: 20                     # cada thread custa memória; o servidor tem 2 núcleos
+      min-spare: 4
   port: 8080
   shutdown: graceful
   forward-headers-strategy: native   # IP real do cliente vindo do gateway (rede interna confiável)

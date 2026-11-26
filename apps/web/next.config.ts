@@ -16,6 +16,9 @@ const csp = [
 const config: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  // O app não usa next/image. Ligado, /_next/image atende sem login e carrega o sharp, que gasta memória e exige um
+  // processador com SSE4.2 (o servidor não tem). O Dockerfile também tira o sharp da imagem.
+  images: { unoptimized: true },
   async headers() {
     return [
       {

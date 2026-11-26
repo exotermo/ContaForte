@@ -1,6 +1,7 @@
 package dev.contaforte.common;
 
 import java.time.Clock;
+import java.time.Duration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -14,9 +15,9 @@ class CommonConfig {
         return Clock.systemUTC();
     }
 
-    /** Argon2id com os parâmetros recomendados pelo Spring Security (formato autodescritivo). */
+    /** Argon2id com os parâmetros recomendados pelo Spring Security (formato autodescritivo), no máximo 2 por vez. */
     @Bean
     PasswordEncoder passwordEncoder() {
-        return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+        return new BoundedPasswordEncoder(Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8(), 2, Duration.ofSeconds(10));
     }
 }

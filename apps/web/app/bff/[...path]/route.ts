@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { backendFetch } from "@/lib/backend";
+import { BusyError, createGate } from "@/lib/gate";
 import { ACCESS_COOKIE, clientIp, isSameOrigin, readCookie } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,11 @@ const MAX_CONFIRM = 1024 * 1024;
 /** Extrato de até 5 MB (o backend impõe o limite exato) mais o envelope do multipart. */
 const MAX_UPLOAD = 5.5 * 1024 * 1024;
 const MAX_QUERY = 2000;
+/**
+ * Cada upload fica inteiro na memória (algumas cópias de até 5,5 MB, liberadas com atraso): um de cada vez, que é
+ * também o ritmo do backend. Quem espera na fila ainda não teve o corpo lido (ADR-021).
+ */
+const uploadGate = createGate(1, 40, 60_000);
 const NO_STORE = { "Cache-Control": "no-store" };
 
 type Ctx = { params: Promise<{ path: string[] }> };
@@ -82,18 +88,49 @@ async function handle(req: Request, ctx: Ctx): Promise<Response> {
   const search = new URL(req.url).search;
   if (search.length > MAX_QUERY) return NextResponse.json({ error: "consulta longa demais" }, { status: 414, headers: NO_STORE });
 
+  if (!isUpload(req.method, path)) return send(req, path, token, search);
+  const type = (req.headers.get("content-type") ?? "").toLowerCase();
+  if (!type.startsWith("multipart/form-data")) {
+    return NextResponse.json({ error: "esperado multipart/form-data" }, { status: 415, headers: NO_STORE });
+  }
+  if (Number(req.headers.get("content-length")) > MAX_UPLOAD) return tooBig();
+
+  // O cookie existir não prova nada: o token é conferido no backend ANTES de o arquivo ser lido para a memória.
+  // Sem isso, qualquer um, com um cookie inventado, derrubaria o front mandando arquivos em paralelo.
+  const denied = await checkToken(token);
+  if (denied) return denied;
+  try {
+    return await uploadGate(() => send(req, path, token, search));
+  } catch (e) {
+    if (!(e instanceof BusyError)) throw e;
+    return NextResponse.json({ error: "ocupado" }, { status: 503, headers: { ...NO_STORE, "Retry-After": "5" } });
+  }
+}
+
+/** Devolve a resposta de recusa, ou null se o backend reconhece o token. */
+async function checkToken(token: string): Promise<Response | null> {
+  try {
+    const res = await backendFetch("/api/v1/users/me", { token });
+    await res.arrayBuffer(); // esvazia a resposta para a conexão ser reaproveitada
+    if (res.ok) return null;
+    return res.status === 401
+      ? NextResponse.json({ error: "não autorizado" }, { status: 401, headers: NO_STORE })
+      : NextResponse.json({ error: "indisponível" }, { status: 503, headers: NO_STORE });
+  } catch {
+    return NextResponse.json({ error: "indisponível" }, { status: 503, headers: NO_STORE });
+  }
+}
+
+/** Lê o corpo (com limite), repassa ao backend e devolve a resposta dele. */
+async function send(req: Request, path: string[], token: string, search: string): Promise<Response> {
   let body: Uint8Array | string | undefined;
   let contentType = "application/json";
   if (isUpload(req.method, path)) {
-    // upload de extrato: só multipart, repassado com o Content-Type original (que traz o boundary)
-    const ct = req.headers.get("content-type") ?? "";
-    if (!ct.toLowerCase().startsWith("multipart/form-data")) {
-      return NextResponse.json({ error: "esperado multipart/form-data" }, { status: 415, headers: NO_STORE });
-    }
+    // upload de extrato (já conferido como multipart), repassado com o Content-Type original, que traz o boundary
     const bytes = await readLimited(req, MAX_UPLOAD);
     if (!bytes) return tooBig();
     body = bytes;
-    contentType = ct;
+    contentType = req.headers.get("content-type") ?? "";
   } else if (req.method === "POST" || req.method === "PATCH") {
     const bytes = await readLimited(req, isConfirm(req.method, path) ? MAX_CONFIRM : MAX_JSON);
     if (!bytes) return tooBig();

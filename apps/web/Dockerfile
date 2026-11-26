@@ -11,7 +11,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+RUN npm run build \
+    && rm -rf .next/standalone/node_modules/sharp .next/standalone/node_modules/@img   # sem otimizador (next.config.ts)
 
 FROM node:22-alpine AS runtime
 RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app
@@ -22,6 +23,6 @@ COPY --from=build --chown=app:app /app/.next/static ./.next/static
 COPY --from=build --chown=app:app /app/public ./public
 USER app:app
 EXPOSE 3000
-HEALTHCHECK --interval=15s --timeout=3s --start-period=20s --retries=5 \
+HEALTHCHECK --interval=15s --timeout=3s --start-period=60s --retries=5 \
     CMD wget -q -O /dev/null http://127.0.0.1:3000/up || exit 1
 CMD ["node", "server.js"]

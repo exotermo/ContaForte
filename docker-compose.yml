@@ -46,6 +46,26 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:?defina com ./cf init}
       POSTGRES_USER: ${POSTGRES_USER:?defina com ./cf init}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina com ./cf init}
+    # Dimensionado para uso pessoal em 192 MiB (ADR-021): o backend usa no máximo 5 conexões; sem consultas paralelas
+    # nem JIT, que gastam memória e quase não ajudam em 2 núcleos com este volume de dados.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=48MB
+      - -c
+      - max_connections=20
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=32MB
+      - -c
+      - effective_cache_size=128MB
+      - -c
+      - max_parallel_workers_per_gather=0
+      - -c
+      - max_parallel_maintenance_workers=0
+      - -c
+      - jit=off
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -53,8 +73,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
-    mem_limit: 512m
+      start_period: 60s
+    mem_limit: 192m
 
   redis:
     logging: *logging
@@ -63,7 +83,9 @@ services:
     networks: [app]
     environment:
       REDISCLI_AUTH: ${REDIS_PASSWORD:?defina com ./cf init}
-    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDISCLI_AUTH\" --appendonly yes --save 60 1000"]
+    # Guarda só os contadores dos limitadores (login, importação). Cheio, recusa gravações em vez de despejar chaves:
+    # despejar zeraria contadores, e sem eles o login falha fechado.
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDISCLI_AUTH\" --appendonly yes --save 60 1000 --maxmemory 16mb --maxmemory-policy noeviction"]
     volumes:
       - redis-data:/data
     healthcheck:
@@ -71,7 +93,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    mem_limit: 256m
+    mem_limit: 32m
 
   mqtt:
     profiles: [iot]
@@ -114,13 +136,21 @@ services:
       JWT_PRIVATE_KEY_B64: ${JWT_PRIVATE_KEY_B64:?defina com ./cf init}
       ADMIN_EMAIL: ${ADMIN_EMAIL:?defina com ./cf init}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?defina com ./cf init}
+      # Memória da JVM dentro dos 448 MiB do contêiner (ADR-021). Além do heap há ~125 MB de classes, o código
+      # compilado, as pilhas das threads e memória nativa. Só o primeiro nível do JIT: bem menos memória e subida
+      # mais rápida. A última opção impede que cada thread guarde um buffer do tamanho do maior arquivo que já leu.
+      # Mudou um número aqui: rode ./cf bench.
+      JAVA_TOOL_OPTIONS: >-
+        -XX:+UseSerialGC -Xms32m -Xmx224m -Xss512k -XX:MinHeapFreeRatio=15 -XX:MaxHeapFreeRatio=35
+        -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=48m -XX:MaxMetaspaceSize=176m
+        -XX:+ExitOnOutOfMemoryError -Djdk.nio.maxCachedBufferSize=262144
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:8081/actuator/health | grep -q '\"status\":\"UP\"'"]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 40s
-    mem_limit: 768m
+      start_period: 120s       # processador antigo demora a subir; falhas neste período não contam
+    mem_limit: 448m
 
   web:
     logging: *logging
@@ -132,13 +162,14 @@ services:
         condition: service_healthy
     environment:
       BACKEND_URL: http://backend:8080
+      NODE_OPTIONS: --max-old-space-size=80   # teto do heap do Node, abaixo do limite do contêiner
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/up"]
       interval: 15s
       timeout: 3s
       retries: 5
-      start_period: 20s
-    mem_limit: 256m
+      start_period: 60s
+    mem_limit: 160m
 
   # ---------------------------------------------------------------- observabilidade
   # Proxy somente-leitura da API do Docker: o Alloy e o container-exporter nunca montam o docker.sock diretamente.
@@ -300,7 +331,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    mem_limit: 64m
+    mem_limit: 48m             # o processo usa menos de 10; o resto são os buffers de rede durante uploads em paralelo
 
   # ---------------------------------------------------------------- exposição pública (opcional)
   # Só sobe com COMPOSE_PROFILES=tunnel no .env (ver docs 06_Operacao). Sem portas publicadas: a conexão é de saída.
@@ -316,6 +347,7 @@ services:
         condition: service_healthy
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}   # obrigatório com o perfil tunnel (o cf doctor confere)
+      GOMEMLIMIT: 48MiB                 # o coletor de lixo do Go trabalha antes de o contêiner chegar ao limite
     command: ["tunnel", "--no-autoupdate", "--metrics", "127.0.0.1:20241", "run"]
     healthcheck:
       test: ["CMD", "cloudflared", "tunnel", "--metrics", "127.0.0.1:20241", "ready"]
@@ -323,4 +355,4 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
-    mem_limit: 128m
+    mem_limit: 64m

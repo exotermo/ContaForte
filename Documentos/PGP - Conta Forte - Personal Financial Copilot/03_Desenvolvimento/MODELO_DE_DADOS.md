@@ -106,6 +106,8 @@ O `NUMERIC(14,2)` do Postgres **arredonda em silêncio** valores com mais de 2 c
 
 `transactions` ganha `classification_status` (`NONE`, `AUTO`, `SUGGESTED`, `CONFIRMED`), `classification_source`, `classification_confidence` e `suggested_category_id`/`suggested_context_id`. Novas tabelas: `pix_recipients` (favorecido por usuário), `pix_recipient_category_votes` e `pix_recipient_context_votes` (votos **por direção**, `IN` receita e `OUT` despesa, a confiança é **calculada** dos votos, não guardada; V8), `categorization_rules` e `classification_feedback`. Na importação (V9), cada linha nova ou possível duplicata de `import_items` guarda o que o motor decidiu (`engine_*`: alvo e decisão de categoria e de contexto, resumo, origem e confiança) e a escolha do usuário na prévia (`chosen*`); na confirmação isso vira o estado da transação. Decisões em [ADR-017](../02_Arquitetura/Arquitetura/ADR/017-classificacao-em-estagios-com-confianca-calibrada.md) e [ADR-018](../02_Arquitetura/Arquitetura/ADR/018-privacidade-de-favorecidos-e-feedback.md).
 
+A **V10** só acrescenta o índice parcial `ix_import_items_duplicate_of`: sem ele, cada transação apagada de verdade lia `import_items` inteira. Um teste exige índice em toda chave estrangeira que aponta para `transactions`.
+
 ## Liquidez (o que entra em cada total)
 
 | Tipo de conta | Total |

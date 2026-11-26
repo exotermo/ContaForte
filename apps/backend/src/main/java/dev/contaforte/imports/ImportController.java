@@ -1,5 +1,6 @@
 package dev.contaforte.imports;
 
+import dev.contaforte.common.ConcurrencyGate;
 import dev.contaforte.common.PageResponse;
 import dev.contaforte.imports.ImportDtos.ConfirmRequest;
 import dev.contaforte.imports.ImportDtos.ImportItemResponse;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.net.URI;
+import java.time.Duration;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +39,11 @@ class ImportController {
 
     private final ImportService service;
 
+    // Sugestão, prévia, confirmação e desfazer trabalham com até 20 mil linhas na memória: um de cada vez (ADR-021). O portão fica
+    // aqui, por fora da transação do serviço, para a próxima só começar depois de a anterior ter sido gravada.
+    private final ConcurrencyGate heavy = new ConcurrencyGate(1, Duration.ofSeconds(60),
+            "Há outra importação em andamento. Tente novamente em instantes.");
+
     ImportController(ImportService service) {
         this.service = service;
     }
@@ -48,14 +55,16 @@ class ImportController {
     ResponseEntity<ImportResponse> create(@AuthenticationPrincipal Jwt jwt, @RequestPart("file") MultipartFile file,
                                           @RequestParam UUID accountId, @RequestParam(required = false) ImportFormat format,
                                           @RequestParam(required = false) String mapping) {
-        ImportResponse created = service.preview(userId(jwt), file, accountId, format, mapping);
+        UUID user = userId(jwt);
+        ImportResponse created = heavy.run(() -> service.preview(user, file, accountId, format, mapping));
         return ResponseEntity.created(URI.create("/api/v1/imports/" + created.id())).body(created);
     }
 
     @PostMapping(value = "/suggest-mapping", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Sugere o mapeamento de colunas de um CSV (delimitador, cabeçalho, primeiras linhas), sem gravar nada")
     CsvSuggestion suggest(@AuthenticationPrincipal Jwt jwt, @RequestPart("file") MultipartFile file) {
-        return service.suggestMapping(userId(jwt), file);
+        UUID user = userId(jwt);
+        return heavy.run(() -> service.suggestMapping(user, file));
     }
 
     @GetMapping
@@ -95,13 +104,15 @@ class ImportController {
             description = "Corpo opcional: includePossible (ids de possíveis duplicatas a importar) e exclude (ids de linhas novas a pular). "
                     + "Confirmar duas vezes responde 409; prévia vencida, 410.")
     ImportResponse confirm(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id, @RequestBody(required = false) ConfirmRequest body) {
-        return service.confirm(userId(jwt), id, body);
+        UUID user = userId(jwt);
+        return heavy.run(() -> service.confirm(user, id, body));
     }
 
     @PostMapping("/{id}/rollback")
     @Operation(summary = "Desfaz uma importação confirmada (exclusão lógica das transações dela)")
     ImportResponse rollback(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
-        return service.rollback(userId(jwt), id);
+        UUID user = userId(jwt);
+        return heavy.run(() -> service.rollback(user, id));
     }
 
     @DeleteMapping("/{id}")

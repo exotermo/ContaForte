@@ -72,6 +72,12 @@ test.describe("sessão", () => {
     expect((await request.get("/icons/icon-512.png")).ok()).toBe(true);
   });
 
+  test("o otimizador de imagens está desligado", async ({ request }) => {
+    // ele atende sem login e carrega código nativo que o processador do servidor não executa
+    const res = await request.get("/_next/image?url=%2Ficons%2Ficon-192.png&w=64&q=75");
+    expect(res.status()).toBe(404);
+  });
+
   test("cabeçalhos de segurança estão presentes", async ({ request }) => {
     const res = await request.get("/login");
     expect(res.headers()["content-security-policy"]).toContain("frame-ancestors 'none'");

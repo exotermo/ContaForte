@@ -4,7 +4,7 @@ Guia para instalar, operar e monitorar o ContaForte. Tudo roda em Docker, em red
 
 ## Quickstart
 
-Pré-requisitos: Docker com Compose v2 e cerca de 1 GB de RAM livre para rodar (os builds e o monitoramento pedem bem mais). Não é preciso Java, Node nem Go no host: os builds acontecem em containers (o Go só é baixado em container se não existir localmente).
+Pré-requisitos: Docker com Compose v2 e cerca de 1 GB de RAM livre para rodar: os limites do núcleo somam 880 MiB, ou 944 com o túnel (os builds e o monitoramento pedem bem mais). Não é preciso Java, Node nem Go no host: os builds acontecem em containers (o Go só é baixado em container se não existir localmente).
 
 ```bash
 ./cf init     # verifica pré-requisitos e gera o .env com segredos aleatórios
@@ -59,7 +59,7 @@ Para ver o produto com números sem digitar nada: `./cf seed` cria o usuário `d
 
 ## Desempenho (`./cf bench`)
 
-Além das telas, o bench mede a **importação de 20 mil linhas** com o motor de classificação ligado, no pior caso de regras (51 regras do usuário percorridas em toda linha, mais as do sistema): tempo de prévia, confirmação e desfazer e a memória do backend. Falha se a prévia passar de 10 s, se a memória chegar perto dos 768 MiB ou se o número de linhas categorizadas sozinhas diferir do esperado (8 mil de 20 mil).
+Além das telas, o bench mede a **importação de 20 mil linhas** com o motor de classificação ligado, no pior caso de regras (51 regras do usuário percorridas em toda linha, mais as do sistema): tempo de prévia, confirmação e desfazer e a memória do backend. Falha se a prévia passar de 10 s, se o backend passar de 92% do limite de 448 MiB, se algum serviço reiniciar ou morrer por falta de memória ou se o número de linhas categorizadas sozinhas diferir do esperado (8 mil de 20 mil).
 
 Cria um usuário descartável com N transações sintéticas (padrão 10 mil), roda o k6 por 20 s com 10 usuários virtuais passando pelo gateway e remove tudo ao final. Medido na máquina de desenvolvimento (p95, em ms):
 
@@ -116,6 +116,14 @@ Em **Importações** você traz o extrato do banco. O fluxo é sempre em duas fa
 **Privacidade:** o arquivo **não fica guardado**. Ficam só o hash (para avisar "este arquivo já foi importado"), o nome e as linhas da prévia, por 24 horas, e depois as transações que você confirmou. Prévias não confirmadas são apagadas depois de 24 horas.
 
 **Limites:** 20 prévias por hora por usuário (as descartadas contam). Acima disso a tela mostra em quantos minutos tentar de novo.
+
+## Memória
+
+Cada serviço tem um teto, e a soma do núcleo com o túnel fica em 944 MiB ([ADR-021](../02_Arquitetura/Arquitetura/ADR/021-orcamento-de-memoria-de-1-gb.md)). Medido em 2 núcleos, contando o swap: cerca de 430 MiB parado, 440 na importação de 20 mil linhas e na carga do `bench` e 590 com uploads em paralelo (maior total simultâneo). `./cf mem` mostra o uso de agora.
+
+Para caber nisso, o sistema faz **uma importação por vez** e calcula no máximo 2 senhas ao mesmo tempo. Um aviso de "ocupado" (503) significa que a fila demorou demais: basta tentar de novo.
+
+Se um serviço reiniciar sozinho, confira com `./cf mem --for 60s` enquanto repete a ação e procure `Memory cgroup out of memory` em `journalctl -k`. Aumentar um limite exige tirar de outro: um teste mantém a soma em até 1024 MiB.
 
 ## Categorias sugeridas, regras e favorecidos
 

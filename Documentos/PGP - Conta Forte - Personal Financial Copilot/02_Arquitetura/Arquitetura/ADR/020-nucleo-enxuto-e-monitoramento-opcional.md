@@ -21,4 +21,4 @@ A meta é a stack caber em **1 GB de RAM** num servidor doméstico modesto. Na m
 - No padrão não há métricas nem logs centralizados; o diagnóstico usa `./cf status`, `./cf mem` e `./cf logs`. O que aconteceu enquanto o `obs` estava desligado não aparece nos painéis, salvo os logs ainda guardados pelo Docker que o Alloy conseguir ler ao ligar.
 - Quem já tinha a stack no ar precisa saber que o `up` não liga mais o monitoramento.
 - Um teste exige que o núcleo seja exatamente os cinco serviços: um serviço novo precisa caber no orçamento ou ir para um perfil.
-- Os limites de memória de cada serviço serão ajustados em seguida.
+- Os limites de memória de cada serviço estão no [ADR-021](021-orcamento-de-memoria-de-1-gb.md).

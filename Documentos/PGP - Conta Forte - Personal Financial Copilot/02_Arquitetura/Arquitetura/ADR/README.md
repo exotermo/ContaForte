@@ -24,3 +24,4 @@ Formato: Contexto, Decisão, Consequências. Status: Proposto, Aceito ou Substit
 | [018](018-privacidade-de-favorecidos-e-feedback.md) | Privacidade de favorecidos PIX e do feedback de classificação | Aceito |
 | [019](019-dashboard-com-serie-mensal-e-caixa-disponivel-como-posicao.md) | Dashboard: série mensal agregada no banco e "caixa disponível" como posição, não previsão | Aceito |
 | [020](020-nucleo-enxuto-e-monitoramento-opcional.md) | Núcleo enxuto, com monitoramento e MQTT em perfis opcionais | Aceito |
+| [021](021-orcamento-de-memoria-de-1-gb.md) | Orçamento de memória de 1 GB e limites de trabalho simultâneo | Aceito |

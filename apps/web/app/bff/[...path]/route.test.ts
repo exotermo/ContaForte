@@ -151,7 +151,8 @@ describe("proxy de dados /bff", () => {
     const res = await POST(multipart(payload), ctx(["imports"]));
 
     expect(res.status).toBe(201);
-    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect((fetchMock.mock.calls[0] as unknown as [string])[0]).toBe("http://backend:8080/api/v1/users/me");
+    const [url, init] = fetchMock.mock.calls[1] as unknown as [string, RequestInit];
     expect(url).toBe("http://backend:8080/api/v1/imports");
     expect(new Headers(init.headers).get("content-type")).toBe("multipart/form-data; boundary=XYZ");
     expect(new Headers(init.headers).get("authorization")).toBe("Bearer AT123");
@@ -161,7 +162,7 @@ describe("proxy de dados /bff", () => {
   it("a sugestão de mapeamento também é upload", async () => {
     const fetchMock = backend(200, {});
     await POST(multipart(new Uint8Array([1, 2, 3])), ctx(["imports", "suggest-mapping"]));
-    expect((fetchMock.mock.calls[0] as unknown as [string])[0]).toBe("http://backend:8080/api/v1/imports/suggest-mapping");
+    expect((fetchMock.mock.calls[1] as unknown as [string])[0]).toBe("http://backend:8080/api/v1/imports/suggest-mapping");
   });
 
   it("recusa upload que não é multipart (415) sem chamar o backend", async () => {
@@ -200,7 +201,7 @@ describe("proxy de dados /bff", () => {
 
     expect(res.status).toBe(413);
     expect(sent).toBeLessThan(8);   // parou de ler ao passar do limite, não consumiu os 8 MB
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(fetchMock.mock.calls.map((c) => (c as unknown as [string])[0])).toEqual(["http://backend:8080/api/v1/users/me"]);
   });
 
   it("upload exige sessão e a mesma origem", async () => {
@@ -208,6 +209,43 @@ describe("proxy de dados /bff", () => {
     expect((await POST(multipart(new Uint8Array([1]), { cookie: "" }), ctx(["imports"]))).status).toBe(401);
     expect((await POST(multipart(new Uint8Array([1]), { origin: "http://evil.example" }), ctx(["imports"]))).status).toBe(403);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("com token recusado pelo backend, o arquivo nem chega a ser lido nem é repassado", async () => {
+    const fetchMock = backend(401, {});
+    const upload = multipart(new Uint8Array(1024), { cookie: "cf_at=inventado" });
+
+    const res = await POST(upload, ctx(["imports"]));
+
+    expect(res.status).toBe(401);
+    expect(upload.bodyUsed).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("sem conseguir conferir o token, o upload é recusado com 503 sem ler o arquivo", async () => {
+    for (const failure of [() => Promise.reject(new Error("ECONNREFUSED")), () => Promise.resolve(new Response("{}", { status: 500 }))]) {
+      vi.stubGlobal("fetch", vi.fn(failure));
+      const upload = multipart(new Uint8Array(16));
+      expect((await POST(upload, ctx(["imports"]))).status).toBe(503);
+      expect(upload.bodyUsed).toBe(false);
+    }
+  });
+
+  it("uploads em paralelo são lidos e enviados um de cada vez", async () => {
+    let inside = 0;
+    let peak = 0;
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      if (url.endsWith("/users/me")) return new Response("{}", { status: 200 });
+      peak = Math.max(peak, ++inside);
+      await new Promise((r) => setTimeout(r, 5));
+      inside -= 1;
+      return new Response("{}", { status: 201 });
+    }));
+
+    const all = await Promise.all(Array.from({ length: 6 }, () => POST(multipart(new Uint8Array(32)), ctx(["imports"]))));
+
+    expect(all.map((r) => r.status)).toEqual([201, 201, 201, 201, 201, 201]);
+    expect(peak).toBe(1);
   });
 
   it("a confirmação aceita corpo JSON grande (listas de ids), os demais corpos continuam em 64 KB", async () => {

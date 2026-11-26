@@ -4,6 +4,7 @@ import (
 	"os"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -103,4 +104,53 @@ func TestFreePort(t *testing.T) {
 	if got := freePort(9000, func(int) bool { return true }); got != 9000 {
 		t.Fatalf("sem porta livre = %d", got)
 	}
+}
+
+// TestStackCabeEm1GB trava a meta do projeto (ADR-021): o que fica sempre ligado, mais o túnel, não passa de 1 GiB
+// mesmo se cada contêiner chegar ao próprio limite.
+func TestStackCabeEm1GB(t *testing.T) {
+	raw, err := os.ReadFile("../../docker-compose.yml")
+	if err != nil {
+		t.Skip("docker-compose.yml fora do alcance (teste isolado do módulo)")
+	}
+	byService, _ := composeProfiles(t)
+	limits := memLimits(string(raw))
+	total := 0
+	for svc, profile := range byService {
+		mib, ok := limits[svc]
+		if !ok {
+			t.Errorf("%s sem mem_limit (em MiB, no formato 123m)", svc)
+		}
+		if profile == "" || profile == "tunnel" {
+			total += mib
+		}
+	}
+	if total == 0 || total > stackBudgetMiB {
+		t.Errorf("núcleo + túnel somam %d MiB; o teto é %d. Reduza outro limite ou ponha o serviço novo num perfil", total, stackBudgetMiB)
+	}
+}
+
+func TestMemLimits(t *testing.T) {
+	got := memLimits("services:\n  a:\n    mem_limit: 24m   # com comentário\n  b:\n    image: x\n  c:\n    mem_limit: 1g\n")
+	if len(got) != 1 || got["a"] != 24 {
+		t.Fatalf("limites = %v", got)
+	}
+}
+
+const stackBudgetMiB = 1024
+
+// memLimits devolve o mem_limit, em MiB, de cada serviço. Só aceita o formato "123m": outro conta como ausente.
+func memLimits(compose string) map[string]int {
+	_, body, _ := strings.Cut(compose, "services:\n")
+	svcRe := regexp.MustCompile(`^  ([a-z][a-z-]*):\s*$`)
+	memRe := regexp.MustCompile(`^    mem_limit: ([0-9]+)m\s*(#.*)?$`)
+	out, current := map[string]int{}, ""
+	for _, line := range strings.Split(body, "\n") {
+		if m := svcRe.FindStringSubmatch(line); m != nil {
+			current = m[1]
+		} else if m := memRe.FindStringSubmatch(line); m != nil {
+			out[current], _ = strconv.Atoi(m[1])
+		}
+	}
+	return out
 }
