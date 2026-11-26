@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build 100% em container: não exige JDK 21 nem Gradle no host.
 
-FROM gradle:8.14.3-jdk21 AS build
+FROM gradle:8.14.8-jdk21 AS build
 WORKDIR /app
 COPY build.gradle settings.gradle ./
 # camada de dependências em cache (só invalida se o build.gradle mudar)
